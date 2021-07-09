@@ -8,10 +8,15 @@ from multiprocessing import Pool
 import cantools
 import numpy, binascii
 
+# candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
+candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
+candbPool = {'0e': candb}
 
-def parse_tjms_message(data, db, vehicleMode='ME7', protocol='0e', signal=False):
+def parse_tjms_message(data, protol, vehicleMode='ME7', protocol='0e', signal=False):
 
     time1 = time.time() * 1000
+
+    db = candbPool[protol]
 
     CanIDList = EnterpriseTransportProtolVer[vehicleMode][protocol]
 

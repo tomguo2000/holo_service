@@ -103,11 +103,8 @@ def details():
                    }, 200
 
         # 解析企标string，得到list
-        Pools = Pool(1)
-        asyncResult = []
-        respContents = []
-        # candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
-        candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
+
+
 
         # 串行处理，功能正确
         # for item in cropedOriMessage:
@@ -115,35 +112,40 @@ def details():
         #     respContents.append(_res)
 
         # 开进程池并行处理
-        # for item in cropedOriMessage:
-        #     asyncResult.append(Pools.apply_async(tjmsParse, args=(item.split(',')[2], candb, item.split(',')[1], item.split(',')[0], signal)))
-        # Pools.close()
-        # Pools.join()
+        Pools = Pool(8)
+        asyncResult = []
+        respContents = []
+
+        candb = '0e'
+        for item in cropedOriMessage:
+            asyncResult.append(Pools.apply_async(tjmsParse, args=(item.split(',')[2], candb, item.split(',')[1], item.split(',')[0], signal)))
+        Pools.close()
+        Pools.join()
+
+        for res in asyncResult:
+            _res = res.get()
+            if _res:
+                respContents.append(_res)
+
+
+        # 并行处理方式2 效果不好
+        # with concurrent.futures.ThreadPoolExecutor(max_workers=12) as executor:
         #
-        # for res in asyncResult:
-        #     _res = res.get()
-        #     if _res:
-        #         respContents.append(_res)
-
-
-        # 并行处理方式2
-        with concurrent.futures.ThreadPoolExecutor(max_workers=12) as executor:
-
-            to_do = []
-            for item in cropedOriMessage:
-                future = executor.submit(tjmsParse, item.split(',')[2], candb, item.split(',')[1], item.split(',')[0], signal)
-                to_do.append(future)
-
-            results = []
-            for future in concurrent.futures.as_completed(to_do):
-                res = future.result()
-                results.append(res)
+        #     to_do = []
+        #     for item in cropedOriMessage:
+        #         future = executor.submit(tjmsParse, item.split(',')[2], candb, item.split(',')[1], item.split(',')[0], signal)
+        #         to_do.append(future)
+        #
+        #     results = []
+        #     for future in concurrent.futures.as_completed(to_do):
+        #         res = future.result()
+        #         results.append(res)
 
 
         return {
                    "code": 200,
                    "message": None,
-                   "businessObj": {"len":len(results),"size":sys.getsizeof(results)}
+                   "businessObj": {"len":len(respContents),"size":sys.getsizeof(respContents)}
                }, 200
     except Exception as ex:
         return {
