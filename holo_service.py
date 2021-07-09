@@ -5,11 +5,13 @@ from common.timeUtils import Timeutils
 from api.overall_by_vin import *
 from api.tj32960 import *
 from api.tjms import *
+from api.daily import *
 from common.setlog2 import set_logger
 
 
 app = Flask(__name__)
 app.register_blueprint(overall_by_vin, url_prefix="/api")
+app.register_blueprint(daily, url_prefix="/api/daily")
 app.register_blueprint(tj32960, url_prefix="/api/tj32960")
 app.register_blueprint(tjms, url_prefix="/api/tjms")
 

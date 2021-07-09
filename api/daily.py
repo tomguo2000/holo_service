@@ -7,10 +7,10 @@ from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
 import service.public
 
-overall_by_vin = Blueprint("overall_by_vin", __name__)
+daily = Blueprint("daily", __name__)
 
 
-@overall_by_vin.route('/vin', methods=["GET"])
+@daily.route('/', methods=["GET"])
 def overall_by_vin_vin():
     try:
 
@@ -18,93 +18,83 @@ def overall_by_vin_vin():
         try:
             params = request.args.to_dict()
             vin = params['vin']
-            startTime = int(params['startTime']) if int(params['startTime']) > 9999999999 else int(params['startTime'])*1000
-            endTime = int(params['endTime']) if int(params['endTime']) > 9999999999 else int(params['endTime'])*1000
-            interval = int(params['interval'])  # 单位：分钟
+            date = params['date']  # 格式: 2021-06-26
+            date = date+'_00:00:00'  # 新格式: 2021-06-26_00:00:00
 
         except:
             raise Exception ("110900")
 
-        # 检查数据量.如果超过1000个格的查询范围，抛异常不与执行
-        MaxRange = 1000
-        ss = ((endTime-startTime) / 1000 / (interval*60))
-        if (endTime-startTime) / 1000 / (interval*60) > MaxRange:
-            raise Exception ("110901")
-        if interval < 1 or interval > 60:
-            raise Exception ("110901")
 
         time0 = time.time()*1000
         logger.debug(f"hhhh开始。。。。。。{time0}")
 
-
-
         # 构建一个X轴
         time1 = time.time()*1000
-        Xaxis = createXaxis(vin, startTime, endTime, interval)
+        Xaxis = createXaxis(date)
         logger.debug(f"hhhh构建一个X轴完毕。。。{time.time()*1000-time1}")
 
 
-        # 根据X轴，得到日期List，用于拼接数据源的path
-        time1 = time.time()*1000
-        dateList = service.public.createDateList(Xaxis)
-        logger.debug(f"hhhh得到日期List完毕。。。{time.time()*1000-time1}")
-
-        # 传入X轴和dateList，获取国标的string结果
-        # tj32960 = getTJ32960Details(vin, Xaxis, dateList)
 
         # 传入X轴和dateList，获取国标的报文条数结果
         time1 = time.time()*1000
-        message_tj32960List = getTJ32960(vin, Xaxis, dateList)
+        message_tj32960Live = getTJ32960(vin, Xaxis, 'message_national_live.txt', [date[:10]])
+        message_tj32960Resent = getTJ32960(vin, Xaxis, 'message_national_resent.txt', [date[:10]])
         logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
 
 
         # 传入X轴和dateList，获取企标的聚合结果
         time1 = time.time()*1000
-        message_MSList = getMS(vin, Xaxis, dateList)
+        message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', [date[:10]])
+        message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', [date[:10]])
+        message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', [date[:10]])
+
         logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
 
 
 
         # 传入X轴和dateList，获取MISC的聚合结果
         time1 = time.time()*1000
-        message_MiscList = getMisc(vin, Xaxis, dateList)
+        message_MiscList = getMisc(vin, Xaxis, [date[:10]])
         logger.debug(f"hhhh获取MISC的聚合结果完毕。。。{time.time()*1000-time1}")
 
 
 
         # 传入X轴和dateList，获取登入登出心跳的聚合结果
         time1 = time.time()*1000
-        message_HeartbeatList = getHeartbeat(vin, Xaxis, dateList)
+        message_HeartbeatList = getHeartbeat(vin, Xaxis, [date[:10]])
         logger.debug(f"hhhh获取登入登出心跳的聚合结果完毕。。。{time.time()*1000-time1}")
 
 
 
         # 传入X轴和dateList，获取SDK初始化的聚合结果
         time1 = time.time()*1000
-        event_VehicleLoginList = getVehicleLoginEvents(vin, Xaxis, dateList)
+        event_VehicleLoginList = getVehicleLoginEvents(vin, Xaxis, [date[:10]])
         logger.debug(f"hhhh获取SDK初始化的聚合结果 完毕。。。{time.time()*1000-time1}")
 
 
 
         # 传入X轴和dateList，获取控车event的结果
         time1 = time.time()*1000
-        event_RemoteCmdList = getRemoteCmdEvents(vin, Xaxis, dateList)
+        event_RemoteCmdList = getRemoteCmdEvents(vin, Xaxis, [date[:10]])
         logger.debug(f"hhhh获取控车event的结果 完毕。。。{time.time()*1000-time1}")
 
 
 
         # 传入X轴和dateList，获取emq连接的event结果
         time1 = time.time()*1000
-        event_ConnStatusList = getConnStatus(vin, Xaxis, dateList)
+        event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
         logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
 
 
         time1 = time.time()*1000
         resp = {}
         resp['Xaxis'] = Xaxis
-        resp['dateList'] = dateList
-        resp['message_tj32960List'] = message_tj32960List
-        resp['message_MSList'] = message_MSList
+        resp['dateList'] = [date]
+        resp['message_tj32960Live'] = message_tj32960Live
+        resp['message_tj32960Resent'] = message_tj32960Resent
+        resp['message_MSLive'] = message_MSLive
+        resp['message_MSResent'] = message_MSResent
+        resp['message_MSWarning'] = message_MSWarning
         resp['message_MiscList'] = message_MiscList
         resp['message_HeartbeatList'] = message_HeartbeatList
         resp['event_VehicleLoginList'] = event_VehicleLoginList
@@ -128,98 +118,64 @@ def overall_by_vin_vin():
                }, 200
 
 
-def createXaxis(vin, startTimeStamp, endTimeStamp, interval):
-    # 秒清0，调整startTimeStamp向上到workingStartTimeStamp
-    _tempTimeArray = Timeutils.timeStamp2timeArray(startTimeStamp)
-    _delta = datetime.timedelta(seconds=_tempTimeArray.second, microseconds=_tempTimeArray.microsecond)
-    workingStartTime = _tempTimeArray - _delta
+def createXaxis(date, interval=10):
 
-    # workingStartTimeStamp是否被3整除，如不能就分钟减1再试。
-    while workingStartTime.minute % interval != 0:
-        workingStartTime = workingStartTime - datetime.timedelta(minutes=1)
-    workingStartTimeStamp = Timeutils.timeArray2timeStamp(workingStartTime, ms=True)
-
-    # 找到恰当的workingEndTimeStamp
-    _tempTimeArray = Timeutils.timeStamp2timeArray(endTimeStamp)
-    _delta = datetime.timedelta(seconds=60 - _tempTimeArray.second, microseconds=-_tempTimeArray.microsecond)
-    workingEndTime = _tempTimeArray + _delta
-    while workingEndTime.minute % interval != 0:
-        workingEndTime = workingEndTime + datetime.timedelta(minutes=1)
-    workingEndTimeStamp = Timeutils.timeArray2timeStamp(workingEndTime, ms=True)
+    workingStartTimeStamp = Timeutils.timeString2timeStamp(date, ms=True)
+    workingEndTimeStamp = workingStartTimeStamp + 86400*1000 # 1天的毫秒数
 
     # xAxisTotal: X轴的点位数量
-    xAxisTotal = math.ceil((workingEndTimeStamp - workingStartTimeStamp) / (interval * 60 * 1000))
+    xAxisTotal = math.ceil((workingEndTimeStamp - workingStartTimeStamp) / (interval*1000))
 
     # respXaxis: 用于绘图的X轴的坐标list
     respXaxis = []
     timeCursor = workingStartTimeStamp
     while xAxisTotal:
         respXaxis.append(Timeutils.timeStamp2timeString(timeCursor))
-        timeCursor += interval * 60 * 1000
+        timeCursor += interval * 1000
         xAxisTotal -= 1
 
     return respXaxis
 
 
-def getTJ32960(vin, Xaxis, dateList):
+def getTJ32960(vin, Xaxis, messagetype, dateList):
     # 天际国标的报文文件名
-    dataSourcesLive = 'message_national_live.txt'
-    # 天际国标补发报文文件名
-    dataSourcesResent = 'message_national_resent.txt'
+    dataSources = messagetype
 
     # 获取需要读取的文件列表
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
-    fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
 
     # readKeys = [['MPUTime'], ['TYPE_CMD']]
-    readKeys = [['MPUTime'], ['TYPE_CMD']]
+    readKeys = [['MPUTime']]
     # 获取内容
     oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
-    oriMessageListResent = service.public.getOriMessageList(fullPathList2, readKeys)
-    # 组合实发和补发报文
-    oriAllMessage = oriMessageList + oriMessageListResent
 
     # 假设实发和补发没有重复的部分。不需要进行去重的动作
 
-    Y32960 = assignAmount2TimeSlot(Xaxis, oriAllMessage, needSort=True)
+    Y32960 = assignAmount2TimeSlot(Xaxis, oriMessageList, needSort=False)
     return Y32960
 
 
-def getMS(vin, Xaxis, dateList):
+def getMS(vin, Xaxis, messagetype, dateList):
     time0 = time.time()*1000
 
     # 天际企标的报文文件名
-    dataSourcesLive = 'message_enterprise_live.txt'
-    dataSourcesResent = 'message_enterprise_resent.txt'
-    dataSourcesWarning = 'message_enterprise_warning.txt'
+    dataSourcesLive = messagetype
 
 
     # 获取需要读取的文件列表
     time1 = time.time()*1000
     fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
-    fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent)
-    fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWarning)
 
 
     # 读取必要的message
     time1 = time.time()*1000
-    readKeys = [['MPUTime'], ['TYPE_CMD']]
+    readKeys = [['MPUTime']]
     oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
-    oriMessageListResent = service.public.getOriMessageList(fullPathList2, readKeys)
-    oriMessageListWarning = service.public.getOriMessageList(fullPathList3, readKeys)
-
-
-    # 组合实发,补发,报警报文
-    time1 = time.time()*1000
-    oriAllMessage = oriMessageList + oriMessageListResent + oriMessageListWarning
-
-
-    # TODO 排序及处理实发补发故障之间的重复报文
 
 
     # 把企标分发到Y轴
     time1 = time.time()*1000
-    YMSdict = assignAmount2TimeSlot(Xaxis, oriAllMessage, needSort=True)
+    YMSdict = assignAmount2TimeSlot(Xaxis, oriMessageList, needSort=False)
 
     return YMSdict
 
@@ -231,7 +187,7 @@ def getMisc(vin, Xaxis, dateList):
     # 获取需要读取的文件列表
     fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
 
-    readKeys = [['MPUTime'], ['TYPE_CMD']]
+    readKeys = [['MPUTime']]
     oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
 
     YMisc = assignAmount2TimeSlot(Xaxis, oriMessageList)
@@ -246,7 +202,7 @@ def getHeartbeat(vin, Xaxis, dateList):
     # 获取需要读取的文件列表
     fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
 
-    readKeys = [['MPUTime'], ['TYPE_CMD']]
+    readKeys = [['MPUTime']]
     oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
 
     YHeartbeat = assignAmount2TimeSlot(Xaxis, oriMessageList)
@@ -375,6 +331,7 @@ def makeResponse(resp):
     del(resp['dateList'])
 
     for _item in resp:
+
         _itemResp = []
 
         try:
@@ -402,23 +359,6 @@ def makeResponse(resp):
         makeResp[_item] = _itemResp
 
     return makeResp
-
-
-def getTJ32960Details(vin, Xaxis, dateList):
-    # 天际国标的报文文件名
-    dataSourcesLive = 'message_national_live.txt'
-
-    # 获取需要读取的文件列表
-    fullPathList = service.public.getFullPathList(vin, dateList, dataSourcesLive)
-
-    # 定义一下要读数据源的哪些节点和顺序.每行的一个key用一个[]来描述。一行3个字段，就由3个[]组成大list[[.....],[...],[..]]
-
-    readKeys = [['contents', 'message_ns'], ['TYPE_CMD']]
-
-    # 一把读进来，注意看内存占用和读取时间。先判断vin所在的目录是否存在，不存在代表vin非法或者在很长时间段内没有任何报文和event信息
-    oriMessageList = service.public.getOriMessageList(fullPathList, readKeys)
-
-    return len(oriMessageList)
 
 
 def assignAmount2TimeSlot(Xaxis, dataList, needSort=False):
@@ -532,15 +472,3 @@ def assignArray2TimeSlot(Xaxis, dataList, needSort=False):
                 break
     return Yaxis
 
-
-def loadFileContents(fullFilePath, filename):
-    if os.path.exists(fullFilePath):
-        try:
-            logger.info(f'loading file: {os.path.join(fullFilePath, filename)}')
-            with open(os.path.join(fullFilePath, filename), 'r') as f:
-                _contents = f.readlines()
-                # 以后判断是否需要排序
-                # _contents.sort()
-                return _contents
-        except:
-            return []

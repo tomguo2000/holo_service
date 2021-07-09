@@ -1763,7 +1763,7 @@ EnterpriseTransportProtolVer = {
 
 ReturnCode = {
 
-    "110900": "parameters error",
+    "110900": "parameters error!!!",
     "110901": "x超过1000，或者interval不在范围 1 - 60分钟",
     "110902": "Verify failure",
     "111000": "ERROR"
