@@ -12,6 +12,37 @@ import service.gb32960.tj_gb32960 as tj
 tj32960 = Blueprint("tj32960", __name__)
 
 
+@tj32960.route('/parse', methods=["GET"])
+def parse_one():
+    try:
+
+        # 检查入参
+        try:
+            params = request.args.to_dict()
+            data = params['data']
+
+        except:
+            raise Exception ("110900")
+
+
+        # 解析国标string，得到list
+        respContents = tjgb(data, '0101')
+
+        return {
+                   "code": 200,
+                   "message": None,
+                   "businessObj": respContents
+               }, 200
+    except Exception as ex:
+        return {
+                   "code": ex.args[0],
+                   "message": ReturnCode[ex.args[0]],
+                   "businessObj": None
+               }, 200
+
+
+
+
 @tj32960.route('/', methods=["GET"])
 def details():
     try:

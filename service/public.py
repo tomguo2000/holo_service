@@ -9,17 +9,19 @@ import cantools
 import numpy, binascii
 
 
-def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
+def parse_tjms_message(data, db, vehicleMode='ME7', protocol='0e', signal=False):
+
+    time1 = time.time() * 1000
+
     CanIDList = EnterpriseTransportProtolVer[vehicleMode][protocol]
-    db = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
 
     mainCursor = 0
 
-    canIDAmount=numpy.zeros(len(CanIDList), dtype=int)
-    canMessageOffset=numpy.zeros(len(CanIDList), dtype=int)
+    canIDAmount = numpy.zeros(len(CanIDList), dtype=int)
+    canMessageOffset = numpy.zeros(len(CanIDList), dtype=int)
 
     for y in range(0, len(CanIDList)):
-        v=int(data[mainCursor:mainCursor+2], 16)
+        v = int(data[mainCursor:mainCursor+2], 16)
         canIDAmount[y] = v
         canMessageOffset[y] = mainCursor+2
         mainCursor = mainCursor + 2 + canIDAmount[y]*8*2
@@ -41,7 +43,7 @@ def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
 
         resp[CanIDList[x]] = {"amount": int(canIDAmount[x]),
                               "canMessageList": canMessageList,
-                              "signalMessageList":signalMessageList}
+                              "signalMessageList": signalMessageList}
 
     return resp
 
