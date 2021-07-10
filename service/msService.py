@@ -36,7 +36,7 @@ def getCanIDListBySignalList(signalList, vehicleMode):
     fullCanDBDict = genMessagesSignals(canDB)
 
     resp = {}
-
+    errorSign = False
     for sig in signalList:
         for x in fullCanDBDict:
             if sig in fullCanDBDict[x]:
@@ -48,13 +48,17 @@ def getCanIDListBySignalList(signalList, vehicleMode):
                 break
         else:
             print(f"{sig}:not find")
+            errorSign = True
 
     # resp = {
     #     'BMS_0x100': ['BMS_PackU', 'BMS_PackI'],
     #     'BCM_0x310': ['BCM_FL_Door_Sts', 'BCM_FR_Door_Sts', 'BCM_RL_Door_Sts', 'BCM_RR_Door_Sts']
     # }
 
-    return resp
+    if errorSign:
+        return None
+    else:
+        return resp
 
 
 
