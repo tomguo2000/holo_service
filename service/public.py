@@ -17,13 +17,15 @@ candbPool = {
     }
 }
 
+
+
 def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
 
     time1 = time.time() * 1000
 
     canDb = candbPool[vehicleMode][protocol]
-
     CanIDList = EnterpriseTransportProtolVer[vehicleMode][protocol]
+
     CanIDListLen = len(CanIDList)
 
     mainCursor = 0
@@ -60,7 +62,6 @@ def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
 
                 resp[CanIDList[x]] = canMessageList
 
-    print(resp)
     return resp
 
 
