@@ -9,47 +9,58 @@ import cantools
 import numpy, binascii
 
 # candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
-candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
-candbPool = {'0e': candb}
+candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
+candbPool = {
+    'ME7': {
+        '0e': candb_0e,
+        '0f': candb_0e
+    }
+}
 
-def parse_tjms_message(data, protol, vehicleMode='ME7', protocol='0e', signal=False):
+def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
 
     time1 = time.time() * 1000
 
-    db = candbPool[protol]
+    canDb = candbPool[vehicleMode][protocol]
 
     CanIDList = EnterpriseTransportProtolVer[vehicleMode][protocol]
+    CanIDListLen = len(CanIDList)
 
     mainCursor = 0
 
-    canIDAmount = numpy.zeros(len(CanIDList), dtype=int)
-    canMessageOffset = numpy.zeros(len(CanIDList), dtype=int)
+    # canIDAmount = numpy.zeros(CanIDListLen, dtype=int)
+    # canMessageOffset = numpy.zeros(CanIDListLen, dtype=int)
 
-    for y in range(0, len(CanIDList)):
-        v = int(data[mainCursor:mainCursor+2], 16)
-        canIDAmount[y] = v
+    canIDAmount = {}
+    canMessageOffset = {}
+
+    for y in range(CanIDListLen):
+        canIDAmount[y] = int(data[mainCursor:mainCursor+2], 16)
         canMessageOffset[y] = mainCursor+2
-        mainCursor = mainCursor + 2 + canIDAmount[y]*8*2
+        mainCursor = mainCursor + 2 + canIDAmount[y]*16
 
     if len(data) != mainCursor:
         logger.warning(f"企标秒包的解析错误，按照canid的顺序取走后有剩余字节")
 
     resp = {}
-    for x in range(0, len(CanIDList)):
+
+    for x in range(CanIDListLen):
         canMessageList = []
         signalMessageList = []
         for y in range(0, int(canIDAmount[x])):
-            _canMessage = data[canMessageOffset[x] + y*8*2 : canMessageOffset[x] + y*8*2 + 16]
+            _canMessage = data[canMessageOffset[x] + y*16 : canMessageOffset[x] + y*16 + 16]
             canMessageList.append(_canMessage)
 
             if signal:
                 canID = CanIDList[x]
-                signalMessageList.append(db.decode_message(canID,binascii.unhexlify(_canMessage),0,0))
+                signalMessageList.append(canDb.decode_message(canID,binascii.unhexlify(_canMessage),0,0))
 
-        resp[CanIDList[x]] = {"amount": int(canIDAmount[x]),
-                              "canMessageList": canMessageList,
-                              "signalMessageList": signalMessageList}
+                resp[CanIDList[x]] = signalMessageList
+            else:
 
+                resp[CanIDList[x]] = canMessageList
+
+    print(resp)
     return resp
 
 

@@ -9,6 +9,7 @@ import service.public
 import cantools
 import sys
 import concurrent.futures
+from service.public import parse_tjms_message
 
 
 
@@ -31,12 +32,7 @@ def parsems():
         except:
             raise Exception ("110900")
 
-        time1 = time.time() * 1000
-        print(f"开始读candb文件啦。。。{time1}")
-        candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
-        print(f"读candb文件完成啦。。。{time.time()*1000 - time1}")
-
-        resp = service.public.parse_tjms_message(data=data, db=candb, vehicleMode=vehicleMode, protocol=protocol, signal=signal)
+        resp = parse_tjms_message(data=data, vehicleMode=vehicleMode, protocol=protocol, signal=signal)
 
         return resp
 
@@ -51,6 +47,8 @@ def parsems():
 @tjms.route('/', methods=["GET"])
 def details():
     try:
+
+        time0 = time.time() * 1000
 
         # 检查入参
         try:
@@ -76,7 +74,7 @@ def details():
         # 天际企标报警报文文件名
         dataSourcesWaining = 'message_enterprise_warning.txt'
         # 要从文件中读取的key
-        readKeys = [['MPUTime'], ['TYPE_CMD'], ['contents', 'MSSecondPacket']]
+        readKeys = [['MPUTime'], ['TYPE_CMD'], ['contents', 'MSSecondPacket'], ['contents', 'MSPacketVer']]
 
         # 获取需要读取的文件列表
         fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
@@ -102,9 +100,9 @@ def details():
                        "businessObj": {"amount": len(cropedOriMessage)}
                    }, 200
 
-        # 解析企标string，得到list
 
-
+        logger.info(f"开始要解析企标了，到目前未知耗时: {time.time()*1000 - time0} ms")
+        time0 = time.time()*1000
 
         # 串行处理，功能正确
         # for item in cropedOriMessage:
@@ -116,9 +114,9 @@ def details():
         asyncResult = []
         respContents = []
 
-        candb = '0e'
+        # candb = '0e'
         for item in cropedOriMessage:
-            asyncResult.append(Pools.apply_async(tjmsParse, args=(item.split(',')[2], candb, item.split(',')[1], item.split(',')[0], signal)))
+            asyncResult.append(Pools.apply_async(tjmsParse, (item.split(',')[2], item.split(',')[3], item.split(',')[1], item.split(',')[0], signal)))
         Pools.close()
         Pools.join()
 
@@ -142,6 +140,11 @@ def details():
         #         results.append(res)
 
 
+        logger.info(f"开始要写最后的结果了，前一阶段耗时: {time.time()*1000 - time0} ms")
+
+        with open ('result.csv', 'w') as f:
+            f.write(str(respContents))
+
         return {
                    "code": 200,
                    "message": None,
@@ -155,6 +158,7 @@ def details():
                }, 200
 
 def tjmsParse(data, candb, type, MPUTime, signal=False):
-    dd = service.public.parse_tjms_message(data, candb, signal=signal)
+    dd = service.public.parse_tjms_message(data, protocol=candb, signal=signal)
+
     resp = {'MPUTime': MPUTime, 'messageType': type, 'messageDetails': dd}
     return resp
