@@ -28,10 +28,6 @@ def genMessagesSignals(canDB):
 
 
 def getCanIDListBySignalList(signalList, vehicleMode):
-    print(signalList)
-    # 查找对应的canID，找不到就返回错误
-    # TODO
-
     canDB = candbPool[vehicleMode]['0e']
     fullCanDBDict = genMessagesSignals(canDB)
 
@@ -40,14 +36,12 @@ def getCanIDListBySignalList(signalList, vehicleMode):
     for sig in signalList:
         for x in fullCanDBDict:
             if sig in fullCanDBDict[x]:
-                print(x)
                 if resp.get(x):
                     resp[x].append(sig)
                 else:
                     resp[x] = [sig]
                 break
         else:
-            print(f"{sig}:not find")
             errorSign = True
 
     # resp = {
@@ -105,7 +99,4 @@ def parse_tjms_signals(data, vehicleMode, protocol, canIDDict):
             resp[CanIDList[_index]] = signalMessageList
 
     return resp
-#
-# signalList = ['BMS_PackU', 'BMS_PackI', 'BCM_FL_Door_Sts', 'BCM_FR_Door_Sts', 'BCM_RL_Door_Sts', 'BCM_RR_Door_Sts']
-# vehicleMode = 'ME7'
-# getCanIDListBySignalList(signalList, vehicleMode)
+

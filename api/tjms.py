@@ -96,7 +96,7 @@ def signals():
         for res in asyncResult:
             _res = res.get()
             if _res:
-                respContents.append(_res)
+                respContents += _res
 
 
         logger.info(f"开始要写最后的结果了，前一阶段耗时: {time.time()*1000 - time0} ms")
@@ -111,7 +111,8 @@ def signals():
             "endTime": endTime,
             "canIDDict": canIDDict,
             "signalList": signalList,
-            "vehicleMode": vehicleMode
+            "vehicleMode": vehicleMode,
+            "respContentsSize": sys.getsizeof(respContents)
         }
         return(resp)
     except Exception as ex:
@@ -271,10 +272,41 @@ def tjmsParse(data, candb, type, MPUTime, signal=False):
     return resp
 
 
-
 def tjmsParseSignals(data, candb, type, MPUTime, canIDDict):
 
-    dd = service.msService.parse_tjms_signals(data, vehicleMode='ME7', protocol=candb, canIDDict=canIDDict)
+    signalValues = service.msService.parse_tjms_signals(data, vehicleMode='ME7', protocol=candb, canIDDict=canIDDict)
 
-    resp = {'MPUTime': MPUTime, 'messageType': type, 'messageDetails': dd}
-    return resp
+    response = []
+
+    for _value in signalValues.values():
+
+        # 这个信号的_value在秒包里出现了_lines行。如果多于一行，要重新就算MCUTime
+        _lines = len(_value)
+
+        if _lines == 1:
+            # MPUTime就是这个signal的时间
+            _mpuTime = {"MPUTime": MPUTime}
+            for i in _value:
+                for j in i:
+                    _mcuDict = {"MCUTime": MPUTime+'.000'}
+                    _respDict = dict(_mpuTime, **_mcuDict)
+                    _respDict = dict(_respDict, **j)
+                    response.append(_respDict)
+
+        else:
+
+            # MPUTime就是这个signal的时间
+            _mpuTime = {"MPUTime": MPUTime}
+            _mpuStartTimeStamp = Timeutils.timeString2timeStamp(MPUTime, ms=True) - 1000  # 减一秒作为开始
+            _mpuStartTimeString = Timeutils.timeStamp2timeString(_mpuStartTimeStamp)
+            _timeStep = 1000 / _lines
+
+            for _index in range(len(_value)):
+
+                for j in _value[_index]:
+                    _mcuDict = {"MCUTime": _mpuStartTimeString + '.' + str(int(_index * _timeStep)).zfill(3)}
+                    _respDict = dict(_mpuTime, **_mcuDict)
+                    _respDict = dict(_respDict, **j)
+                    response.append(_respDict)
+
+    return response
