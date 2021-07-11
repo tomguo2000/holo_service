@@ -102,7 +102,9 @@ def signals():
         logger.info(f"开始要写最后的结果了，前一阶段耗时: {time.time()*1000 - time0} ms")
 
         with open ('result.csv', 'w') as f:
-            f.write(str(respContents))
+            # f.write(str(respContents))
+            for line in respContents:
+                f.write(str(line)+'\n')
 
 
         resp = {
