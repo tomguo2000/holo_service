@@ -65,6 +65,46 @@ def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
     return resp
 
 
+def cropmessage2dict(oriAllMessage, startTime, endTime):
+    startTimeStr = Timeutils.timeStamp2timeString(startTime)
+    endTimeStr = Timeutils.timeStamp2timeString(endTime)
+
+    # 要求传入的dataList里，每行是一个Dict，并且Dict里要包含一个叫timestamp的key/value
+    bufferCursor = 0
+
+    # 找到需要处理的第一条
+    find = False
+    while bufferCursor < len(oriAllMessage):
+
+        if oriAllMessage[bufferCursor].split(',')[0] < startTimeStr:
+            # 跳过这条废数据
+            bufferCursor += 1
+        else:
+            # print (f"First content {dataList[bufferCursor]} 找到了!")
+            find = True
+            break
+
+    if find:
+        logger.debug(f"找到了需要处理的第一条：content:{oriAllMessage[bufferCursor]}")
+    else:
+        logger.debug(f'最后一个文件读完了，啥也没有')
+        return {}
+
+    respMessage = {}
+
+    while oriAllMessage[bufferCursor].split(',')[0] < endTimeStr:
+        # respMessage.append(oriAllMessage[bufferCursor])
+        respMessage[oriAllMessage[bufferCursor].split(',')[0]] = (oriAllMessage[bufferCursor].split(',')[2],oriAllMessage[bufferCursor].split(',')[3])
+
+        # 如果buffer还没到底，就cursor+1
+        if bufferCursor < (len(oriAllMessage) - 1):
+            bufferCursor += 1
+        else:
+            break
+    return respMessage
+
+
+
 def cropmessage(oriAllMessage, startTime, endTime):
     startTimeStr = Timeutils.timeStamp2timeString(startTime)
     endTimeStr = Timeutils.timeStamp2timeString(endTime)
