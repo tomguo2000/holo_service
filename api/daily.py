@@ -240,7 +240,7 @@ def getVehicleLoginEvents(vin, Xaxis, dateList):
 
 def getRemoteCmdEvents(vin, Xaxis, dateList):
     # 天际的报文文件名
-    dataSources = 'event_vehicle.txt'
+    dataSources = 'event_remote_cmd.txt'
 
     # 获取需要读取的文件列表
     fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
@@ -252,14 +252,41 @@ def getRemoteCmdEvents(vin, Xaxis, dateList):
     # readKeys用['.']的时候，通畅需要对返回的List做二次加工
     respMessageList = []
     for _item in oriMessageList:
-        _temp = json.loads(_item)
 
-        if _temp['timestamp'] < 9999999999:
-            _temp['timestamp'] = _temp['timestamp'] * 1000
+        try:
 
-        respMessageList.append({'timestamp': _temp['timestamp'],
-                                'timestr': Timeutils.timeStamp2timeString(_temp['timestamp']),
-                                'event': _temp['event']})
+            _temp = json.loads(_item)
+
+            # 判断是平台发出，还是tbox回执
+            if _temp.get('status') == '258':
+                # 这是平台发出的控车指令，新增记录
+                if _temp['timestamp'] < 9999999999:
+                    _temp['timestamp'] = _temp['timestamp'] * 1000
+
+                respMessageList.append({'timestamp': _temp['timestamp'],    # 1626159853760
+                                        'timestr': Timeutils.timeStamp2timeString(_temp['timestamp']),
+                                        'cmd': _temp['cmd'],            # "Diagnose_Read_DTC"
+                                        'cmdId': _temp['cmdId'],        # "1626159852952hMrO5FawR5v"
+                                        'sn': _temp.get('sn'),          # "4988"
+                                        'vin': _temp['vin'],            # "LTWA35K14LS000540"
+                                        'QA': _temp['status']           # "258"
+                                        })
+            elif _temp.get('ACK'):
+                # 这个tbox返回的回执，修改记录
+                _vin = _temp.get('VIN')         # "LTWA35K14LS000540"
+                _sn = _temp.get('SN')           # "137c"
+                _sn = str(int(_sn, 16))         # 转10进制的str
+                _ACK = _temp.get('ACK')         # "01"
+
+                for _update in respMessageList:
+                    if _update['vin'] == _vin and _update['sn'] == _sn:
+                        _update['QA'] = _ACK
+
+            else:
+                logger.warning(f"不予处理的event内容，既不是258已发出，也不是tbox的ACK:{_temp}")
+                continue
+        except:
+            logger.warning(f"dirty message 读不懂:{_temp}")
 
     YHeartbeat = assignArray2TimeSlot(Xaxis, respMessageList)
 

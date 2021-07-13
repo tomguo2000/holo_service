@@ -10,10 +10,14 @@ import numpy, binascii
 
 # candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
 candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
+candb_ME5_00 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V1.8.dbc')
 candbPool = {
     'ME7': {
         '0e': candb_0e,
         '0f': candb_0e
+    },
+    'ME5': {
+        '00': candb_ME5_00
     }
 }
 
