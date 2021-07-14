@@ -279,3 +279,32 @@ def createDateListByDuration(startTimestamp, endTimestamp):
     # pathTotal: 涉及到的文件的数量
     Xaxis = [Timeutils.timeStamp2timeString(startTimestamp), Timeutils.timeStamp2timeString(endTimestamp)]
     return createDateList(Xaxis)
+
+
+def getVINList():
+    # 通过环境变量找到主程序的名字
+    env_dist = os.environ
+    for key in env_dist:
+        if key == 'HOLO_APPNAME':
+            appname = env_dist[key]
+
+    try:
+        appname
+    except NameError:
+        logger.error("HOLO_APPNAME这个环境变量没有定义，检查入口程序的设置")
+
+    # 通过引入的CONFIG得到运行环境
+    env = CONFIG['env']
+
+    # 拼接出存在vin码dict的path
+    path = os.path.join(CONFIG[appname][env]['Storage_Prefix'], env)
+    files = os.listdir(path)
+
+    vinList = []
+
+    for file in files:
+        if os.path.isdir(os.path.join(path,file)):
+            if len(file) == 17:
+                vinList.append(file)
+
+    return vinList
