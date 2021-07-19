@@ -18,12 +18,13 @@ def static_ecu_ver(contents):
 
                     if not ecu.get('ecuPn') or not ecu.get('ecuHv') or not ecu.get('ecuSv'):
                         # 这是一次诊断失败，有空值
-                        print('Fail', ecu['ecuN'], ecu['ecuPn'],ecu['ecuHv'],ecu['ecuSv'])
+                        # print('Fail', ecu['ecuN'], ecu['ecuPn'],ecu['ecuHv'],ecu['ecuSv'])
                         _errorEcuName.append(ecu['ecuN'])
 
                     else:
                         # 这是一次成功诊断，完美
-                        print(ecu['ecuN'], ecu['ecuPn'],ecu['ecuHv'],ecu['ecuSv'])
+                        # print(ecu['ecuN'], ecu['ecuPn'],ecu['ecuHv'],ecu['ecuSv'])
+                        pass
 
                 _errorEcuAmount = len(_errorEcuName)
 
@@ -38,22 +39,35 @@ def static_ecu_ver(contents):
 
     # waterFlowRecords.sort()
 
+    print(waterFlowRecords)
+
     total = len(waterFlowRecords)
+    totalVin = len(contents.keys())
     rightRec = 0
     errorRec = 0
     errorEcuNameCount = {}
+    errorVINRecords = {}
     for item in waterFlowRecords:
         if item['errorEcuAmount'] == 0:
             rightRec += 1
         else:
             errorRec += 1
+
+            if errorVINRecords.get(item['vin']):
+                errorVINRecords[item['vin']].append(item['timeStr'])
+            else:
+                errorVINRecords[item['vin']] = [item['timeStr']]
+
             for _errorEcuName in item['errorEcuName']:
                 errorEcuNameCount[_errorEcuName] = errorEcuNameCount.get(_errorEcuName, 0) + 1
 
     resp = {
-        "total": total,
-        "rightRec": rightRec,
-        "errorRec": errorRec,
+        "totalVins": totalVin,
+        "vinsList": [key for key in contents],
+        "totalRecords": total,
+        "rightRecords": rightRec,
+        "errorVINRecords": errorVINRecords,
+        "errorRecords": errorRec,
         "errorEcuNameCount": errorEcuNameCount
     }
     return resp

@@ -5,11 +5,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             'topic': ['ONLINE-INPUT-MSD'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['STG-INPUT-MSD'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -23,11 +25,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             'topic': ['ONLINE-INPUT-SECURITY'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['STG-INPUT-SECURITY'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -41,11 +45,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             'topic': ['ONLINE-INPUT-CHECK'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['STG-INPUT-CHECK'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -61,11 +67,13 @@ CONFIG = {
             # ONLINE-SERVICE-TboxCmdAck-ALL: 转发了INPUT_ACK的报文（tbox的ACK1/ACK2)
             # ONLINE-EMQ-RemoteControlCmd-ALL: 转发了RECEIVE的报文 (云端发的258状态和转发的tbox ACK)
             'topic': ['ONLINE-EMQ-RemoteControlCmd-ALL'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['TEST-EMQ-RemoteControlCmd-ALL'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -80,11 +88,13 @@ CONFIG = {
             'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             # ONLINE-SERVICE-TboxCmdAck-ALL: 转发了INPUT_ACK的报文（tbox的ACK1/ACK2)
             'topic': ['ONLINE-SERVICE-TboxCmdAck-ALL'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['TEST-SERVICE-TboxCmdAck-ALL'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -98,11 +108,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.116:9092', '192.168.3.13:9092', '192.168.3.182:9092'],
             'topic': ['ONLINE-SERVICE-VehicleCurrentEcusInfo-ALL'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['TEST-SERVICE-VehicleCurrentEcusInfo-ALL'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -116,11 +128,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.116:9092'],
             'topic': 'ONLINE-SERVICE-VehicleLogin-ALL',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': 'TEST-SERVICE-VehicleLogin-ALL',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -134,11 +148,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             'topic': ['ONLINE-EMQ-ClientDisconnect-ALL', 'CLIENT-CONNECTED-HOOK'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': ['TEST-EMQ-ClientDisconnect-ALL', 'CLIENT-CONNECTED-HOOK'],
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -173,11 +189,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092'],
             'topic': 'ONLINE-INPUT-NS',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': 'STG-INPUT-NS',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -192,11 +210,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092'],
             'topic': 'ONLINE-INPUT-HEARTBEAT',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': 'STG-INPUT-HEARTBEAT',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -211,11 +231,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092'],
             'topic': 'ONLINE-INPUT-MS',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': 'STG-INPUT-MS',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -231,11 +253,13 @@ CONFIG = {
         'online': {
             'server': ['192.168.3.165:9092'],
             'topic': 'ONLINE-INPUT-MS-ME5',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'test': {
             'server': ['192.168.0.8:9092'],
             'topic': 'STG-INPUT-MS-ME5',
+            'group_id': 'holo_inject',
             'Storage_Prefix': '/home/baowen/holodata',
         },
         'local': {
@@ -261,15 +285,26 @@ CONFIG = {
     },
     'holo_service': {
         'online': {
-            'Storage_Prefix': '/home/baowen/holodata',
+            'Storage_Prefix': '/home/baowen/holodata'
         },
         'test': {
-            'Storage_Prefix': '/home/baowen/holodata',
+            'Storage_Prefix': '/home/baowen/holodata'
         },
         'local': {
-            'Storage_Prefix': '/Users/guoliang/data',
+            'Storage_Prefix': '/Users/guoliang/data'
         }
     },
+    'holo_scp': {
+        'online': {
+            'remote_path': 'root@navtest:/dearcc/holodata'
+        },
+        'test': {
+            'remote_path': 'root@navtest:/dearcc/holodata'
+        },
+        'local': {
+            'remote_path': 'root@navtest:/dearcc/holodata'
+        }
+    }
 }
 
 EnterpriseTransportProtolVer = {
