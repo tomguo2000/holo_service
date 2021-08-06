@@ -1,5 +1,7 @@
 import time, datetime, sys, os, json
-os.chdir('..')
+sys.path.append('/Users/guoliang/PycharmProjects/holo_service/')
+os.chdir('../')
+print(sys.path)
 
 import service.public
 import service.staticService
