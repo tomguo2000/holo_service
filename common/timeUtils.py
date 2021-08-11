@@ -97,49 +97,44 @@ class Timeutils(object):
     def timeNS2timeString(self, national_std):
         "150a0f0a0B2F ---> 2021-10-15_10:11:47"
         # length must be 12
-        if len(national_std) != 12: raise Exception("format ERROR: must be 12 chars")
+        if len(national_std) != 12:
+            raise Exception("format ERROR: must be 12 chars")
 
         x = (int(national_std[0:2], 16))
         if x > 99:
             raise Exception("Year format ERROR")
         else:
-            x = str(x)
-        x = '0' + x if len(x) < 2 else x
+            x = str(x).zfill(2)
 
         y = (int(national_std[2:4], 16))
         if y > 12:
             raise Exception("Month format ERROR")
         else:
-            y = str(y)
-        y = '0' + y if len(y) < 2 else y
+            y = str(y).zfill(2)
 
         z = (int(national_std[4:6], 16))
         if z > 31:
             raise Exception("Day format ERROR")
         else:
-            z = str(z)
-        z = '0' + z if len(z) < 2 else z
+            z = str(z).zfill(2)
 
         a = (int(national_std[6:8], 16))
         if a > 60:
             raise Exception("Hour format ERROR")
         else:
-            a = str(a)
-        a = '0' + a if len(a) < 2 else a
+            a = str(a).zfill(2)
 
         b = (int(national_std[8:10], 16))
         if b > 60:
             raise Exception("Min format ERROR")
         else:
-            b = str(b)
-        b = '0' + b if len(b) < 2 else b
+            b = str(b).zfill(2)
 
         c = (int(national_std[10:12], 16))
         if c > 60:
             raise Exception("Second format ERROR")
         else:
-            c = str(c)
-        c = '0' + c if len(c) < 2 else c
+            c = str(c).zfill(2)
 
         return '20' + x + '-' + y + '-' + z + '_' + a + ':' + b + ':' + c
 
