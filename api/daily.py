@@ -90,16 +90,16 @@ def overall_by_vin_vin():
         resp = {}
         resp['Xaxis'] = Xaxis
         resp['dateList'] = [date]
-        resp['message_tj32960Live'] = message_tj32960Live
-        resp['message_tj32960Resent'] = message_tj32960Resent
-        resp['message_MSLive'] = message_MSLive
-        resp['message_MSResent'] = message_MSResent
-        resp['message_MSWarning'] = message_MSWarning
-        resp['message_MiscList'] = message_MiscList
-        resp['message_HeartbeatList'] = message_HeartbeatList
-        resp['event_VehicleLoginList'] = event_VehicleLoginList
-        resp['event_RemoteCmdList'] = event_RemoteCmdList
-        resp['event_ConnStatusList'] = event_ConnStatusList
+        resp['message_国标实发报文'] = message_tj32960Live
+        resp['message_国标补发报文'] = message_tj32960Resent
+        resp['message_企标实发报文'] = message_MSLive
+        resp['message_企标补发报文'] = message_MSResent
+        resp['message_企标告警报文'] = message_MSWarning
+        resp['message_Misc报文'] = message_MiscList
+        resp['message_心跳报文'] = message_HeartbeatList
+        resp['event_车辆登录Vehicle服务事件'] = event_VehicleLoginList
+        resp['event_远程控车指令事件'] = event_RemoteCmdList
+        resp['event_Tbox到平台连接事件'] = event_ConnStatusList
 
         logger.debug(f"hhhh组织resp 完毕。。。{time.time()*1000-time1}")
 
