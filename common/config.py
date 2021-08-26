@@ -281,7 +281,7 @@ CONFIG = {
         'local': {
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
-        'pack_days_before': 30
+        'pack_days_before': 20
     },
     'holo_scp': {
         'online': {
@@ -293,7 +293,18 @@ CONFIG = {
         'local': {
             'remote_path': 'root@navtest:/dearcc/holodata'
         }
-    }
+    },
+    'holo_service': {
+        'online': {
+            'Storage_Prefix': '/holo/holodata'
+        },
+        'test': {
+            'Storage_Prefix': '/holo/holodata'
+        },
+        'local': {
+            'Storage_Prefix': '/Users/guoliang/data'
+        }
+    },
 }
 
 EnterpriseTransportProtolVer = {
