@@ -289,7 +289,8 @@ def getRemoteCmdEvents(vin, Xaxis, dateList):
             logger.warning(f"dirty message 读不懂:{_temp}")
 
     # 2021-08-27 发生过remotecmd的文件里，时间乱序，所以在这里排序一下
-    respMessageList.sort()
+    print(type(respMessageList))
+    print(respMessageList)
 
     YHeartbeat = assignArray2TimeSlot(Xaxis, respMessageList)
 
