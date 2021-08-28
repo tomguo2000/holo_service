@@ -281,7 +281,7 @@ CONFIG = {
         'local': {
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
-        'pack_days_before': 20
+        'pack_days_before': 30
     },
     'holo_scp': {
         'online': {
