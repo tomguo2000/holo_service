@@ -33,17 +33,11 @@ def ecuversion_stat(date):
                 refinedContents.append(json.loads(c))
             vinsContents[vin] = refinedContents
 
-        staticReport = service.staticService.static_ecu_ver(vinsContents)
-        # 计算单车的结果
 
-        # 计算全部车辆的计算结果
+        errorRecordFlow = service.staticService.errorRecordFlow(vinsContents)
 
+        return errorRecordFlow
 
-        return {
-                   "code": 200,
-                   "message": None,
-                   "businessObj": staticReport
-               }
     except Exception as ex:
         return {
                    "code": ex.args[0],
@@ -61,8 +55,34 @@ if __name__ == '__main__':
     os.environ['HOLO_APPNAME']=appname
 
 
-    workingDataOffset = -7    # calculate the date from now
+    # workingDataOffset = -51    # calculate the date from now
 
-    workingDateArray = Timeutils.timeStamp2timeArray(timeStamp=time.time()) + datetime.timedelta(days=workingDataOffset)
-    workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
-    print (ecuversion_stat(workingDateStr))
+    startDate = '2021-07-01'
+    days = 31
+    workingDataOffset = 0
+
+    ecuversion_statList = []
+    while workingDataOffset < days:
+
+        workingDateArray = Timeutils.timeString2timeArray(startDate, format='%Y-%m-%d')
+        workingDateArray = workingDateArray + datetime.timedelta(days=workingDataOffset)
+        workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
+        _temp = ecuversion_stat(workingDateStr)
+        for _i in _temp:
+            ecuversion_statList.append(_i)
+
+        workingDataOffset += 1
+
+
+
+    with open ("error_ecu_result.csv", 'w') as f:
+        for line in ecuversion_statList:
+            _c = ''
+            _c += line['timeStr'] + ','
+            _c += line['vin'] + ','
+            _c += str(line['errorEcuName']) + ','
+            _c += str(line['fullEcuInfo']) + ','
+            # f.write(json.dumps(c))
+            f.write(json.dumps(_c))
+            f.write('\n')
+
