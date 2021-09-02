@@ -59,8 +59,8 @@ if __name__ == '__main__':
 
     # workingDataOffset = -51    # calculate the date from now
 
-    startDate = '2021-07-01'
-    days = 31
+    startDate = '2021-09-01'
+    days = 1
     workingDataOffset = 0
 
     ecuversion_statList = []
@@ -79,11 +79,11 @@ if __name__ == '__main__':
 
     with open ("error_ecu_result.csv", 'w') as f:
         for line in ecuversion_statList:
-            _c = ''
-            _c += line['timeStr'] + ','
-            _c += line['vin'] + ','
-            _c += str(line['errorEcuName']) + ','
-            _c += str(line['fullEcuInfo']) + ','
+            _c = {}
+            _c['timeStr'] = line['timeStr']
+            _c['vin'] = line['vin']
+            _c['errorEcuName'] = line['errorEcuName']
+            _c['fullEcuInfo'] = line['fullEcuInfo']
             # f.write(json.dumps(c))
             f.write(json.dumps(_c))
             f.write('\n')
