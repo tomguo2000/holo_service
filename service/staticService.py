@@ -27,15 +27,15 @@ def errorRecordFlow(contents):
                         pass
 
                 # 出错的诊断，加入waterFlowRecords
-                if _errorEcuName:
-                    waterFlowRecords.append(
-                        {
-                            "timeStr": _timeStr,
-                            "vin": _vin,
-                            "errorEcuName": _errorEcuName,
-                            "fullEcuInfo": detail
-                        }
-                    )
+                # if _errorEcuName:
+                waterFlowRecords.append(
+                    {
+                        "timeStr": _timeStr,
+                        "vin": _vin,
+                        "errorEcuName": _errorEcuName,
+                        "fullEcuInfo": detail
+                    }
+                )
 
 
     b=[]
