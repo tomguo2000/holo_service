@@ -156,21 +156,30 @@ def getOriMessageList(fullPathList, readKeys):
     # print(f"内存占比：{info.percent}")
     # print(f"cpu个数：{psutil.cpu_count()}")
     time1=time.time()*1000
-
+    print(f"要读取这些文件：{fullPathList}")
     # 定义最后返回的List
     respContents = []
 
-    readfileFunPools = Pool(7)
-    asyncResult = []
-    for _path in fullPathList:
-        asyncResult.append(readfileFunPools.apply_async(getOriMessageSingleFileAsync, args=(_path, readKeys)))
-    readfileFunPools.close()
-    readfileFunPools.join()
+    if len(fullPathList) == 1:
+        # 单个文件，用同步方式
+        respContents = getOriMessageSingleFileAsync(fullPathList[0], readKeys)
+        if not respContents:
+            respContents=[]
 
-    for res in asyncResult:
-        _res = res.get()
-        if _res:
-            respContents = respContents + _res
+    else:
+        # 多个文件，异步方式工作
+        readfileFunPools = Pool(7)
+        asyncResult = []
+
+        for _path in fullPathList:
+            asyncResult.append(readfileFunPools.apply_async(getOriMessageSingleFileAsync, args=(_path, readKeys)))
+        readfileFunPools.close()
+        readfileFunPools.join()
+
+        for res in asyncResult:
+            _res = res.get()
+            if _res:
+                respContents = respContents + _res
 
     time2=time.time()*1000
     logger.info(f"本次读了{len(fullPathList)}个这样 {fullPathList[0]} 的文件，共耗时:{time2-time1}毫秒")
