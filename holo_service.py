@@ -43,4 +43,4 @@ os.environ['HOLO_APPNAME']=appname
 
 if __name__ == "__main__":
     logger.info (f"{appname}开始运行了...")
-    app.run(host='0.0.0.0', port=5678, debug=False)
+    app.run(host='0.0.0.0', port=8678, debug=False)
