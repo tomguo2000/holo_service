@@ -56,12 +56,12 @@ def ecuversion_stat(data):
 
     errorEcuStatic = static(errorEcuList)
     # print(errorEcuStatic)
-    ss = (sorted(errorEcuStatic.items(), key = lambda kv:(kv[1], kv[0])))
+    ss = (sorted(errorEcuStatic.items(), key = lambda kv:(kv[1], kv[0]), reverse=True))
 
     return {
         "totalRecordsAmount": totalRecordsAmount,
         "errorRecordsAmount": errorRecordsAmount,
-        "errorEcuStatic": errorEcuStatic,
+        # "errorEcuStatic": errorEcuStatic,
         "errorEcuStaticSorted": ss
     }
 
