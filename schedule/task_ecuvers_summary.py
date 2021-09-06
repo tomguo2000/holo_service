@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # workingDataOffset = -51    # calculate the date from now
 
     startDate = '2021-09-01'
-    days = 1
+    days = 7
     workingDataOffset = 0
 
     while workingDataOffset < days:
