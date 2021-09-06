@@ -69,6 +69,10 @@ if __name__ == '__main__':
         workingDateArray = workingDateArray + datetime.timedelta(days=workingDataOffset)
         workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
         _temp = ecuversion_stat(workingDateStr)
-        print(f"{workingDateStr}的统计结果是：{_temp}")
+
+        with open (f"error_ecu_summary_{workingDateStr}.txt", 'w') as f:
+            f.write(json.dumps(_temp))
+
+
         workingDataOffset += 1
 
