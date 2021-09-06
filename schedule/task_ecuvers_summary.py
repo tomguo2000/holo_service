@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
 
 
-    with open ("error_ecu_result.csv", 'w') as f:
+    with open ("error_ecu_summary.csv", 'w') as f:
         for line in ecuversion_statList:
             _c = {}
             _c['timeStr'] = line['timeStr']
