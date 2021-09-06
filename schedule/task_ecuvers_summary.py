@@ -55,10 +55,15 @@ def ecuversion_stat(data):
     errorEcuList = reformEcuList(errorRecords)
 
     errorEcuStatic = static(errorEcuList)
-    print(errorEcuStatic)
-    print(sorted(errorEcuStatic.items(), key = lambda kv:(kv[1], kv[0])))
+    # print(errorEcuStatic)
+    ss = (sorted(errorEcuStatic.items(), key = lambda kv:(kv[1], kv[0])))
 
-
+    return {
+        "totalRecordsAmount": totalRecordsAmount,
+        "errorRecordsAmount": errorRecordsAmount,
+        "errorEcuStatic": errorEcuStatic,
+        "errorEcuStaticSorted": ss
+    }
 
 
 if __name__ == '__main__':
@@ -88,4 +93,10 @@ if __name__ == '__main__':
         workingDataOffset += 1
 
 
-    ecuversion_stat(ecuversion_statList)
+    reecuversion_statsp = ecuversion_stat(ecuversion_statList)
+    resp = {
+        "startDate": startDate,
+        "days": days,
+        "ecuversion_stat": reecuversion_statsp
+    }
+    print(resp)
