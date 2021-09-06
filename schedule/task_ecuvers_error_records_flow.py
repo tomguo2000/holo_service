@@ -14,7 +14,7 @@ from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
 
 
-def ecuversion_stat(date):
+def ecuversion_errorrecords_flow(date):
     try:
         dataSources = 'event_ecus_info.txt'
         readKeys = ['.']
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         workingDateArray = Timeutils.timeString2timeArray(startDate, format='%Y-%m-%d')
         workingDateArray = workingDateArray + datetime.timedelta(days=workingDataOffset)
         workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
-        _temp = ecuversion_stat(workingDateStr)
+        _temp = ecuversion_errorrecords_flow(workingDateStr)
         for _i in _temp:
             ecuversion_statList.append(_i)
 

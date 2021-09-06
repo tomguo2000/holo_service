@@ -12,40 +12,52 @@ from common.setlog2 import set_logger
 from common.timeUtils import Timeutils
 from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
+from schedule.task_ecuvers_error_records_flow import ecuversion_errorrecords_flow
+
+def filterME7records(data):
+    ME7records = []
+    for item in data:
+        if 'MC' in item['vin']:
+            pass
+        else:
+            ME7records.append(item)
+    return ME7records
+
+def filterErrorrecords(data):
+    errorRecords = []
+    for item in data:
+        if item['errorEcuName']:
+            errorRecords.append(item)
+        else:
+            pass
+    return errorRecords
 
 
-def ecuversion_stat(date):
-    try:
-        dataSources = 'event_ecus_info.txt'
-        readKeys = ['.']
+def reformEcuList(data):
+    errorEcuList = []
+    for item in data:
+        for error_ecu_name in item['errorEcuName']:
+            errorEcuList.append(error_ecu_name)
+    return errorEcuList
 
-        # 获取vin码的列表
-        vinList = service.public.getVINList()
-
-        # 获取fullpath，按照['.']来读取内容
-        vinsContents = {}
-        dataSources = 'event_ecus_info.txt'
-        readKeys = ['.']
-
-        for vin in vinList:
-            vin_fullPathList = service.public.getFullPathList(vin, [date], dataSources)
-            contents = service.public.getOriMessageList(vin_fullPathList, readKeys)
-            refinedContents = []
-            for c in contents:
-                refinedContents.append(json.loads(c))
-            vinsContents[vin] = refinedContents
+def static(data):
+    dict = {}
+    for key in data:
+        dict[key] = dict.get(key, 0) + 1
+    return dict
 
 
-        errorSummary = service.staticService.static_ecu_ver(vinsContents)
+def ecuversion_stat(data):
+    totalRecordsAmount = len(data)
+    totalME7Records = filterME7records(data)
+    errorRecords = filterErrorrecords(totalME7Records)
+    errorRecordsAmount = len(errorRecords)
+    errorEcuList = reformEcuList(errorRecords)
 
-        return errorSummary
+    errorEcuStatic = static(errorEcuList)
+    print(errorEcuStatic)
+    print(sorted(errorEcuStatic.items(), key = lambda kv:(kv[1], kv[0])))
 
-    except Exception as ex:
-        return {
-                   "code": ex.args[0],
-                   "message": ReturnCode[ex.args[0]],
-                   "businessObj": None
-               }, 200
 
 
 
@@ -63,16 +75,17 @@ if __name__ == '__main__':
     days = 7
     workingDataOffset = 0
 
+    ecuversion_statList = []
     while workingDataOffset < days:
 
         workingDateArray = Timeutils.timeString2timeArray(startDate, format='%Y-%m-%d')
         workingDateArray = workingDateArray + datetime.timedelta(days=workingDataOffset)
         workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
-        _temp = ecuversion_stat(workingDateStr)
-
-        with open (f"error_ecu_summary_{workingDateStr}.txt", 'w') as f:
-            f.write(json.dumps(_temp))
-
+        _temp = ecuversion_errorrecords_flow(workingDateStr)
+        for _i in _temp:
+            ecuversion_statList.append(_i)
 
         workingDataOffset += 1
 
+
+    ecuversion_stat(ecuversion_statList)
