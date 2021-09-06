@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # workingDataOffset = -51    # calculate the date from now
 
     startDate = '2021-09-01'
-    days = 7
+    days = 1
     workingDataOffset = 0
 
     ecuversion_statList = []
