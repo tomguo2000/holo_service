@@ -116,10 +116,10 @@ def static_ecu_ver(contents):
 
     resp = {
         "totalVins": totalVin,
-        "vinsList": [key for key in contents],
+        # "vinsList": [key for key in contents],
         "totalRecords": total,
         "rightRecords": rightRec,
-        "errorVINRecords": errorVINRecords,
+        # "errorVINRecords": errorVINRecords,
         "errorRecords": errorRec,
         "errorEcuNameCount": errorEcuNameCount
     }

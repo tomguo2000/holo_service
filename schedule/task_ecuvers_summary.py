@@ -37,6 +37,7 @@ def ecuversion_stat(date):
 
 
         errorSummary = service.staticService.static_ecu_ver(vinsContents)
+
         print(f"{date}的统计结果是：{errorSummary}")
 
         return errorSummary
@@ -76,17 +77,4 @@ if __name__ == '__main__':
 
         workingDataOffset += 1
 
-
-    # print(ecuversion_statList)
-
-    # with open ("error_ecu_summary.csv", 'w') as f:
-    #     for line in ecuversion_statList:
-    #         _c = {}
-    #         _c['timeStr'] = line['timeStr']
-    #         _c['vin'] = line['vin']
-    #         _c['errorEcuName'] = line['errorEcuName']
-    #         _c['fullEcuInfo'] = line['fullEcuInfo']
-    #         # f.write(json.dumps(c))
-    #         f.write(json.dumps(_c))
-    #         f.write('\n')
-    #
+    print(ecuversion_statList)
