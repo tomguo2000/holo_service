@@ -92,7 +92,7 @@ def static_ecu_ver(contents):
 
     # waterFlowRecords.sort()
 
-    print(waterFlowRecords)
+    # print(waterFlowRecords)
 
     total = len(waterFlowRecords)
     totalVin = len(contents.keys())

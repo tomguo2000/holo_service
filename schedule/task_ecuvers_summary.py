@@ -38,8 +38,6 @@ def ecuversion_stat(date):
 
         errorSummary = service.staticService.static_ecu_ver(vinsContents)
 
-        print(f"{date}的统计结果是：{errorSummary}")
-
         return errorSummary
 
     except Exception as ex:
@@ -65,16 +63,12 @@ if __name__ == '__main__':
     days = 1
     workingDataOffset = 0
 
-    ecuversion_statList = []
     while workingDataOffset < days:
 
         workingDateArray = Timeutils.timeString2timeArray(startDate, format='%Y-%m-%d')
         workingDateArray = workingDateArray + datetime.timedelta(days=workingDataOffset)
         workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
         _temp = ecuversion_stat(workingDateStr)
-        for _i in _temp:
-            ecuversion_statList.append(_i)
-
+        print(f"{workingDateStr}的统计结果是：{_temp}")
         workingDataOffset += 1
 
-    print(ecuversion_statList)
