@@ -7,20 +7,8 @@ from common.config import CONFIG, ReturnCode, EnterpriseTransportProtolVer
 from multiprocessing import Pool
 import cantools
 import numpy, binascii
+from service.public import candbPool
 
-# candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
-candb_0a = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V309.210409_500km_SOP+6_TBOX.DBC')
-candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
-candbPool = {
-    'ME7': {
-        '0a': candb_0a,
-        '0b': candb_0a,
-        '0c': candb_0e,
-        '0d': candb_0e,
-        '0e': candb_0e,
-        '0f': candb_0e
-    }
-}
 
 def genMessagesSignals(canDB):
     respDict = {}
