@@ -93,6 +93,9 @@ def signals():
         asyncResult = []
         respContents = []
 
+        if sortedMessages:
+            print(f"异步解析这类数据：{sortedMessages[0]}")
+
         for item in sortedMessages:
             asyncResult.append(Pools.apply_async(tjmsParseSignals,
                                                  (item[0],
@@ -108,8 +111,6 @@ def signals():
             if _res:
                 respContents += _res
 
-        print(type(respContents))
-        print(respContents[0])
 
         logger.info(f"开始要写最后的结果了，前一阶段耗时: {time.time()*1000 - time0} ms")
 
