@@ -127,9 +127,12 @@ def signals():
             "canIDDict": canIDDict,
             "signalList": signalList,
             "vehicleMode": vehicleMode,
-            "respContentsSize": sys.getsizeof(respContents)
+            "respContentsSize": sys.getsizeof(respContents),
+            "respContents": respContents
         }
-        return(resp)
+
+        return resp
+
     except Exception as ex:
         return {
                    "code": ex.args[0],
