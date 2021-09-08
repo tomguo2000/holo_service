@@ -12,6 +12,8 @@ import numpy, binascii
 candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC')
 candbPool = {
     'ME7': {
+        '0c': candb_0e,
+        '0d': candb_0e,
         '0e': candb_0e,
         '0f': candb_0e
     }
