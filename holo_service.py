@@ -8,6 +8,7 @@ from api.tjms import *
 from api.daily import *
 from api.ecuversion import *
 from common.setlog2 import set_logger
+from flask_gzip import Gzip
 
 
 app = Flask(__name__)
@@ -17,6 +18,7 @@ app.register_blueprint(tj32960, url_prefix="/api/tj32960")
 app.register_blueprint(tjms, url_prefix="/api/tjms")
 app.register_blueprint(ecuversion, url_prefix="/api/ecuversion")
 
+gzip = Gzip(app)
 
 @app.before_request
 def logger_request_info():
