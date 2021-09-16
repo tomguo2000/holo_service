@@ -53,7 +53,7 @@ def signals():
         # 天际企标报警报文文件名
         dataSourcesWaining = 'message_enterprise_warning.txt'
         # 要从文件中读取的key
-        readKeys = [['MCUTime'], ['TYPE_CMD'], ['contents', 'MSSecondPacket'], ['contents', 'MSPacketVer']]
+        readKeys = [['MCUTime'], ['TYPE_CMD'], ['contents', 'MSSecondPacket'], ['contents', 'MSPacketVer'], ['vehicleMode']]
 
         # 获取需要读取的文件列表
         fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
@@ -101,6 +101,7 @@ def signals():
                                                  (item[0],
                                                   item[1][0],
                                                   item[1][1],
+                                                  item[1][2],
                                                   canIDDict
                                                   )))
         Pools.close()
@@ -290,9 +291,9 @@ def tjmsParse(data, candb, type, MPUTime, signal=False):
     return resp
 
 
-def tjmsParseSignals(MCUTime, data, protocol, canIDDict):
+def tjmsParseSignals(MCUTime, data, protocol, vehicleMode, canIDDict):
 
-    signalValues = service.msService.parse_tjms_signals(data, vehicleMode='ME7', protocol=protocol, canIDDict=canIDDict)
+    signalValues = service.msService.parse_tjms_signals(data, vehicleMode=vehicleMode, protocol=protocol, canIDDict=canIDDict)
 
     response = []
 

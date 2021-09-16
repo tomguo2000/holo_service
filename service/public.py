@@ -103,7 +103,9 @@ def cropmessage2dict(oriAllMessage, startTime, endTime):
 
     while oriAllMessage[bufferCursor].split(',')[0] < endTimeStr:
         # respMessage.append(oriAllMessage[bufferCursor])
-        respMessage[oriAllMessage[bufferCursor].split(',')[0]] = (oriAllMessage[bufferCursor].split(',')[2],oriAllMessage[bufferCursor].split(',')[3])
+        respMessage[oriAllMessage[bufferCursor].split(',')[0]] = (oriAllMessage[bufferCursor].split(',')[2],
+                                                                  oriAllMessage[bufferCursor].split(',')[3],
+                                                                  oriAllMessage[bufferCursor].split(',')[4])
 
         # 如果buffer还没到底，就cursor+1
         if bufferCursor < (len(oriAllMessage) - 1):

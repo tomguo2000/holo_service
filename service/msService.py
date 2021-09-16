@@ -21,7 +21,10 @@ def genMessagesSignals(canDB):
 
 
 def getCanIDListBySignalList(signalList, vehicleMode):
-    canDB = candbPool[vehicleMode]['0e']
+    if vehicleMode == 'ME7':
+        canDB = candbPool[vehicleMode]['0e']
+    else:
+        canDB = candbPool[vehicleMode]['00']
     fullCanDBDict = genMessagesSignals(canDB)
 
     resp = {}
