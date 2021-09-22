@@ -752,8 +752,8 @@ def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict):
 
 def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
     # 要求传入的dataList里，每行是一个Dict，并且Dict里要包含一个叫timestamp的key/value
-    # print(dataList)
-    # print(type(dataList))
+    print(f"assignSignal2TimeSlot: dataList={dataList}")
+    print(type(dataList))
 
     XaxisCursor = 0
     bufferCursor = 0
@@ -809,4 +809,18 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
                 bufferCursor += 1
             else:
                 break
+
+    # 每个x格子，取目前的[]里的第一个有效值返回
+
+    Yaxis = makeValueSlim(Yaxis)
+
     return Yaxis
+
+
+def makeValueSlim(YaxisData):
+    print(f"makeValueSlim函数, YaxisData: {YaxisData}")
+    for k,v in YaxisData.items():
+        print(k,v)
+        if v:
+            YaxisData[k]=v[0]
+    return YaxisData
