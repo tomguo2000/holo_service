@@ -250,7 +250,7 @@ def ibsreveal_index():
             sortedMessages = sorted(combinedDict.items(),key=lambda x:x[0])
 
             logger.info(f"开始要解析企标了，到目前为止耗时: {time.time()*1000 - time0} ms")
-            time0 = time.time()*1000
+            timeE = time.time()*1000
 
 
             # 开进程池并行处理
@@ -296,10 +296,9 @@ def ibsreveal_index():
                 }})
 
 
-            time1 = time.time()*1000
-            logger.debug(f"YaxisSignalList的转换完毕。。。{time.time()*1000-time1}")
+            logger.debug(f"企标干完了，这一段耗时:。。。{time.time()*1000 - timeE}")
 
-        logger.debug(f"hhhh组织resp 完毕。。。{time.time()*1000-time1}")
+        logger.debug(f"hhhh组织resp 完毕。。 本次http调用共耗时：{time.time()*1000-time0} ms")
 
         # 没有值的时间点，也生成每个图形上对应x轴的空值
         resp = makeResponse(resp)
