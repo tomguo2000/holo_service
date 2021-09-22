@@ -614,6 +614,8 @@ def makeResponse(resp):
                 type = 'list'
             elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), dict):
                 type = 'dict'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), float):
+                type = 'float'
             else:
                 type = 'NULL'
         except:
@@ -630,6 +632,8 @@ def makeResponse(resp):
                 _itemResp.append(_value)
             elif type == 'int':
                 _itemResp.append(0)
+            elif type == 'float':
+                _itemResp.append(0.)
             elif type == 'list':
                 _itemResp.append([])
             elif type == 'dict':
@@ -648,6 +652,8 @@ def makeResponse(resp):
         try:
             if isinstance(next(iter(resp['YaxisOverall'][_item].values())), int):
                 type = 'int'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), float):
+                type = 'float'
             elif isinstance(next(iter(resp['YaxisOverall'][_item].values())), list):
                 type = 'list'
             elif isinstance(next(iter(resp['YaxisOverall'][_item].values())), dict):
@@ -668,6 +674,8 @@ def makeResponse(resp):
                 _itemResp.append(_value)
             elif type == 'int':
                 _itemResp.append(0)
+            elif type == 'float':
+                _itemResp.append(0.)
             elif type == 'list':
                 _itemResp.append([])
             elif type == 'dict':
@@ -873,7 +881,7 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
 
     # logger.debug(f"assignSignal2TimeSlot执行中: Yaxis: {Yaxis}")
 
-    # 每个x格子，取目前的[]里的第一个有效值返回
+    # TODO 每个x格子，取目前的[]里的第一个有效值返回
     Yaxis = makeValueSlim(Yaxis)
 
     return Yaxis
@@ -884,7 +892,13 @@ def makeValueSlim(YaxisData):
     for k,v in YaxisData.items():
         if v:
             # 现在的瘦身方法，是取每个刻度的list值的第一个。后续可以处理成第一个有效值或者均值或者K图
-            YaxisData[k] = v[0]
+            _value = v[0]
+
+            # 如果时浮点的值，保留两位小数
+            if isinstance(_value, float):
+                _value = round(_value, 2)
+
+            YaxisData[k] = _value
         else:
             YaxisData[k] = None
     return YaxisData

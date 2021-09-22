@@ -165,7 +165,8 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict):
                 _canMessage = canIDSecAllData[microSecCount*16:microSecCount*16 + 16]
 
                 # 这个8字节的全部message
-                _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, 0)
+                # _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, 0)
+                _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, True)
 
                 signalValueList.append(_fullSignalMessage[signalName])
 
