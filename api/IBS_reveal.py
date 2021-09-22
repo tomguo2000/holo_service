@@ -279,9 +279,13 @@ def ibsreveal_index():
                 if _res:
                     respContents += _res
 
+            logger.info(f"企标解析到信号完成，这个阶段耗时: {time.time()*1000 - timeE} ms")
+            logger.info(f"企标解析到信号完成，到目前为止耗时: {time.time()*1000 - time0} ms")
+
+
             # 每个信号占1行，每行是所有的秒信号
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents)
-
+            logger.info(f"企标transformer2Yaxis完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
             for oneSignalAllSec in signalListFor1Line:
                 _signalName = oneSignalAllSec[0]
@@ -299,7 +303,7 @@ def ibsreveal_index():
                 }})
 
 
-            logger.debug(f"企标干完了，这一段耗时:。。。{time.time()*1000 - timeE}")
+            logger.debug(f"企标全干完了，这一段耗时:。。。{time.time()*1000 - timeE}")
 
         logger.debug(f"hhhh组织resp 完毕。。 本次http调用共耗时：{time.time()*1000-time0} ms")
 
