@@ -27,7 +27,7 @@ def ibsreveal_index():
             # -------
 
             startTime = Timeutils.timeString2timeStamp(date, format='%Y-%m-%d', ms=True)
-            endTime = startTime + 30*1000 - 1000
+            endTime = startTime + 86400*1000 - 1000
 
             overallList = ['event_ConnStatusList']
             signalList = [
