@@ -59,7 +59,7 @@ def ibsreveal_index():
         # 构建一个X轴
         time1 = time.time()*1000
         Xaxis = createXaxis(startTime, endTime, interval=10)
-        logger.debug(f"hhhh构建一个X轴完毕。。。{time.time()*1000-time1}")
+        logger.debug(f"hhhh构建一个X轴完毕。。{Xaxis}。{time.time()*1000-time1}")
 
 
         # 定义返回的resp
@@ -67,13 +67,14 @@ def ibsreveal_index():
         resp['Xaxis'] = Xaxis
         resp['dateList'] = [date]
         resp['YaxisList'] = []
-
+        resp['YaxisOverall'] = {}
+        resp['YaxisSignal'] = {}
 
         # 传入X轴和dateList，获取emq连接的event结果
         time1 = time.time()*1000
         event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
         logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
-        resp['event_ConnStatusList'] = event_ConnStatusList
+        resp['YaxisOverall']['event_ConnStatusList'] = event_ConnStatusList
         resp['YaxisList'].append({"event_ConnStatusList": {
             "type": "event",
             "other": "........."
@@ -84,7 +85,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             event_VehicleLoginList = getVehicleLoginEvents(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取SDK初始化的聚合结果 完毕。。。{time.time()*1000-time1}")
-            resp['event_VehicleLoginList'] = event_VehicleLoginList
+            resp['YaxisOverall']['event_VehicleLoginList'] = event_VehicleLoginList
             resp['YaxisList'].append({"event_VehicleLoginList": {
                 "type": "message",
                 "other": "........."
@@ -96,7 +97,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             event_RemoteCmdList = getRemoteCmdEvents(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取控车event的结果 完毕。。。{time.time()*1000-time1}")
-            resp['event_RemoteCmdList'] = event_RemoteCmdList
+            resp['YaxisOverall']['event_RemoteCmdList'] = event_RemoteCmdList
             resp['YaxisList'].append({"event_RemoteCmdList": {
                 "type": "message",
                 "other": "........."
@@ -108,7 +109,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_tj32960Live = getTJ32960(vin, Xaxis, 'message_national_live.txt', [date[:10]])
             logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
-            resp['message_tj32960Live'] = message_tj32960Live
+            resp['YaxisOverall']['message_tj32960Live'] = message_tj32960Live
             resp['YaxisList'].append({"message_tj32960Live": {
                 "type": "message",
                 "other": "........."
@@ -120,7 +121,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_tj32960Resent = getTJ32960(vin, Xaxis, 'message_national_resent.txt', [date[:10]])
             logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
-            resp['message_tj32960Resent'] = message_tj32960Resent
+            resp['YaxisOverall']['message_tj32960Resent'] = message_tj32960Resent
             resp['YaxisList'].append({"message_tj32960Resent": {
                 "type": "message",
                 "other": "........."
@@ -133,7 +134,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', [date[:10]])
             logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MSLive'] = message_MSLive
+            resp['YaxisOverall']['message_MSLive'] = message_MSLive
             resp['YaxisList'].append({"message_MSLive": {
                 "type": "message",
                 "other": "........."
@@ -145,7 +146,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', [date[:10]])
             logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MSResent'] = message_MSResent
+            resp['YaxisOverall']['message_MSResent'] = message_MSResent
             resp['YaxisList'].append({"message_MSResent": {
                 "type": "message",
                 "other": "........."
@@ -157,7 +158,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', [date[:10]])
             logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MSWarning'] = message_MSWarning
+            resp['YaxisOverall']['message_MSWarning'] = message_MSWarning
             resp['YaxisList'].append({"message_MSWarning": {
                 "type": "message",
                 "other": "........."
@@ -169,7 +170,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_MiscList = getMisc(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取MISC的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MiscList'] = message_MiscList
+            resp['YaxisOverall']['message_MiscList'] = message_MiscList
             resp['YaxisList'].append({"message_MiscList": {
                 "type": "message",
                 "other": "........."
@@ -181,7 +182,7 @@ def ibsreveal_index():
             time1 = time.time()*1000
             message_HeartbeatList = getHeartbeat(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取登入登出心跳的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_HeartbeatList'] = message_HeartbeatList
+            resp['YaxisOverall']['message_HeartbeatList'] = message_HeartbeatList
             resp['YaxisList'].append({"message_HeartbeatList": {
                 "type": "message",
                 "other": "........."
@@ -287,9 +288,11 @@ def ibsreveal_index():
                 _signalAllValues = oneSignalAllSec[1]
 
                 # 把每个信号的全部value，对应到统一的X轴上
+                logger.debug(f"assignSignal2TimeSlot调用前: {_signalAllValues}")
                 YaxisSignalList = assignSignal2TimeSlot(Xaxis=Xaxis, dataList=_signalAllValues)
+                logger.debug(f"assignSignal2TimeSlot调用后: {YaxisSignalList}")
 
-                resp[_signalName] = YaxisSignalList
+                resp['YaxisSignal'][_signalName] = YaxisSignalList
                 resp['YaxisList'].append({_signalName: {
                     "type": "signal",
                     "other": "........."
@@ -589,37 +592,86 @@ def makeResponse(resp):
     makeResp['Xaxis'] = resp['Xaxis']
     makeResp['dateList'] = resp['dateList']
     makeResp['YaxisList'] = resp['YaxisList']
+    makeResp['YaxisSignal'] = {}
+    makeResp['YaxisOverall'] = {}
     del(resp['Xaxis'])
     del(resp['dateList'])
     del(resp['YaxisList'])
 
-    for _item in resp:
+    # 归类输出YaxisSignal
+    for _item in resp['YaxisSignal']:
 
         _itemResp = []
 
         try:
-            if isinstance(next(iter(resp[_item].values())), int):
+            if isinstance(next(iter(resp['YaxisSignal'][_item].values())), int):
                 type = 'int'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), list):
+                type = 'list'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), dict):
+                type = 'dict'
             else:
-                type = 'unknown'
+                type = 'NULL'
         except:
-            type = 'unknown'
+            type = 'NULL'
 
 
         # 遍历每个刻度
         for _x in makeResp['Xaxis']:
 
             # 取出_item这个分类下，每个刻度对应的实际值
-            _value = resp[_item].get(_x)
+            _value = resp['YaxisSignal'][_item].get(_x)
 
             if _value:
                 _itemResp.append(_value)
             elif type == 'int':
                 _itemResp.append(0)
-            else:
+            elif type == 'list':
                 _itemResp.append([])
+            elif type == 'dict':
+                _itemResp.append({})
+            else:
+                _itemResp.append(None)
 
-        makeResp[_item] = _itemResp
+        makeResp['YaxisSignal'][_item] = _itemResp
+
+
+    # 归类输出YaxisOverall
+    for _item in resp['YaxisOverall']:
+
+        _itemResp = []
+
+        try:
+            if isinstance(next(iter(resp['YaxisOverall'][_item].values())), int):
+                type = 'int'
+            elif isinstance(next(iter(resp['YaxisOverall'][_item].values())), list):
+                type = 'list'
+            elif isinstance(next(iter(resp['YaxisOverall'][_item].values())), dict):
+                type = 'dict'
+            else:
+                type = 'NULL'
+        except:
+            type = 'NULL'
+
+
+        # 遍历每个刻度
+        for _x in makeResp['Xaxis']:
+
+            # 取出_item这个分类下，每个刻度对应的实际值
+            _value = resp['YaxisOverall'][_item].get(_x)
+
+            if _value:
+                _itemResp.append(_value)
+            elif type == 'int':
+                _itemResp.append(0)
+            elif type == 'list':
+                _itemResp.append([])
+            elif type == 'dict':
+                _itemResp.append({})
+            else:
+                _itemResp.append(None)
+
+        makeResp['YaxisOverall'][_item] = _itemResp
 
     return makeResp
 
@@ -794,7 +846,7 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
     Yaxis = {}
     # 开始根据respXaxis的刻度，生成对应的respYdict
     while XaxisCursor < len(Xaxis):
-
+        # Xaxis[XaxisCursor] 代表下一个刻度
         if Xaxis[XaxisCursor] <= dataList_keys[bufferCursor]:
             XaxisCursor += 1
         else:
@@ -810,8 +862,9 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
             else:
                 break
 
-    # 每个x格子，取目前的[]里的第一个有效值返回
+    logger.debug(f"assignSignal2TimeSlot执行中: Yaxis: {Yaxis}")
 
+    # 每个x格子，取目前的[]里的第一个有效值返回
     Yaxis = makeValueSlim(Yaxis)
 
     return Yaxis
@@ -823,4 +876,6 @@ def makeValueSlim(YaxisData):
         print(k,v)
         if v:
             YaxisData[k]=v[0]
+        else:
+            YaxisData[k]=None
     return YaxisData
