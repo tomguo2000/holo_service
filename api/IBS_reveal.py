@@ -59,7 +59,7 @@ def ibsreveal_index():
         # 构建一个X轴
         time1 = time.time()*1000
         Xaxis = createXaxis(startTime, endTime, interval=10)
-        logger.debug(f"hhhh构建一个X轴完毕。。{Xaxis}。{time.time()*1000-time1}")
+        logger.debug(f"hhhh构建一个X轴完毕。。from {Xaxis[0]} to {Xaxis[-1]}。{time.time()*1000-time1}")
 
 
         # 定义返回的resp
