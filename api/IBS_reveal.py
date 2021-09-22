@@ -27,7 +27,7 @@ def ibsreveal_index():
             # -------
 
             startTime = Timeutils.timeString2timeStamp(date, format='%Y-%m-%d', ms=True)
-            endTime = startTime + 86400*1000 - 1000
+            endTime = startTime + 30*1000 - 1000
 
             overallList = ['event_ConnStatusList']
             signalList = [
@@ -804,18 +804,25 @@ def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict):
 
 def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
     # 要求传入的dataList里，每行是一个Dict，并且Dict里要包含一个叫timestamp的key/value
-    print(f"assignSignal2TimeSlot: dataList={dataList}")
-    print(type(dataList))
+    print(f"assignSignal2TimeSlot: Xaxis={Xaxis}")
+    print(type(Xaxis))
+
+    # 这里要增加一个copy的_Xaxis,并且添加一个刻度，用于后续计算时，标识终点。
+    if len(Xaxis) < 2:
+        logger.error(f"ERROR: assignSignal2TimeSlot 说干不了了，这里只有不到2个list的item：{Xaxis}，怎么虚拟出终点啊。。。")
+
+    _duration = Timeutils.timeString2timeStamp(Xaxis[1]) - Timeutils.timeString2timeStamp(Xaxis[0])
+    _Xaxis = Xaxis[:]
+    _Xaxis.append(Timeutils.timeStamp2timeString(Timeutils.timeString2timeStamp(_Xaxis[-1]) + _duration))
 
     XaxisCursor = 0
     bufferCursor = 0
     workingStartTimeStamp = Timeutils.timeString2timeStamp(Xaxis[0], ms=True)
-    workingStartTimeStr = Xaxis[0]
+    workingStartTimeStr = _Xaxis[0]
 
-    # TODO 注意检查这样得到的list，是否从有序变成了无序
+    # 注意检查这样得到的list，是否从有序变成了无序
     dataList_keys = list(dataList.keys())
     dataList_values = list(dataList.values())
-
     _verifyDict = dict(zip(dataList_keys, dataList_values))
     if _verifyDict != dataList:
         logger.error("ERROR: 坏了，从dict转list后，变成了无序的list")
@@ -828,12 +835,10 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
     find = False
     while bufferCursor < len(dataList):
 
-        # if int(dataList[bufferCursor].get('timestamp')) < workingStartTimeStamp:
         if dataList_keys[bufferCursor] < workingStartTimeStr:
             # 跳过这条废数据
             bufferCursor += 1
         else:
-            # print (f"First content {dataList[bufferCursor]} 找到了!")
             find = True
             break
 
@@ -844,17 +849,16 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
         return {}
 
     Yaxis = {}
-    # 开始根据respXaxis的刻度，生成对应的respYdict
-    while XaxisCursor < len(Xaxis):
-        # Xaxis[XaxisCursor] 代表下一个刻度
-        if Xaxis[XaxisCursor] <= dataList_keys[bufferCursor]:
+    # 开始根据_Xaxis的刻度，生成对应的respYdict
+    while XaxisCursor < len(_Xaxis):
+        # _Xaxis[XaxisCursor] 代表下一个刻度
+        if _Xaxis[XaxisCursor] <= dataList_keys[bufferCursor]:
             XaxisCursor += 1
         else:
-            if Yaxis.get(str(Xaxis[XaxisCursor-1])):
-                # Yaxis[str(Xaxis[XaxisCursor-1])].append(dataList_values[bufferCursor])
-                Yaxis[str(Xaxis[XaxisCursor-1])] += dataList_values[bufferCursor]
+            if Yaxis.get(str(_Xaxis[XaxisCursor-1])):
+                Yaxis[str(_Xaxis[XaxisCursor-1])] += dataList_values[bufferCursor]
             else:
-                Yaxis[str(Xaxis[XaxisCursor-1])] = dataList_values[bufferCursor]
+                Yaxis[str(_Xaxis[XaxisCursor-1])] = dataList_values[bufferCursor]
 
             # 如果buffer还没到底，就cursor+1
             if bufferCursor < (len(dataList_keys) - 1):
@@ -873,9 +877,9 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
 def makeValueSlim(YaxisData):
     print(f"makeValueSlim函数, YaxisData: {YaxisData}")
     for k,v in YaxisData.items():
-        print(k,v)
         if v:
-            YaxisData[k]=v[0]
+            # 现在的瘦身方法，是取每个刻度的list值的第一个。后续可以处理成第一个有效值或者均值或者K图
+            YaxisData[k] = v[0]
         else:
-            YaxisData[k]=None
+            YaxisData[k] = None
     return YaxisData
