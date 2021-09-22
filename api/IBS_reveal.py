@@ -288,9 +288,9 @@ def ibsreveal_index():
                 _signalAllValues = oneSignalAllSec[1]
 
                 # 把每个信号的全部value，对应到统一的X轴上
-                logger.debug(f"assignSignal2TimeSlot调用前: {_signalAllValues}")
+                # logger.debug(f"assignSignal2TimeSlot调用前: {_signalAllValues}")
                 YaxisSignalList = assignSignal2TimeSlot(Xaxis=Xaxis, dataList=_signalAllValues)
-                logger.debug(f"assignSignal2TimeSlot调用后: {YaxisSignalList}")
+                # logger.debug(f"assignSignal2TimeSlot调用后: {YaxisSignalList}")
 
                 resp['YaxisSignal'][_signalName] = YaxisSignalList
                 resp['YaxisList'].append({_signalName: {
@@ -804,8 +804,8 @@ def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict):
 
 def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
     # 要求传入的dataList里，每行是一个Dict，并且Dict里要包含一个叫timestamp的key/value
-    print(f"assignSignal2TimeSlot: Xaxis={Xaxis}")
-    print(type(Xaxis))
+    # print(f"assignSignal2TimeSlot: Xaxis={Xaxis}")
+    # print(type(Xaxis))
 
     # 这里要增加一个copy的_Xaxis,并且添加一个刻度，用于后续计算时，标识终点。
     if len(Xaxis) < 2:
@@ -844,6 +844,7 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
 
     if find:
         logger.debug(f"找到了需要处理的第一条：content:{dataList_keys[bufferCursor]}")
+        pass
     else:
         logger.debug(f'最后一个文件读完了，啥也没有')
         return {}
@@ -866,7 +867,7 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
             else:
                 break
 
-    logger.debug(f"assignSignal2TimeSlot执行中: Yaxis: {Yaxis}")
+    # logger.debug(f"assignSignal2TimeSlot执行中: Yaxis: {Yaxis}")
 
     # 每个x格子，取目前的[]里的第一个有效值返回
     Yaxis = makeValueSlim(Yaxis)
@@ -875,7 +876,7 @@ def assignSignal2TimeSlot(Xaxis, dataList, needSort=False):
 
 
 def makeValueSlim(YaxisData):
-    print(f"makeValueSlim函数, YaxisData: {YaxisData}")
+    # print(f"makeValueSlim函数, YaxisData: {YaxisData}")
     for k,v in YaxisData.items():
         if v:
             # 现在的瘦身方法，是取每个刻度的list值的第一个。后续可以处理成第一个有效值或者均值或者K图
