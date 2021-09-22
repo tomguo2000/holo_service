@@ -7,6 +7,7 @@ from api.tj32960 import *
 from api.tjms import *
 from api.daily import *
 from api.ecuversion import *
+from api.holoview import *
 from common.setlog2 import set_logger
 from flask_gzip import Gzip
 
@@ -14,6 +15,7 @@ from flask_gzip import Gzip
 app = Flask(__name__)
 app.register_blueprint(overall_by_vin, url_prefix="/api")
 app.register_blueprint(daily, url_prefix="/api/daily")
+app.register_blueprint(holoview, url_prefix="/api/holoview")
 app.register_blueprint(tj32960, url_prefix="/api/tj32960")
 app.register_blueprint(tjms, url_prefix="/api/tjms")
 app.register_blueprint(ecuversion, url_prefix="/api/ecuversion")
