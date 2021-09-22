@@ -9,96 +9,46 @@ import service.public, service.msService
 
 
 
-holoview = Blueprint("holoview", __name__)
+ibsreveal = Blueprint("ibsreveal", __name__)
 
 
-@holoview.route('/checkSignal', methods=["GET"])
-def holoview_checkSignal():
+@ibsreveal.route('/', methods=["GET"])
+def ibsreveal_index():
     try:
         # 检查入参
         try:
             params = request.args.to_dict()
-            print("holoview_checkSignal:", params)
-            vehicleModel = params['vehicleModel']
-            signalName = params['signalName']
+            logger.info(f"有人调用ibsreveal_index了，参数如下:{params}")
 
-            if vehicleModel not in ['ME7', 'ME5']:
-                raise
-
-        except:
-            raise Exception ("110900")
-
-        signalInfo = service.msService.getSignalInfo(signalName=signalName, vehicleModel=vehicleModel)
-
-        if not signalInfo:
-            return {
-                       "code": 400,
-                       "message": "没有找到了这个信号的信息，小天认为你喝酒了",
-                       "businessObj": None
-                   }, 200
-        else:
-            return {
-                       "code": 200,
-                       "message": "找到了这个信号的信息，小天认为你做的很好",
-                       "businessObj": signalInfo
-                   }, 200
-    except Exception as ex:
-        return {
-                   "code": ex.args[0],
-                   "message": ReturnCode[ex.args[0]],
-                   "businessObj": None
-               }, 200
-
-
-
-@holoview.route('/overall', methods=["GET"])
-def holoview_getOverall():
-    overall = {
-        "event_ConnStatusList": "Tbox到平台连接事件",
-        "event_VehicleLoginList": "车辆登录Vehicle服务事件",
-        "event_RemoteCmdList": "远程控车指令事件",
-        "message_tj32960Login": "国标登录报文",
-        "message_tj32960Live": "国标实发报文",
-        "message_tj32960Resent": "国标补发报文",
-        "message_MSLive": "企标实发报文",
-        "message_MSResent": "企标补发报文",
-        "message_MSWarning": "企标告警报文",
-        "message_MiscList": "Misc报文",
-        "message_HeartbeatList": "心跳报文"
-    }
-    return {
-               "code": 200,
-               "message": "获取整体指标成功",
-               "businessObj": overall
-           }, 200
-
-
-@holoview.route('/', methods=["GET"])
-def holoview_index():
-    try:
-
-        # 检查入参
-        try:
-            params = request.args.to_dict()
-            logger.info(f"有人调用holoview了，参数如下:{params}")
             vin = params['vin']
-            startTime = params.get('startTime')
-            endTime = params.get('endTime')
-            env = params.get('local')
-            overall = params.get('overall')
-            signal = params.get('signal')
+            date = params['date']
+            env = params.get('env')
 
-            startTime = int(startTime) if int(startTime) > 9999999999 else int(startTime) * 1000
-            endTime = int(endTime) if int(endTime) > 9999999999 else int(endTime) * 1000
-            overallList = overall.split(',') if overall else []
-            signalList = signal.split(',') if signal else []
+            # -------
+
+            startTime = Timeutils.timeString2timeStamp(date, format='%Y-%m-%d', ms=True)
+            endTime = startTime + 86400*1000 - 1000
+
+            overallList = ['event_ConnStatusList']
+            signalList = [
+                'ME7_IBS_SOC_STATE',
+                'ME7_IBS_SOC',
+                'ME7_IBS_SOH_SUL',
+                'ME7_IBS_U_BATT',
+                'ME7_VCU_LVSmartChrg_Status',
+                'ME7_VCU_DC_VoltageReq',
+                'ME7_IBS_Status_Voltage',
+                'ME7_BCM_SystemPowerMode',
+                'ME7_ESP_VehicleSpeed',
+                'ME7_DCDC_IdcLvCurr'
+            ]
 
         except:
-            raise Exception ("110900")
+            raise Exception("110900")
 
         # 判断不要跨天
         if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
-            raise Exception ("110903")
+            raise Exception("110903")
         else:
             date = Timeutils.timeStamp2timeString(startTime)[:10]
 
@@ -278,19 +228,19 @@ def holoview_index():
             # 获取企标的string结果，裁剪后转为dict结果
             oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
             oriMessageLiveCropedDict = service.public.cropmessage2dict(oriMessageList, startTime, endTime)
-            logger.info(f"企标实发报文，包含了这些秒包： {oriMessageLiveCropedDict.keys()}")
+            # logger.debug(f"企标实发报文，包含了这些秒包： {oriMessageLiveCropedDict.keys()}")
 
             # 获取企标的string结果，裁剪后转为dict结果
             oriMessageListResent = service.public.getOriMessageList(fullPathList2, readKeys)
             oriMessageResentCropedDict = service.public.cropmessage2dict(oriMessageListResent, startTime, endTime)
-            logger.info(f"企标补发报文，包含了这些秒包：{oriMessageResentCropedDict.keys()}")
+            # logger.debug(f"企标补发报文，包含了这些秒包：{oriMessageResentCropedDict.keys()}")
 
             # 获取企标的string结果，裁剪后转为dict结果
             oriMessageListWarning = service.public.getOriMessageList(fullPathList3, readKeys)
             # 告警报文，是实发和补发混杂，先排序在去crop
             oriMessageListWarning.sort()
             oriMessageWarningCropedDict = service.public.cropmessage2dict(oriMessageListWarning, startTime, endTime)
-            logger.info(f"企标告警报文，包含了这些秒包：{oriMessageWarningCropedDict.keys()}")
+            # logger.debug(f"企标告警报文，包含了这些秒包：{oriMessageWarningCropedDict.keys()}")
 
             # 组合实发,补发,告警报文， 组合后是乱序的
             combinedDict = dict(oriMessageLiveCropedDict, **oriMessageResentCropedDict)
