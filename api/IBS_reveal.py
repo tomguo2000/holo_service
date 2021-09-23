@@ -21,13 +21,25 @@ def ibsreveal_index():
             logger.info(f"有人调用ibsreveal_index了，参数如下:{params}")
 
             vin = params['vin']
-            date = params['date']
+            date = params.get('date')
             env = params.get('env')
+            startTime = params.get('startTime')
+            endTime = params.get('endTime')
 
             # -------
+            if startTime:
+                startTime = int(startTime)
+                if startTime < 9992360223:
+                    startTime *= 1000
+            else:
+                startTime = Timeutils.timeString2timeStamp(date, format='%Y-%m-%d', ms=True)
 
-            startTime = Timeutils.timeString2timeStamp(date, format='%Y-%m-%d', ms=True)
-            endTime = startTime + 86400*1000 - 1000
+            if endTime:
+                endTime = int(endTime)
+                if endTime < 9992360223:
+                    endTime *= 1000
+            else:
+                endTime = Timeutils.timeString2timeStamp(date, format='%Y-%m-%d', ms=True) + 86400*1000 - 1000
 
             overallList = ['event_ConnStatusList']
             signalList = [
