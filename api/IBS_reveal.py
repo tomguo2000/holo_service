@@ -309,9 +309,10 @@ def ibsreveal_index():
                 # logger.debug(f"assignSignal2TimeSlot调用后: {YaxisSignalList}")
 
                 resp['YaxisSignal'][_signalName] = YaxisSignalList
+                choices = service.msService.getSignalInfo(signalName=_signalName,vehicleModel=vehicleModel)
                 resp['YaxisList'].append({_signalName: {
                     "type": "signal",
-                    "other": "........."
+                    "choices": choices['choices']
                 }})
 
 

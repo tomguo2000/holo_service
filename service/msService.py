@@ -33,6 +33,7 @@ def getSignalInfo(signalName, vehicleModel):
             signalInfo = canDB.get_message_by_name(x).get_signal_by_name(signalName)
             resp['canID'] = x
             resp['comment'] = signalInfo.comment
+            resp['choices'] = signalInfo.choices
             break
 
     return resp
