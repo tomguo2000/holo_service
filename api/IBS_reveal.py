@@ -643,16 +643,18 @@ def makeResponse(resp):
 
             if _value:
                 _itemResp.append(_value)
-            elif type == 'int':
-                _itemResp.append(0)
-            elif type == 'float':
-                _itemResp.append(0.)
-            elif type == 'list':
-                _itemResp.append([])
-            elif type == 'dict':
-                _itemResp.append({})
+            # 不区分value类型，统一返回None 2021/09/24 这样做是对的
+            # elif type == 'int':
+            #     _itemResp.append(0)
+            # elif type == 'float':
+            #     _itemResp.append(0.)
+            # elif type == 'list':
+            #     _itemResp.append([])
+            # elif type == 'dict':
+            #     _itemResp.append({})
             else:
                 _itemResp.append(None)
+
 
         makeResp['YaxisSignal'][_item] = _itemResp
 
