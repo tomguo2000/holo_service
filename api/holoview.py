@@ -454,7 +454,11 @@ def transformer2Yaxis(canIDDict, contents):
         _v = _line[2]
         # TODO 验证这样的做法是否合适？从 signalYaxisList[signalIndex[_line[0]]][1][_k] = _v 到现在这样
         if _v:
-            signalYaxisList[signalIndex[_line[0]]][1][_k] = _v[0]
+            _value = _v[0]
+            # 如果时浮点的值，保留两位小数
+            if isinstance(_value, float):
+                _value = round(_value, 2)
+            signalYaxisList[signalIndex[_line[0]]][1][_k] = _value
         else:
             signalYaxisList[signalIndex[_line[0]]][1][_k] = _v
 
