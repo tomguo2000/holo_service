@@ -197,13 +197,13 @@ def getOriMessageSingleFileAsync(_path, readKeys):
     # 处理一个具体的文件
     if os.path.exists(_path):
         step0 = time.time()*1000
-        # logger.debug(f"要打开这个文件了。。。。{_path}")
+        logger.debug(f"OptStep1: getOriMessageSingleFileAsync要打开这个文件了。。。。{_path}")
 
         fileContents = []
         with open (_path, 'r') as f:
             _contents = f.readlines()
 
-        # logger.debug(f"读{_path}到内存，花费到 {time.time()*1000-step0}毫秒")
+        logger.debug(f"OptStep2: 读{_path}到内存，花费到 {time.time()*1000-step0}毫秒")
         try:
             for _row in _contents:
                 try:
@@ -236,7 +236,7 @@ def getOriMessageSingleFileAsync(_path, readKeys):
                     # 一行的数据组织完了，写入fileContents
                     fileContents.append(newRow.strip(','))
 
-            # logger.debug(f"解析{_path}内容到新的list，花费到 {time.time()*1000-step0}毫秒")
+            logger.debug(f"OptStep3: 解析{_path}内容到新的list，花费到 {time.time()*1000-step0}毫秒")
 
         except Exception as ex:
             logger.warning(ex)
