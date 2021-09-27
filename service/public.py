@@ -205,7 +205,7 @@ def getOriMessageSingleFileAsync(_path, readKeys):
 
         logger.debug(f"OptStep2: 读{_path}到内存，花费到 {time.time()*1000-step0}毫秒")
 
-        timelineDict = transformer2TimelineDict(_contents)
+        # timelineDict = transformer2TimelineDict(_contents)
         # print(timelineDict['2021-09-10_00:00:08'])
         logger.debug(f"OptStep3: 将文件内容转成timelineDict，花费到 {time.time()*1000-step0}毫秒")
 
