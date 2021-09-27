@@ -113,9 +113,9 @@ def holoview_index():
             'ME7_IBS_Status_Voltage',
             'ME7_BCM_SystemPowerMode',
             'ME7_ESP_VehicleSpeed',
-            'ME7_DCDC_IdcLvCurr'
+            'ME7_DCDC_IdcLvCurr',
+            'ME7_BMS_PackU',
         ]
-
 
         # 判断不要跨天
         if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
@@ -128,7 +128,7 @@ def holoview_index():
 
 
         # 构建一个X轴
-        Xaxis = createXaxis(startTime, endTime, interval=10)
+        Xaxis = createXaxis(startTime, endTime, interval=30)
         logger.debug(f"1：构建一个X轴完毕。。。{time.time()*1000-time0}")
 
 

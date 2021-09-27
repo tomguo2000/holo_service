@@ -250,6 +250,7 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
         signalNameList = canIDDict[_canID]
 
         for microSecCount in range(0, canIDSecAmount):
+        # for microSecCount in range(0, 1):
 
             # 取出来第一个8字节
             _canMessage = canIDSecAllData[microSecCount*16:microSecCount*16 + 16]
@@ -262,6 +263,8 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
                 signalValueList = []
                 signalValueList.append(_fullSignalMessage[signalName])
                 resp.append((signalName, signalValueList))
+
+            microSecCount += 50
 
     return resp
 
