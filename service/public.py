@@ -257,7 +257,9 @@ def getOriMessageSingleFileAsync(_path, readKeys):
 def transformer2TimelineDict(contents):
     _timelineDict = {}
     for _line in contents:
-        _timelineDict[_line['MCUTime']] = _line['contents']
+        _dict = json.loads(_line)
+        if _dict.get('MCUTime') and _dict.get('contents'):
+            _timelineDict[_dict['MCUTime']] = _dict['contents']
     return _timelineDict
 
 
