@@ -307,6 +307,7 @@ def ibsreveal_index():
                 # 把每个信号的全部value，对应到统一的X轴上
                 # logger.debug(f"assignSignal2TimeSlot调用前: {_signalAllValues}")
                 YaxisSignalList = assignSignal2TimeSlot(Xaxis=Xaxis, dataList=_signalAllValues)
+                # YaxisSignalList是若干个小dict，值没有[]
                 # logger.debug(f"assignSignal2TimeSlot调用后: {YaxisSignalList}")
 
                 resp['YaxisSignal'][_signalName] = YaxisSignalList

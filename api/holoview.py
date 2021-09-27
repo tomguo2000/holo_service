@@ -137,6 +137,8 @@ def holoview_index():
         resp['Xaxis'] = Xaxis
         resp['dateList'] = [date]
         resp['YaxisList'] = []
+        resp['YaxisOverall'] = {}
+        resp['YaxisSignal'] = {}
 
 
         # 传入X轴和dateList，获取emq连接的event结果
@@ -144,19 +146,20 @@ def holoview_index():
             time1 = time.time()*1000
             event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
-            resp['event_ConnStatusList'] = event_ConnStatusList
+            resp['YaxisOverall']['event_ConnStatusList'] = event_ConnStatusList
             resp['YaxisList'].append({"event_ConnStatusList": {
                 "type": "event",
                 "other": "........."
             }})
             logger.debug(f"2-1：event_ConnStatusList的event结果完毕。。。{time.time()*1000-time0}")
 
+
         # 传入X轴和dateList，获取SDK初始化的聚合结果
         if "event_VehicleLoginList" in overallList:
             time1 = time.time()*1000
             event_VehicleLoginList = getVehicleLoginEvents(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取SDK初始化的聚合结果 完毕。。。{time.time()*1000-time1}")
-            resp['event_VehicleLoginList'] = event_VehicleLoginList
+            resp['YaxisOverall']['event_VehicleLoginList'] = event_VehicleLoginList
             resp['YaxisList'].append({"event_VehicleLoginList": {
                 "type": "message",
                 "other": "........."
@@ -168,7 +171,7 @@ def holoview_index():
             time1 = time.time()*1000
             event_RemoteCmdList = getRemoteCmdEvents(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取控车event的结果 完毕。。。{time.time()*1000-time1}")
-            resp['event_RemoteCmdList'] = event_RemoteCmdList
+            resp['YaxisOverall']['event_RemoteCmdList'] = event_RemoteCmdList
             resp['YaxisList'].append({"event_RemoteCmdList": {
                 "type": "message",
                 "other": "........."
@@ -181,7 +184,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_tj32960Live = getTJ32960(vin, Xaxis, 'message_national_live.txt', [date[:10]])
             logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
-            resp['message_tj32960Live'] = message_tj32960Live
+            resp['YaxisOverall']['message_tj32960Live'] = message_tj32960Live
             resp['YaxisList'].append({"message_tj32960Live": {
                 "type": "message",
                 "other": "........."
@@ -194,7 +197,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_tj32960Resent = getTJ32960(vin, Xaxis, 'message_national_resent.txt', [date[:10]])
             logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
-            resp['message_tj32960Resent'] = message_tj32960Resent
+            resp['YaxisOverall']['message_tj32960Resent'] = message_tj32960Resent
             resp['YaxisList'].append({"message_tj32960Resent": {
                 "type": "message",
                 "other": "........."
@@ -207,7 +210,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', [date[:10]])
             logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MSLive'] = message_MSLive
+            resp['YaxisOverall']['message_MSLive'] = message_MSLive
             resp['YaxisList'].append({"message_MSLive": {
                 "type": "message",
                 "other": "........."
@@ -220,7 +223,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', [date[:10]])
             logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MSResent'] = message_MSResent
+            resp['YaxisOverall']['message_MSResent'] = message_MSResent
             resp['YaxisList'].append({"message_MSResent": {
                 "type": "message",
                 "other": "........."
@@ -233,7 +236,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', [date[:10]])
             logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MSWarning'] = message_MSWarning
+            resp['YaxisOverall']['message_MSWarning'] = message_MSWarning
             resp['YaxisList'].append({"message_MSWarning": {
                 "type": "message",
                 "other": "........."
@@ -246,7 +249,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_MiscList = getMisc(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取MISC的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_MiscList'] = message_MiscList
+            resp['YaxisOverall']['message_MiscList'] = message_MiscList
             resp['YaxisList'].append({"message_MiscList": {
                 "type": "message",
                 "other": "........."
@@ -259,7 +262,7 @@ def holoview_index():
             time1 = time.time()*1000
             message_HeartbeatList = getHeartbeat(vin, Xaxis, [date[:10]])
             logger.debug(f"hhhh获取登入登出心跳的聚合结果完毕。。。{time.time()*1000-time1}")
-            resp['message_HeartbeatList'] = message_HeartbeatList
+            resp['YaxisOverall']['message_HeartbeatList'] = message_HeartbeatList
             resp['YaxisList'].append({"message_HeartbeatList": {
                 "type": "message",
                 "other": "........."
@@ -331,26 +334,29 @@ def holoview_index():
             combinedDict = dict(combinedDict, **oriMessageWarningCropedDict)
 
             # 对字典进行排序后转成list
-            sortedMessages = sorted(combinedDict.items(),key=lambda x:x[0])
-
+            sortedMessages = sorted(combinedDict.items(), key=lambda x:x[0])
             logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
 
-            '''
+            # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
+            abstractionMessages = abstract(sortedMessages, Xaxis)
+
+            print(len(abstractionMessages))
+            print(type(abstractionMessages))
+
             # 开进程池并行处理
             Pools = Pool(8)
             asyncResult = []
             respContents = []
 
-            if sortedMessages:
-                print(f"异步解析这类数据：{sortedMessages[0]}")
+            if abstractionMessages:
                 print("canIDDict:", canIDDict)
 
-            for item in sortedMessages:
+            for k,v in abstractionMessages.items():
                 asyncResult.append(Pools.apply_async(tjmsParseSignals2List,
-                                                     (item[0],
-                                                      item[1][0],
-                                                      item[1][1],
-                                                      item[1][2],
+                                                     (k,
+                                                      v[0][2],
+                                                      v[0][1],
+                                                      v[0][0],
                                                       canIDDict
                                                       )))
             Pools.close()
@@ -362,7 +368,6 @@ def holoview_index():
                     respContents += _res
 
             logger.debug(f"7: 多进程异步解析到信号完成，到目前为止耗时: {time.time()*1000 - time0} ms")
-        
 
             # 每个信号占1行，每行是所有的秒信号
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents)
@@ -372,17 +377,15 @@ def holoview_index():
                 _signalName = oneSignalAllSec[0]
                 _signalAllValues = oneSignalAllSec[1]
 
-                # 把每个信号的全部value，对应到统一的X轴上
-                YaxisSignalList = assignSignal2TimeSlot(Xaxis=Xaxis, dataList=_signalAllValues)
-
-                resp[_signalName] = YaxisSignalList
+                resp['YaxisSignal'][_signalName] = _signalAllValues
+                choices = service.msService.getSignalInfo(signalName=_signalName,vehicleModel=vehicleModel)
                 resp['YaxisList'].append({_signalName: {
                     "type": "signal",
-                    "other": "........."
+                    "choices": choices['choices']
                 }})
 
+
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
-            '''
 
         # 按照Xaxis的刻度，把没有值的刻度填充无效值
         resp = makeResponse(resp)
@@ -400,6 +403,35 @@ def holoview_index():
                    "businessObj": None
                }, 200
 
+
+def abstract(sortedMessages, Xaxis):
+    # print(sortedMessages[0])
+
+    # 设2个指针：Xaxis指针， buffer指针。 赋值到Yaxis的字典里。
+    XaxisCursor = 0
+    bufferCursor = 0
+
+    abstractionMessages = {}
+
+    # 开始根据respXaxis的刻度，生成对应的respYdict
+    while XaxisCursor < len(Xaxis):
+        # 寻找第一个有值的刻度
+        if Xaxis[XaxisCursor] <= sortedMessages[bufferCursor][0]:
+            XaxisCursor += 1
+        else:
+            # 如果这个刻度有值了，就忽略
+            if abstractionMessages.get(str(Xaxis[XaxisCursor-1])):
+                pass
+            # 如果没有值，就写入
+            else:
+                abstractionMessages[str(Xaxis[XaxisCursor-1])] = sortedMessages[bufferCursor][1:]
+
+            # 如果buffer还没到底，就cursor+1
+            if bufferCursor < (len(sortedMessages) - 1):
+                bufferCursor += 1
+            else:
+                break
+    return abstractionMessages
 
 def transformer2Yaxis(canIDDict, contents):
     # 得到要输出signal的list
@@ -420,7 +452,11 @@ def transformer2Yaxis(canIDDict, contents):
     for _line in contents:
         _k = _line[1]
         _v = _line[2]
-        signalYaxisList[signalIndex[_line[0]]][1][_k] = _v
+        # TODO 验证这样的做法是否合适？从 signalYaxisList[signalIndex[_line[0]]][1][_k] = _v 到现在这样
+        if _v:
+            signalYaxisList[signalIndex[_line[0]]][1][_k] = _v[0]
+        else:
+            signalYaxisList[signalIndex[_line[0]]][1][_k] = _v
 
     return signalYaxisList
 
@@ -674,39 +710,91 @@ def makeResponse(resp):
     makeResp['Xaxis'] = resp['Xaxis']
     makeResp['dateList'] = resp['dateList']
     makeResp['YaxisList'] = resp['YaxisList']
+    makeResp['YaxisSignal'] = {}
+    makeResp['YaxisOverall'] = {}
     del(resp['Xaxis'])
     del(resp['dateList'])
     del(resp['YaxisList'])
 
-    for _item in resp:
+    # 归类输出YaxisSignal
+    for _item in resp['YaxisSignal']:
 
         _itemResp = []
 
         try:
-            if isinstance(next(iter(resp[_item].values())), int):
+            if isinstance(next(iter(resp['YaxisSignal'][_item].values())), int):
                 type = 'int'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), list):
+                type = 'list'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), dict):
+                type = 'dict'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), float):
+                type = 'float'
             else:
-                type = 'unknown'
+                type = 'NULL'
         except:
-            type = 'unknown'
+            type = 'NULL'
 
 
         # 遍历每个刻度
         for _x in makeResp['Xaxis']:
 
             # 取出_item这个分类下，每个刻度对应的实际值
-            _value = resp[_item].get(_x)
+            _value = resp['YaxisSignal'][_item].get(_x)
+
+            if _value:
+                _itemResp.append(_value)
+
+            else:
+                _itemResp.append(None)
+
+
+        makeResp['YaxisSignal'][_item] = _itemResp
+
+
+    # 归类输出YaxisOverall
+    for _item in resp['YaxisOverall']:
+
+        _itemResp = []
+
+        try:
+            if isinstance(next(iter(resp['YaxisOverall'][_item].values())), int):
+                type = 'int'
+            elif isinstance(next(iter(resp['YaxisSignal'][_item].values())), float):
+                type = 'float'
+            elif isinstance(next(iter(resp['YaxisOverall'][_item].values())), list):
+                type = 'list'
+            elif isinstance(next(iter(resp['YaxisOverall'][_item].values())), dict):
+                type = 'dict'
+            else:
+                type = 'NULL'
+        except:
+            type = 'NULL'
+
+
+        # 遍历每个刻度
+        for _x in makeResp['Xaxis']:
+
+            # 取出_item这个分类下，每个刻度对应的实际值
+            _value = resp['YaxisOverall'][_item].get(_x)
 
             if _value:
                 _itemResp.append(_value)
             elif type == 'int':
                 _itemResp.append(0)
-            else:
+            elif type == 'float':
+                _itemResp.append(0.)
+            elif type == 'list':
                 _itemResp.append([])
+            elif type == 'dict':
+                _itemResp.append({})
+            else:
+                _itemResp.append(None)
 
-        makeResp[_item] = _itemResp
+        makeResp['YaxisOverall'][_item] = _itemResp
 
     return makeResp
+
 
 
 def assignAmount2TimeSlot(Xaxis, dataList, needSort=False):

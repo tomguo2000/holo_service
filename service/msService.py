@@ -53,7 +53,8 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
     while messageListSorted[bufferCursor].get("MCUTime") < endTimeStr:
         _jsondata = messageListSorted[bufferCursor]
         seq=(_jsondata['vehicleMode'], _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
-        respMessage[_jsondata['MCUTime']] = ','.join(seq)
+        # respMessage[_jsondata['MCUTime']] = ','.join(seq)
+        respMessage[_jsondata['MCUTime']] = seq
 
         # 如果buffer还没到底，就cursor+1
         if bufferCursor < (len(messageListSorted) - 1):
@@ -93,7 +94,8 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime):
     while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] < endTimeStr:
         _jsondata = json.loads(oriAllMessage[bufferCursor])
         seq=(_jsondata['vehicleMode'], _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
-        respMessage[_jsondata['MCUTime']] = ','.join(seq)
+        # respMessage[_jsondata['MCUTime']] = ','.join(seq)
+        respMessage[_jsondata['MCUTime']] = seq
 
         # 如果buffer还没到底，就cursor+1
         if bufferCursor < (len(oriAllMessage) - 1):
@@ -209,7 +211,7 @@ def parse_tjms_signals(data, vehicleMode, protocol, canIDDict):
     return resp
 
 
-def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict):
+def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=False):
 
     time1 = time.time() * 1000
     canDb = candbPool[vehicleMode][protocol]
