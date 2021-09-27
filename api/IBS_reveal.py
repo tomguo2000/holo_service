@@ -84,13 +84,13 @@ def ibsreveal_index():
 
         # 传入X轴和dateList，获取emq连接的event结果
         time1 = time.time()*1000
-        event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
-        logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
-        resp['YaxisOverall']['event_ConnStatusList'] = event_ConnStatusList
-        resp['YaxisList'].append({"event_ConnStatusList": {
-            "type": "event",
-            "other": "........."
-        }})
+        # event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
+        # logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
+        # resp['YaxisOverall']['event_ConnStatusList'] = event_ConnStatusList
+        # resp['YaxisList'].append({"event_ConnStatusList": {
+        #     "type": "event",
+        #     "other": "........."
+        # }})
 
         # 传入X轴和dateList，获取SDK初始化的聚合结果
         if "event_VehicleLoginList" in overallList:
