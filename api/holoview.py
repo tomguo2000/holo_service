@@ -306,21 +306,23 @@ def holoview_index():
 
             logger.debug(f"4：获取到了需要读取的文件列表:{fullPathList1},{fullPathList2},{fullPathList3}。。。{time.time()*1000-time0}")
 
-            # 获取企标的string结果，裁剪后转为dict结果
-            oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
-            oriMessageLiveCropedDict = service.public.cropmessage2dict(oriMessageList, startTime, endTime)
+            # 获取三类报文的原始内容
+            oriMessageList = service.public.getPureContents(fullPathList1)
+            oriMessageListResent = service.public.getPureContents(fullPathList2)
+            oriMessageListWarning = service.public.getPureContents(fullPathList3)
+
+            # 按照秒格式，把三类报文的原始内容，根据时间段crop，然后转成字典格式
+            oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
+                if oriMessageList else {}
             logger.debug(f"5-1：获取企标实发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
-            # 获取企标的string结果，裁剪后转为dict结果
-            oriMessageListResent = service.public.getOriMessageList(fullPathList2, readKeys)
-            oriMessageResentCropedDict = service.public.cropmessage2dict(oriMessageListResent, startTime, endTime)
+            oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime) \
+                if oriMessageListResent else {}
             logger.debug(f"5-2：获取企标补发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
-            # 获取企标的string结果，裁剪后转为dict结果
-            oriMessageListWarning = service.public.getOriMessageList(fullPathList3, readKeys)
-            # 告警报文，是实发和补发混杂，先排序在去crop
-            oriMessageListWarning.sort()
-            oriMessageWarningCropedDict = service.public.cropmessage2dict(oriMessageListWarning, startTime, endTime)
+            # 告警报文，是实发和补发混杂，要特殊处理下，先排序在去crop
+            oriMessageWarningCropedDict = service.msService.cropWarningAndTransformer2dict(oriMessageListWarning, startTime, endTime) \
+                if oriMessageListWarning else {}
             logger.debug(f"5-3：获取企标告警报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
 
@@ -333,6 +335,7 @@ def holoview_index():
 
             logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
 
+            '''
             # 开进程池并行处理
             Pools = Pool(8)
             asyncResult = []
@@ -359,7 +362,7 @@ def holoview_index():
                     respContents += _res
 
             logger.debug(f"7: 多进程异步解析到信号完成，到目前为止耗时: {time.time()*1000 - time0} ms")
-
+        
 
             # 每个信号占1行，每行是所有的秒信号
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents)
@@ -379,6 +382,7 @@ def holoview_index():
                 }})
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
+            '''
 
         # 按照Xaxis的刻度，把没有值的刻度填充无效值
         resp = makeResponse(resp)

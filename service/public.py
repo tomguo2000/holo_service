@@ -154,6 +154,16 @@ def cropmessage(oriAllMessage, startTime, endTime):
     return respMessage
 
 
+def getPureContents(fullPathList):
+    for fullPath in fullPathList:
+        if os.path.exists(fullPath):
+            step0 = time.time()*1000
+            with open (fullPath, 'r') as f:
+                _contents = f.readlines()
+            logger.debug(f"getPureContents。读{fullPath}到内存, 花了 {time.time()*1000 - step0} ms")
+            return _contents
+        else:
+            return None
 
 def getOriMessageList(fullPathList, readKeys):
 
