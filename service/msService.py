@@ -240,34 +240,28 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
     for _canID in canIDDict:        # 取到需要解析的canID
         _index = CanIDList.index(_canID)
 
-
         # 这个canID在秒包内共有多少个小包
         canIDSecAmount = int(canIDAmount[_index])
 
         # 取出来这个canID在这个秒包的全部数据
         canIDSecAllData = data[canMessageOffset[_index] : canMessageOffset[_index] + int(canIDAmount[_index])*16]
 
-
         # 需要解析的signalList和解析结果
         signalNameList = canIDDict[_canID]
 
+        for microSecCount in range(0, canIDSecAmount):
 
-        # for需要处理的某一个signal
-        for signalName in signalNameList:
-            signalValueList = []
+            # 取出来第一个8字节
+            _canMessage = canIDSecAllData[microSecCount*16:microSecCount*16 + 16]
 
-            for microSecCount in range(0, canIDSecAmount):
+            # 这个8字节的全部message
+            _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, True)
 
-                # 取出来第一个8字节
-                _canMessage = canIDSecAllData[microSecCount*16:microSecCount*16 + 16]
-
-                # 这个8字节的全部message
-                # _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, 0)
-                _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, True)
-
+            # for需要处理的某一个signal
+            for signalName in signalNameList:
+                signalValueList = []
                 signalValueList.append(_fullSignalMessage[signalName])
-
-            resp.append((signalName, signalValueList))
+                resp.append((signalName, signalValueList))
 
     return resp
 

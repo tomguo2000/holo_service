@@ -357,7 +357,8 @@ def holoview_index():
                                                       v[0][2],
                                                       v[0][1],
                                                       v[0][0],
-                                                      canIDDict
+                                                      canIDDict,
+                                                      True
                                                       )))
             Pools.close()
             Pools.join()
@@ -913,9 +914,9 @@ def assignArray2TimeSlot(Xaxis, dataList, needSort=False):
     return Yaxis
 
 
-def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict):
+def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict, firstOnly=False):
 
-    signalsValues = service.msService.parse_tjms_signals_2_list(data, vehicleMode=vehicleMode, protocol=protocol, canIDDict=canIDDict)
+    signalsValues = service.msService.parse_tjms_signals_2_list(data, vehicleMode=vehicleMode, protocol=protocol, canIDDict=canIDDict, firstOnly=firstOnly)
 
     response = []
 
