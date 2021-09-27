@@ -113,8 +113,7 @@ def holoview_index():
             'ME7_IBS_Status_Voltage',
             'ME7_BCM_SystemPowerMode',
             'ME7_ESP_VehicleSpeed',
-            'ME7_DCDC_IdcLvCurr',
-            'ME7_BMS_PackU',
+            'ME7_DCDC_IdcLvCurr'
         ]
 
         # 判断不要跨天
