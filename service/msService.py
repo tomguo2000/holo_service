@@ -17,38 +17,46 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
 
     messageList = []
     for line in oriAllMessage:
-        messageList.append(json.loads(line))
+        _jsondata = json.loads(line)
+        del(_jsondata['serverTime'])
+        del(_jsondata['MPUTime'])
+        del(_jsondata['TYPE_CMD'])
+        del(_jsondata['MCUTimeDelay'])
+        messageList.append(json.dumps(_jsondata))
     messageList.sort()
+
+    messageListSorted = []
+    for line in messageList:
+        messageListSorted.append(json.loads(line))
 
     bufferCursor = 0
 
     # 找到需要处理的第一条
     find = False
-    while bufferCursor < len(oriAllMessage):
+    while bufferCursor < len(messageListSorted):
 
-        if oriAllMessage[bufferCursor].get("MCUTime") < startTimeStr:
+        if messageListSorted[bufferCursor].get("MCUTime") < startTimeStr:
             # 跳过这条废数据
             bufferCursor += 1
         else:
-            # print (f"First content {dataList[bufferCursor]} 找到了!")
             find = True
             break
 
     if find:
-        logger.debug(f"找到了需要处理的第一条：content:{oriAllMessage[bufferCursor]}")
+        logger.debug(f"找到了需要处理的第一条：content:{messageListSorted[bufferCursor]}")
     else:
         logger.debug(f'最后一个文件读完了，啥也没有')
         return {}
 
     respMessage = {}
 
-    while oriAllMessage[bufferCursor].get("MCUTime") < endTimeStr:
-        _jsondata = oriAllMessage[bufferCursor]
+    while messageListSorted[bufferCursor].get("MCUTime") < endTimeStr:
+        _jsondata = messageListSorted[bufferCursor]
         seq=(_jsondata['vehicleMode'], _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
         respMessage[_jsondata['MCUTime']] = ','.join(seq)
 
         # 如果buffer还没到底，就cursor+1
-        if bufferCursor < (len(oriAllMessage) - 1):
+        if bufferCursor < (len(messageListSorted) - 1):
             bufferCursor += 1
         else:
             break
