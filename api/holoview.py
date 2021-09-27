@@ -82,11 +82,17 @@ def holoview_index():
             params = request.args.to_dict()
             logger.info(f"有人调用holoview了，参数如下:{params}")
             vin = params['vin']
+            date = params.get('date')
             startTime = params.get('startTime')
             endTime = params.get('endTime')
-            env = params.get('local')
+            env = params.get('env')
             overall = params.get('overall')
             signal = params.get('signal')
+
+            if not startTime:
+                startTime = Timeutils.timeString2timeStamp(date, format="%Y-%m-%d", ms=True)
+            if not endTime:
+                endTime = startTime + (86400-1) * 1000
 
             startTime = int(startTime) if int(startTime) > 9999999999 else int(startTime) * 1000
             endTime = int(endTime) if int(endTime) > 9999999999 else int(endTime) * 1000
@@ -96,6 +102,21 @@ def holoview_index():
         except:
             raise Exception ("110900")
 
+        overallList = ['event_ConnStatusList']
+        signalList = [
+            'ME7_IBS_SOC_STATE',
+            'ME7_IBS_SOC',
+            'ME7_IBS_SOH_SUL',
+            'ME7_IBS_U_BATT',
+            'ME7_VCU_LVSmartChrg_Status',
+            'ME7_VCU_DC_VoltageReq',
+            'ME7_IBS_Status_Voltage',
+            'ME7_BCM_SystemPowerMode',
+            'ME7_ESP_VehicleSpeed',
+            'ME7_DCDC_IdcLvCurr'
+        ]
+
+
         # 判断不要跨天
         if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
             raise Exception ("110903")
@@ -103,13 +124,12 @@ def holoview_index():
             date = Timeutils.timeStamp2timeString(startTime)[:10]
 
         time0 = time.time()*1000
-        logger.debug(f"hhhh开始。。。。。。{time0}")
+        logger.debug(f"0：可以了，咱现在从头开始。。。。。。{time0}")
 
 
         # 构建一个X轴
-        time1 = time.time()*1000
         Xaxis = createXaxis(startTime, endTime, interval=10)
-        logger.debug(f"hhhh构建一个X轴完毕。。。{time.time()*1000-time1}")
+        logger.debug(f"1：构建一个X轴完毕。。。{time.time()*1000-time0}")
 
 
         # 定义返回的resp
@@ -120,14 +140,16 @@ def holoview_index():
 
 
         # 传入X轴和dateList，获取emq连接的event结果
-        time1 = time.time()*1000
-        event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
-        logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
-        resp['event_ConnStatusList'] = event_ConnStatusList
-        resp['YaxisList'].append({"event_ConnStatusList": {
-            "type": "event",
-            "other": "........."
-        }})
+        if "event_ConnStatusList" in overallList:
+            time1 = time.time()*1000
+            event_ConnStatusList = getConnStatus(vin, Xaxis, [date[:10]])
+            logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
+            resp['event_ConnStatusList'] = event_ConnStatusList
+            resp['YaxisList'].append({"event_ConnStatusList": {
+                "type": "event",
+                "other": "........."
+            }})
+            logger.debug(f"2-1：event_ConnStatusList的event结果完毕。。。{time.time()*1000-time0}")
 
         # 传入X轴和dateList，获取SDK初始化的聚合结果
         if "event_VehicleLoginList" in overallList:
@@ -139,7 +161,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
-
+            logger.debug(f"2-2：event_VehicleLoginList的event结果完毕。。。{time.time()*1000-time0}")
 
         # 传入X轴和dateList，获取控车event的结果
         if "event_RemoteCmdList" in overallList:
@@ -151,6 +173,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-3：event_RemoteCmdList 的event结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取国标的报文条数结果
@@ -163,6 +186,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-4：message_tj32960Live 的event结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取国标的报文条数结果
@@ -175,7 +199,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
-
+            logger.debug(f"2-4：message_tj32960Resent 的event结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取企标的聚合结果
@@ -188,6 +212,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-5：message_MSLive 的结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取企标的聚合结果
@@ -200,6 +225,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-6：message_MSResent 的结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取企标的聚合结果
@@ -212,6 +238,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-7：message_MSWarning 的结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取MISC的聚合结果
@@ -224,6 +251,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-8：message_MiscList 的结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取登入登出心跳的聚合结果
@@ -236,6 +264,7 @@ def holoview_index():
                 "type": "message",
                 "other": "........."
             }})
+            logger.debug(f"2-9：message_HeartbeatList 的结果完毕。。。{time.time()*1000-time0}")
 
 
 
@@ -251,7 +280,7 @@ def holoview_index():
 
             # 根据singal判断需要解析哪些canid
             canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,vehicleMode=vehicleModel)
-
+            logger.debug(f"3：根据singal判断需要解析哪些canid 的结果完毕:{canIDDict}。。。{time.time()*1000-time0}")
 
             if not canIDDict:
                 raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')
@@ -270,27 +299,30 @@ def holoview_index():
             # 要从文件中读取的key
             readKeys = [['MCUTime'], ['TYPE_CMD'], ['contents', 'MSSecondPacket'], ['contents', 'MSPacketVer'], ['vehicleMode']]
 
-            # 获取需要读取的文件列表
+            # 获取需要读取的完整文件路径的列表
             fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
             fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent)
             fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWaining)
 
+            logger.debug(f"4：获取到了需要读取的文件列表:{fullPathList1},{fullPathList2},{fullPathList3}。。。{time.time()*1000-time0}")
+
             # 获取企标的string结果，裁剪后转为dict结果
             oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
             oriMessageLiveCropedDict = service.public.cropmessage2dict(oriMessageList, startTime, endTime)
-            logger.info(f"企标实发报文，包含了这些秒包： {oriMessageLiveCropedDict.keys()}")
+            logger.debug(f"5-1：获取企标实发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
             # 获取企标的string结果，裁剪后转为dict结果
             oriMessageListResent = service.public.getOriMessageList(fullPathList2, readKeys)
             oriMessageResentCropedDict = service.public.cropmessage2dict(oriMessageListResent, startTime, endTime)
-            logger.info(f"企标补发报文，包含了这些秒包：{oriMessageResentCropedDict.keys()}")
+            logger.debug(f"5-2：获取企标补发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
             # 获取企标的string结果，裁剪后转为dict结果
             oriMessageListWarning = service.public.getOriMessageList(fullPathList3, readKeys)
             # 告警报文，是实发和补发混杂，先排序在去crop
             oriMessageListWarning.sort()
             oriMessageWarningCropedDict = service.public.cropmessage2dict(oriMessageListWarning, startTime, endTime)
-            logger.info(f"企标告警报文，包含了这些秒包：{oriMessageWarningCropedDict.keys()}")
+            logger.debug(f"5-3：获取企标告警报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
+
 
             # 组合实发,补发,告警报文， 组合后是乱序的
             combinedDict = dict(oriMessageLiveCropedDict, **oriMessageResentCropedDict)
@@ -299,9 +331,7 @@ def holoview_index():
             # 对字典进行排序后转成list
             sortedMessages = sorted(combinedDict.items(),key=lambda x:x[0])
 
-            logger.info(f"开始要解析企标了，到目前为止耗时: {time.time()*1000 - time0} ms")
-            time0 = time.time()*1000
-
+            logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
 
             # 开进程池并行处理
             Pools = Pool(8)
@@ -328,9 +358,12 @@ def holoview_index():
                 if _res:
                     respContents += _res
 
+            logger.debug(f"7: 多进程异步解析到信号完成，到目前为止耗时: {time.time()*1000 - time0} ms")
+
+
             # 每个信号占1行，每行是所有的秒信号
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents)
-
+            logger.debug(f"8: 把解析信号group完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
             for oneSignalAllSec in signalListFor1Line:
                 _signalName = oneSignalAllSec[0]
@@ -345,14 +378,11 @@ def holoview_index():
                     "other": "........."
                 }})
 
+            logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
-            time1 = time.time()*1000
-            logger.debug(f"YaxisSignalList的转换完毕。。。{time.time()*1000-time1}")
-
-        logger.debug(f"hhhh组织resp 完毕。。。{time.time()*1000-time1}")
-
-        # 没有值的时间点，也生成每个图形上对应x轴的空值
+        # 按照Xaxis的刻度，把没有值的刻度填充无效值
         resp = makeResponse(resp)
+        logger.debug(f"10: 按照Xaxis的刻度，把没有值的刻度填充无效值完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
         return {
                    "code": 200,

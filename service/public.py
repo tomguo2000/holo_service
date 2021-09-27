@@ -206,9 +206,10 @@ def getOriMessageSingleFileAsync(_path, readKeys):
         logger.debug(f"OptStep2: 读{_path}到内存，花费到 {time.time()*1000-step0}毫秒")
 
         # timelineDict = transformer2TimelineDict(_contents)
-        # print(timelineDict['2021-09-10_00:00:08'])
-        logger.debug(f"OptStep3: 将文件内容转成timelineDict，花费到 {time.time()*1000-step0}毫秒")
+        # logger.debug(f"OptStep3: 将文件内容转成timelineDict，花费到 {time.time()*1000-step0}毫秒")
 
+        # 咱试试一开始就用字典，速度如何
+        
         try:
             for _row in _contents:
                 try:
@@ -241,13 +242,14 @@ def getOriMessageSingleFileAsync(_path, readKeys):
                     # 一行的数据组织完了，写入fileContents
                     fileContents.append(newRow.strip(','))
 
-            logger.debug(f"OptStep3: 解析{_path}内容到新的list，花费到 {time.time()*1000-step0}毫秒")
+            logger.debug(f"OptStep4: 解析{_path}内容到新的list，花费到 {time.time()*1000-step0}毫秒")
+            
 
         except Exception as ex:
             logger.warning(ex)
             logger.error(f"文件解析内容错误：{_path}")
             return None
-
+        
         return fileContents
 
     else:
