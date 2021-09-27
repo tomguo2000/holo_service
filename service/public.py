@@ -204,6 +204,11 @@ def getOriMessageSingleFileAsync(_path, readKeys):
             _contents = f.readlines()
 
         logger.debug(f"OptStep2: 读{_path}到内存，花费到 {time.time()*1000-step0}毫秒")
+
+        timelineDict = transformer2TimelineDict(_contents)
+        print(timelineDict['2021-09-10_00:00:08'])
+        logger.debug(f"OptStep3: 将文件内容转成timelineDict，花费到 {time.time()*1000-step0}毫秒")
+
         try:
             for _row in _contents:
                 try:
@@ -249,6 +254,11 @@ def getOriMessageSingleFileAsync(_path, readKeys):
         # logger.info(f"要读取的这个文件不存在:{_path}")
         return None
 
+def transformer2TimelineDict(contents):
+    _timelineDict = {}
+    for _line in contents:
+        _timelineDict[_line['MCUTime']] = _line['contents']
+    return _timelineDict
 
 
 def getFullPathList(vin, dateList, dataSources):
