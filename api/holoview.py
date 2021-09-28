@@ -88,6 +88,7 @@ def holoview_index():
             env = params.get('env')
             overall = params.get('overall')
             signal = params.get('signal')
+            Xinterval = int(params.get('Xinterval')) if params.get('Xinterval') else 30
 
             if not startTime:
                 startTime = Timeutils.timeString2timeStamp(date, format="%Y-%m-%d", ms=True)
@@ -130,7 +131,7 @@ def holoview_index():
 
 
         # 构建一个X轴
-        Xaxis = createXaxis(startTime, endTime, interval=30)
+        Xaxis = createXaxis(startTime, endTime, interval=Xinterval)
         logger.debug(f"1：构建一个X轴完毕。。。{time.time()*1000-time0}")
 
 
