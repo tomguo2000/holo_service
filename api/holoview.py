@@ -102,19 +102,22 @@ def holoview_index():
         except:
             raise Exception ("110900")
 
-        overallList = ['event_ConnStatusList']
-        signalList = [
-            'ME7_IBS_SOC_STATE',
-            'ME7_IBS_SOC',
-            'ME7_IBS_SOH_SUL',
-            'ME7_IBS_U_BATT',
-            'ME7_VCU_LVSmartChrg_Status',
-            'ME7_VCU_DC_VoltageReq',
-            'ME7_IBS_Status_Voltage',
-            'ME7_BCM_SystemPowerMode',
-            'ME7_ESP_VehicleSpeed',
-            'ME7_DCDC_IdcLvCurr'
-        ]
+        if not overallList:
+            overallList = ['event_ConnStatusList']
+
+        if not signalList:
+            signalList = [
+                'ME7_IBS_SOC_STATE',
+                'ME7_IBS_SOC',
+                'ME7_IBS_SOH_SUL',
+                'ME7_IBS_U_BATT',
+                'ME7_VCU_LVSmartChrg_Status',
+                'ME7_VCU_DC_VoltageReq',
+                'ME7_IBS_Status_Voltage',
+                'ME7_BCM_SystemPowerMode',
+                'ME7_ESP_VehicleSpeed',
+                'ME7_DCDC_IdcLvCurr'
+            ]
 
         # 判断不要跨天
         if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
@@ -413,24 +416,28 @@ def abstract(sortedMessages, Xaxis):
 
     abstractionMessages = {}
 
-    # 开始根据respXaxis的刻度，生成对应的respYdict
-    while XaxisCursor < len(Xaxis):
-        # 寻找第一个有值的刻度
-        if Xaxis[XaxisCursor] <= sortedMessages[bufferCursor][0]:
-            XaxisCursor += 1
-        else:
-            # 如果这个刻度有值了，就忽略
-            if abstractionMessages.get(str(Xaxis[XaxisCursor-1])):
-                pass
-            # 如果没有值，就写入
+    # 传进来的参数有值再说，否则直接返回空dict
+    if sortedMessages:
+        # 开始根据respXaxis的刻度，生成对应的respYdict
+        while XaxisCursor < len(Xaxis):
+            # 寻找第一个有值的刻度
+            if Xaxis[XaxisCursor] <= sortedMessages[bufferCursor][0]:
+                XaxisCursor += 1
             else:
-                abstractionMessages[str(Xaxis[XaxisCursor-1])] = sortedMessages[bufferCursor][1:]
+                # 如果这个刻度有值了，就忽略
+                if abstractionMessages.get(str(Xaxis[XaxisCursor-1])):
+                    pass
+                # 如果没有值，就写入
+                else:
+                    abstractionMessages[str(Xaxis[XaxisCursor-1])] = sortedMessages[bufferCursor][1:]
 
-            # 如果buffer还没到底，就cursor+1
-            if bufferCursor < (len(sortedMessages) - 1):
-                bufferCursor += 1
-            else:
-                break
+                # 如果buffer还没到底，就cursor+1
+                if bufferCursor < (len(sortedMessages) - 1):
+                    bufferCursor += 1
+                else:
+                    break
+    else:
+        pass
     return abstractionMessages
 
 def transformer2Yaxis(canIDDict, contents):

@@ -264,9 +264,9 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
                 signalValueList.append(_fullSignalMessage[signalName])
                 resp.append((signalName, signalValueList))
 
-            # 如果只需要解析秒包里，高频率canid的第一个can message，就直接把microSecCount+50，这样就直接跳出循环了
+            # 如果只需要解析秒包里，高频率canid的第一个can message，就直接跳出循环了
             if firstOnly:
-                microSecCount += 100
+                break
 
     return resp
 
