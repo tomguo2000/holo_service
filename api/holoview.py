@@ -390,7 +390,6 @@ def holoview_index():
                     "minimum": _signalInfo['minimum']
                 }})
 
-
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
         # 按照Xaxis的刻度，把没有值的刻度填充无效值
@@ -756,7 +755,7 @@ def makeResponse(resp):
             # 取出_item这个分类下，每个刻度对应的实际值
             _value = resp['YaxisSignal'][_item].get(_x)
 
-            if _value:
+            if _value is not None:
                 _itemResp.append(_value)
 
             else:
