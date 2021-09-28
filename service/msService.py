@@ -130,6 +130,8 @@ def getSignalInfo(signalName, vehicleModel):
             resp['canID'] = x
             resp['comment'] = signalInfo.comment
             resp['choices'] = signalInfo.choices
+            resp['maximum'] = signalInfo.maximum
+            resp['minimum'] = signalInfo.minimum
             break
 
     return resp

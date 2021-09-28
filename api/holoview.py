@@ -382,10 +382,12 @@ def holoview_index():
                 _signalAllValues = oneSignalAllSec[1]
 
                 resp['YaxisSignal'][_signalName] = _signalAllValues
-                choices = service.msService.getSignalInfo(signalName=_signalName,vehicleModel=vehicleModel)
+                _signalInfo = service.msService.getSignalInfo(signalName=_signalName,vehicleModel=vehicleModel)
                 resp['YaxisList'].append({_signalName: {
                     "type": "signal",
-                    "choices": choices['choices']
+                    "choices": _signalInfo['choices'],
+                    "maximum": _signalInfo['maximum'],
+                    "minimum": _signalInfo['minimum']
                 }})
 
 
