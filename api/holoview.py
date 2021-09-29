@@ -340,6 +340,11 @@ def holoview_index():
             sortedMessages = sorted(combinedDict.items(), key=lambda x:x[0])
             logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
 
+            # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
+            if sortedMessages:
+                if vehicleModel != sortedMessages[0][1][0]:
+                    raise Exception("110905", '小天说了，我现在只认识ME7，要问我ME5的事情，你得再等等。。。')
+
             # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
             abstractionMessages = abstract(sortedMessages, Xaxis)
 
