@@ -20,7 +20,9 @@ candbPool = {
         '0c': candb_0e,
         '0d': candb_0e,
         '0e': candb_0e,
-        '0f': candb_0e
+        '0f': candb_0e,
+        '10': candb_0e,
+        '11': candb_0e
     },
     'ME5': {
         '00': candb_ME5_00
