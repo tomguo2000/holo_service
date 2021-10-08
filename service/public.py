@@ -161,15 +161,17 @@ def cropmessage(oriAllMessage, startTime, endTime):
 
 
 def getPureContents(fullPathList):
+    _combinedContents = []
     for fullPath in fullPathList:
         if os.path.exists(fullPath):
             step0 = time.time()*1000
             with open (fullPath, 'r') as f:
                 _contents = f.readlines()
             logger.debug(f"getPureContents。读{fullPath}到内存, 花了 {time.time()*1000 - step0} ms")
-            return _contents
+            _combinedContents += _contents
         else:
-            return None
+            pass
+    return _combinedContents
 
 def getOriMessageList(fullPathList, readKeys):
 
