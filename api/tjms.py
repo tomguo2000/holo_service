@@ -94,7 +94,7 @@ def signals():
         respContents = []
 
         if sortedMessages:
-            print(f"异步解析这类数据：{sortedMessages[0]}")
+            logger.info(f"异步解析这类数据：{sortedMessages[0]}")
 
         for item in sortedMessages:
             asyncResult.append(Pools.apply_async(tjmsParseSignals,

@@ -105,9 +105,13 @@ def cropmessage2dict(oriAllMessage, startTime, endTime):
 
     while oriAllMessage[bufferCursor].split(',')[0] < endTimeStr:
         # respMessage.append(oriAllMessage[bufferCursor])
+
+        # TODO 临时处理
+        _vehicleMode = oriAllMessage[bufferCursor].split(',')[4] if oriAllMessage[bufferCursor].split(',')[4] != 'None' else 'ME7'
+
         respMessage[oriAllMessage[bufferCursor].split(',')[0]] = (oriAllMessage[bufferCursor].split(',')[2],
                                                                   oriAllMessage[bufferCursor].split(',')[3],
-                                                                  oriAllMessage[bufferCursor].split(',')[4])
+                                                                  _vehicleMode)
 
         # 如果buffer还没到底，就cursor+1
         if bufferCursor < (len(oriAllMessage) - 1):
