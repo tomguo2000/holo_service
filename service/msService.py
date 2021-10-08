@@ -52,7 +52,11 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
 
     while messageListSorted[bufferCursor].get("MCUTime") < endTimeStr:
         _jsondata = messageListSorted[bufferCursor]
-        seq=(_jsondata['vehicleMode'], _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
+
+        # 6月1日至7月8日的企标报文中，不含有'vehicleMode'这个节点，所以默认补一个ME7，这里不严谨，后续要去掉或者根据其他条件修改
+        _vehicleMode = _jsondata.get('vehicleMode') if _jsondata.get('vehicleMode') else 'ME7'
+
+        seq=(_vehicleMode, _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
         # respMessage[_jsondata['MCUTime']] = ','.join(seq)
         respMessage[_jsondata['MCUTime']] = seq
 
@@ -93,7 +97,11 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime):
 
     while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] < endTimeStr:
         _jsondata = json.loads(oriAllMessage[bufferCursor])
-        seq=(_jsondata['vehicleMode'], _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
+
+        # 6月1日至7月8日的企标报文中，不含有'vehicleMode'这个节点，所以默认补一个ME7，这里不严谨，后续要去掉或者根据其他条件修改
+        _vehicleMode = _jsondata.get('vehicleMode') if _jsondata.get('vehicleMode') else 'ME7'
+
+        seq=(_vehicleMode, _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
         # respMessage[_jsondata['MCUTime']] = ','.join(seq)
         respMessage[_jsondata['MCUTime']] = seq
 
