@@ -120,11 +120,14 @@ def holoview_index():
                 'ME7_DCDC_IdcLvCurr'
             ]
 
-        # 判断不要跨天
-        if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
-            raise Exception ("110903")
-        else:
-            date = Timeutils.timeStamp2timeString(startTime)[:10]
+        # # 判断不要跨天
+        # if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
+        #     raise Exception ("110903")
+        # else:
+        #     date = Timeutils.timeStamp2timeString(startTime)[:10]
+
+        date = Timeutils.timeStamp2timeString(startTime)[:10]
+
 
         time0 = time.time()*1000
         logger.debug(f"0：可以了，咱现在从头开始。。。。。。{time0}")
