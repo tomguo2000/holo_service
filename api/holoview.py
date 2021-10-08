@@ -320,6 +320,7 @@ def holoview_index():
             oriMessageList = service.public.getPureContents(fullPathList1)
             oriMessageListResent = service.public.getPureContents(fullPathList2)
             oriMessageListWarning = service.public.getPureContents(fullPathList3)
+            logger.debug(f"5-0：获取三类报文的原始内容完毕。。。{time.time()*1000-time0}")
 
             # 按照秒格式，把三类报文的原始内容，根据时间段crop，然后转成字典格式
             oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
