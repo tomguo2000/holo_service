@@ -73,6 +73,8 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime):
     startTimeStr = Timeutils.timeStamp2timeString(startTime)
     endTimeStr = Timeutils.timeStamp2timeString(endTime)
 
+    logger.debug(f"cropAndTransformer2dict: there have {len(oriAllMessage)} lines to do")
+
     bufferCursor = 0
 
     # 找到需要处理的第一条
@@ -96,14 +98,28 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime):
     respMessage = {}
 
     while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] < endTimeStr:
+        '''
         _jsondata = json.loads(oriAllMessage[bufferCursor])
 
         # 6月1日至7月8日的企标报文中，不含有'vehicleMode'这个节点，所以默认补一个ME7，这里不严谨，后续要去掉或者根据其他条件修改
         _vehicleMode = _jsondata.get('vehicleMode') if _jsondata.get('vehicleMode') else 'ME7'
 
         seq=(_vehicleMode, _jsondata['contents']['MSPacketVer'], _jsondata['contents']['MSSecondPacket'])
+        
         # respMessage[_jsondata['MCUTime']] = ','.join(seq)
         respMessage[_jsondata['MCUTime']] = seq
+        '''
+        _MCUTime = oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19]
+        if oriAllMessage[bufferCursor].find('vehicleMode') == -1:
+            _vehicleMode = 'ME7'
+        else:
+            _vehicleMode = oriAllMessage[bufferCursor].split('"vehicleMode": "')[1].split('"')[0]
+        _MSPacketVer = oriAllMessage[bufferCursor].split('"MSPacketVer": "')[1][:2]
+        _MSSecondPacket = oriAllMessage[bufferCursor].split('"MSSecondPacket": "')[1].split('"')[0]
+
+        seq = (_vehicleMode, _MSPacketVer, _MSSecondPacket)
+
+        respMessage[_MCUTime] = seq
 
         # 如果buffer还没到底，就cursor+1
         if bufferCursor < (len(oriAllMessage) - 1):
