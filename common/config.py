@@ -279,7 +279,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'local': {
-            'Storage_Prefix': '/tmp/baowen/holodata',
+            'Storage_Prefix': '/Users/guoliang/data',
         },
         'pack_days_before': 30
     },
