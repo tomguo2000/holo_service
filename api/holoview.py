@@ -361,6 +361,9 @@ def holoview_index():
             # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
             abstractionMessages = abstract(sortedMessages, Xaxis)
 
+            del(sortedMessages)
+            gc.collect()
+
             print(len(abstractionMessages))
             print(type(abstractionMessages))
 
