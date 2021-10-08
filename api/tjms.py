@@ -63,19 +63,19 @@ def signals():
         # 获取企标的string结果，裁剪后转为dict结果
         oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
         oriMessageLiveCropedDict = service.public.cropmessage2dict(oriMessageList, startTime, endTime)
-        logger.info(f"企标实发报文，包含了这些秒包： {oriMessageLiveCropedDict.keys()}")
+        # logger.info(f"企标实发报文，包含了这些秒包： {oriMessageLiveCropedDict.keys()}")
 
         # 获取企标的string结果，裁剪后转为dict结果
         oriMessageListResent = service.public.getOriMessageList(fullPathList2, readKeys)
         oriMessageResentCropedDict = service.public.cropmessage2dict(oriMessageListResent, startTime, endTime)
-        logger.info(f"企标补发报文，包含了这些秒包：{oriMessageResentCropedDict.keys()}")
+        # logger.info(f"企标补发报文，包含了这些秒包：{oriMessageResentCropedDict.keys()}")
 
         # 获取企标的string结果，裁剪后转为dict结果
         oriMessageListWarning = service.public.getOriMessageList(fullPathList3, readKeys)
         # 告警报文，是实发和补发混杂，先排序在去crop
         oriMessageListWarning.sort()
         oriMessageWarningCropedDict = service.public.cropmessage2dict(oriMessageListWarning, startTime, endTime)
-        logger.info(f"企标告警报文，包含了这些秒包：{oriMessageWarningCropedDict.keys()}")
+        # logger.info(f"企标告警报文，包含了这些秒包：{oriMessageWarningCropedDict.keys()}")
 
         # 组合实发,补发,告警报文， 组合后是乱序的
         combinedDict = dict(oriMessageLiveCropedDict, **oriMessageResentCropedDict)
