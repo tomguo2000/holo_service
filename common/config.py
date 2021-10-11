@@ -9,7 +9,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-MSD'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -29,7 +29,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-SECURITY'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -49,7 +49,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-CHECK'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -71,7 +71,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['TEST-EMQ-RemoteControlCmd-ALL'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -92,7 +92,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['TEST-SERVICE-TboxCmdAck-ALL'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -112,7 +112,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['TEST-SERVICE-VehicleCurrentEcusInfo-ALL'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -132,7 +132,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['TEST-SERVICE-VehicleLogin-ALL'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -152,7 +152,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['TEST-EMQ-ClientDisconnect-ALL', 'CLIENT-CONNECTED-HOOK'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -172,7 +172,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-MISC'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -193,7 +193,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-NS'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -214,7 +214,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-HEARTBEAT'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -235,7 +235,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-MS'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -257,7 +257,7 @@ CONFIG = {
             'Storage_Prefix': '/holo/holodata',
         },
         'test': {
-            'server': ['192.168.0.8:9092'],
+            'server': ['192.168.0.11:9092'],
             'topic': ['STG-INPUT-MS-ME5'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
