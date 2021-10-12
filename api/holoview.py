@@ -103,6 +103,10 @@ def holoview_index():
             overallList = overall.split(',') if overall else []
             signalList = signal.split(',') if signal else []
 
+            # firstOnly 用来表示是否只处理 某canID在企标秒包里的第一个8字节信息？
+            # 为True适用于较大时间刻度时, False适用于小时间刻度。
+            firstOnly = True
+
         except:
             raise Exception ("110900")
 
@@ -387,7 +391,7 @@ def holoview_index():
                                                       v[0][1],
                                                       v[0][0],
                                                       canIDDict,
-                                                      True,
+                                                      firstOnly,
                                                       signalsInvalidValueDict
                                                       )))
             Pools.close()
