@@ -307,24 +307,17 @@ def getFullPathList(vin, dateList, dataSources):
 
 
 def createDateList(Xaxis):
-    # pathTotal: 涉及到的文件的数量
-    workingStartTime = Timeutils.timeString2timeArray(Xaxis[0])
-    workingEndTime = Timeutils.timeString2timeArray(Xaxis[-1])
-
-    pathTotal = workingEndTime.toordinal() - workingStartTime.toordinal() + 1
-    fullDateList = []
-    pathCursor = workingStartTime
-    while pathTotal:
-        _path = str(pathCursor.year) + '-' + str(pathCursor.month).zfill(2) + '-' + str(pathCursor.day).zfill(2)
-        fullDateList.append(_path)
-        pathCursor = pathCursor + datetime.timedelta(days=1)
-        pathTotal -= 1
-
-    return fullDateList
+    firstDate = Xaxis[0][:10]
+    lastDate = Xaxis[-1][:10]
+    dateList = []
+    while firstDate <= lastDate:
+        dateList.append(firstDate)
+        _firstDateTimestamp = Timeutils.timeString2timeStamp(firstDate, format='%Y-%m-%d')
+        firstDate = Timeutils.timeStamp2timeString(_firstDateTimestamp + 86400, format='%Y-%m-%d')
+    return dateList
 
 
 def createDateListByDuration(startTimestamp, endTimestamp):
-    # pathTotal: 涉及到的文件的数量
     Xaxis = [Timeutils.timeStamp2timeString(startTimestamp), Timeutils.timeStamp2timeString(endTimestamp)]
     return createDateList(Xaxis)
 

@@ -139,6 +139,20 @@ def genMessagesSignals(canDB):
     return respDict
 
 
+def getSignalsInvalidValues(signalList, vehicleMode):
+    # print(f"getSignalsInvalidValues参数：  signalList:{signalList},vehicleMode:{vehicleMode}")
+    respDict = {}
+    for _signalName in signalList:
+        _signalDetail = getSignalInfo(signalName=_signalName, vehicleModel=vehicleMode)
+        _signalChoices = _signalDetail.get('choices')
+        if _signalChoices:
+            for k,v in _signalChoices.items():
+                if v.lower() == 'invalid':
+                    respDict[_signalName] = k
+    # print(respDict)
+    return respDict
+
+
 def getSignalInfo(signalName, vehicleModel):
     if vehicleModel == 'ME7':
         canDB = candbPool[vehicleModel]['0e']
@@ -237,7 +251,7 @@ def parse_tjms_signals(data, vehicleMode, protocol, canIDDict):
     return resp
 
 
-def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=False):
+def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=False, signalsInvalidValueDict={}):
 
     time1 = time.time() * 1000
     canDb = candbPool[vehicleMode][protocol]
@@ -263,6 +277,8 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
     # 开始按照调用请求的canIDDict解析对应的signal值
 
     resp = []
+    # print(canIDDict)
+    # {'GW_IBS_0x335': ['IBS_SOH_SUL']}
     for _canID in canIDDict:        # 取到需要解析的canID
         _index = CanIDList.index(_canID)
 
@@ -270,25 +286,33 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
         canIDSecAmount = int(canIDAmount[_index])
 
         # 取出来这个canID在这个秒包的全部数据
-        canIDSecAllData = data[canMessageOffset[_index] : canMessageOffset[_index] + int(canIDAmount[_index])*16]
+        canIDSecAllData = data[canMessageOffset[_index]:canMessageOffset[_index] + int(canIDAmount[_index])*16]
 
         # 需要解析的signalList和解析结果
         signalNameList = canIDDict[_canID]
 
         for microSecCount in range(0, canIDSecAmount):
-        # for microSecCount in range(0, 1):
 
             # 取出来第一个8字节
             _canMessage = canIDSecAllData[microSecCount*16:microSecCount*16 + 16]
 
             # 这个8字节的全部message
             _fullSignalMessage = canDb.decode_message(_canID, binascii.unhexlify(_canMessage), 0, True)
+            # Like this:
+            # {'IBS_SOC': 255, 'IBS_SOH_SUL': 255, 'IBS_SOFV_StopEnable': 7.1875, 'IBS_SOFV_Restart': 7.625, 'IBS_SOH_LAM': 127.5, 'IBS_SOH_COR': 9.875, 'IBS_SOFV_Restart_STATE': 1, 'IBS_SOFV_StopEnable_STATE': 1, 'IBS_SOH_SUL_STATE': 3, 'IBS_SOC_STATE': 3, 'IBS_SOH_COR_STATE': 2, 'IBS_SOH_LAM_STATE': 3}
 
             # for需要处理的某一个signal
             for signalName in signalNameList:
+                signalInvalidValue = signalsInvalidValueDict.get(signalName)
                 signalValueList = []
-                signalValueList.append(_fullSignalMessage[signalName])
-                resp.append((signalName, signalValueList))
+                # print(_fullSignalMessage[signalName])
+                # print(f"signalInvalidValue:{signalInvalidValue}")
+                if signalInvalidValue == _fullSignalMessage[signalName]:
+                    # print("find a invalid value, skip it!")
+                    pass
+                else:
+                    signalValueList.append(_fullSignalMessage[signalName])
+                    resp.append((signalName, signalValueList))
 
             # 如果只需要解析秒包里，高频率canid的第一个can message，就直接跳出循环了
             if firstOnly:
