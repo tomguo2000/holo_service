@@ -93,6 +93,19 @@ def holoview_index():
             Xinterval = int(params.get('Xinterval')) if params.get('Xinterval') else 30
             skipInvalidValue = params.get('skipInvalidValue') if params.get('skipInvalidValue') else False
 
+            '''
+            参数说明
+            vin                 必选
+            date                日期，可选，无默认值
+            startTime           起始时间戳
+            endTime             结束时间戳
+            overall             整体指标，可选。后台默认值是event_ConnStatusList
+            signal              信号指标，可选。后台默认值是IBS有关的10个信号
+            Xinterval           时间间隔（秒），可选。后台默认值是30秒
+            skipInvalidValue    信号指标是否跳过非法值，可选。后台默认是False
+            如果同时传了日期和时间戳，已时间戳为准
+            '''
+
             if not startTime:
                 startTime = Timeutils.timeString2timeStamp(date, format="%Y-%m-%d", ms=True)
             if not endTime:
