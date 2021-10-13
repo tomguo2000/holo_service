@@ -77,7 +77,6 @@ def holoview_getOverall():
 @holoview.route('/', methods=["GET"])
 def holoview_index():
     try:
-
         # 检查入参
         try:
             params = request.args.to_dict()
@@ -376,7 +375,7 @@ def holoview_index():
             # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
             if sortedMessages:
                 if vehicleModel != sortedMessages[0][1][0]:
-                    raise Exception("110905", '小天说了，我现在只认识ME7，要问我ME5的事情，你得再等等。。。')
+                    raise Exception("110905", f'小天说了，你告诉我车型是{vehicleModel},可实际上报文是{sortedMessages[0][1][0]},你自己想想清楚先')
 
             # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
             abstractionMessages = abstract(sortedMessages, Xaxis)
@@ -448,7 +447,7 @@ def holoview_index():
     except Exception as ex:
         return {
                    "code": ex.args[0],
-                   "message": ReturnCode[ex.args[0]],
+                   "message": ex.args[1] if len(ex.args) > 1 else ReturnCode[ex.args[0]],
                    "businessObj": None
                }, 200
 
