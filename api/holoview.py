@@ -306,21 +306,6 @@ def holoview_index():
             if vehicleModel not in ['ME7', 'ME5']:
                 raise Exception("110904")
 
-            # 根据singal判断需要解析哪些canid
-            canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList, vehicleMode=vehicleModel)
-
-            # 获取到每个信号的invalid值
-            if skipInvalidValue:
-                signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=realSignalList,
-                                                                                    vehicleMode=vehicleModel)
-            else:
-                signalsInvalidValueDict = {}
-
-            logger.debug(f"3：根据singal判断需要解析哪些canid 的结果完毕:{canIDDict}。。。{time.time()*1000-time0}")
-
-            if not canIDDict:
-                raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')
-
             # 天际企标的报文文件名
             dataSourcesLive = 'message_enterprise_live.txt'
             # 天际企标补发报文文件名
@@ -382,6 +367,22 @@ def holoview_index():
 
             del(sortedMessages)
             gc.collect()
+
+            # 把canIDDict的生成放在这里，因为确认了用什么样的车型和组包协议
+            # 根据singal判断需要解析哪些canid，假设查询时，signal前缀截取的vehicleModel是正确的，后面要跟报文中的实际车型对比
+            canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList, vehicleMode=vehicleModel)
+
+            # 获取到每个信号的invalid值
+            if skipInvalidValue:
+                signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=realSignalList,
+                                                                                    vehicleMode=vehicleModel)
+            else:
+                signalsInvalidValueDict = {}
+
+            logger.debug(f"3：根据singal判断需要解析哪些canid 的结果完毕:{canIDDict}。。。{time.time()*1000-time0}")
+
+            if not canIDDict:
+                raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')
 
             # print(abstractionMessages)
             # Like this:
