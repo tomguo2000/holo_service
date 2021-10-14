@@ -174,11 +174,18 @@ def getSignalInfo(signalName, vehicleModel):
 
     return resp
 
-def getCanIDListBySignalList(signalList, vehicleMode):
+def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
     if vehicleMode == 'ME7':
-        canDB = candbPool[vehicleMode]['0e']
+        if msUploadProtol:
+            canDB = candbPool[vehicleMode][msUploadProtol]
+        else:
+            canDB = candbPool[vehicleMode]['0e']
     else:
-        canDB = candbPool[vehicleMode]['00']
+        if msUploadProtol:
+            canDB = candbPool[vehicleMode][msUploadProtol]
+        else:
+            canDB = candbPool[vehicleMode]['00']
+
     fullCanDBDict = genMessagesSignals(canDB)
 
     resp = {}

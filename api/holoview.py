@@ -359,8 +359,11 @@ def holoview_index():
 
             # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
             if sortedMessages:
+                print(sortedMessages[0][1])
+                msUploadProtol = sortedMessages[0][1][1]
                 if vehicleModel != sortedMessages[0][1][0]:
                     raise Exception("110905", f'小天说了，你告诉我车型是{vehicleModel},可实际上报文是{sortedMessages[0][1][0]},你自己想想清楚先')
+            msUploadProtol = None
 
             # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
             abstractionMessages = abstract(sortedMessages, Xaxis)
@@ -370,7 +373,9 @@ def holoview_index():
 
             # 把canIDDict的生成放在这里，因为确认了用什么样的车型和组包协议
             # 根据singal判断需要解析哪些canid，假设查询时，signal前缀截取的vehicleModel是正确的，后面要跟报文中的实际车型对比
-            canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList, vehicleMode=vehicleModel)
+            canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,
+                                                                   vehicleMode=vehicleModel,
+                                                                   msUploadProtol=msUploadProtol)
 
             # 获取到每个信号的invalid值
             if skipInvalidValue:
@@ -379,7 +384,7 @@ def holoview_index():
             else:
                 signalsInvalidValueDict = {}
 
-            logger.debug(f"3：根据singal判断需要解析哪些canid 的结果完毕:{canIDDict}。。。{time.time()*1000-time0}")
+            logger.debug(f"6+1：根据singal判断需要解析哪些canid 的结果完毕:{canIDDict}。。。{time.time()*1000-time0}")
 
             if not canIDDict:
                 raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')
