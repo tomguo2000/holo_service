@@ -89,7 +89,7 @@ def holoview_index():
             env = params.get('env')
             overall = params.get('overall')
             signal = params.get('signal')
-            Xinterval = int(params.get('Xinterval')) if params.get('Xinterval') else 30
+            Xscale = params.get('Xscale')
             skipInvalidValue = params.get('skipInvalidValue') if params.get('skipInvalidValue') else False
 
             '''
@@ -100,7 +100,23 @@ def holoview_index():
             endTime             结束时间戳
             overall             整体指标，可选。后台默认值是event_ConnStatusList
             signal              信号指标，可选。后台默认值是IBS有关的10个信号
-            Xinterval           时间间隔（秒），可选。后台默认值是30秒
+            Xscale              时间刻度级数，可选。取值1-15，目前开放5-9
+                                x刻度级数  x刻度时间段  
+                                    15      10  ms
+                                    14      20  ms
+                                    13      50  ms
+                                    12      100 ms
+                                    11      200 ms
+                                    10      500 ms
+                                    9       1   s
+                                    8       5   s
+                                    7       10  s
+                                    6       30  s
+                                    5       1   min
+                                    4       5   min
+                                    3       10  min
+                                    2       30  min
+                                    1       60  min
             skipInvalidValue    信号指标是否跳过非法值，可选。后台默认是False
             如果同时传了日期和时间戳，已时间戳为准
             '''
@@ -112,6 +128,49 @@ def holoview_index():
 
             startTime = int(startTime) if int(startTime) > 9999999999 else int(startTime) * 1000
             endTime = int(endTime) if int(endTime) > 9999999999 else int(endTime) * 1000
+
+            # 根据startTime和endTime和Xscale，决定Xscale和Xinterval
+            openedXscale = {
+                # '1': 3600,      # 50m
+                # '2': 1800,      # 30m
+                # '3': 600,       # 10m
+                # '4': 300,       # 5m
+                '5': 60,        # 1m
+                '6': 30,        # 30s
+                '7': 20,        # 20s
+                '8': 10,        # 10s
+                '9': 5,         # 5s
+                '10': 2,        # 2s
+                '11': 1,        # 1s
+                # '12': 0.5,      # 500ms
+                # '13': 0.2,      # 200ms
+                # '14': 0.1,      # 100ms
+                # '15': 0.05,     # 50ms
+                # '16': 0.02,     # 20ms
+                # '17': 0.01,     # 10ms
+            }
+
+            if not Xscale:  # 如果没传，则判断是框选的时间段
+                _interval = (endTime - startTime)/1000/1440   # 设1440格，每格约多少秒
+                bestXscale = [x for x in openedXscale.keys()][-1]           # 先取一个最小值
+                for k,v in openedXscale.items():
+                    if v > _interval:
+                        continue
+                    else:
+                        bestXscale = k
+                        break
+
+                Xscale = bestXscale
+
+            # d = (endTime - startTime) /1000  # 共多少秒的数据
+            # amount = d/Xinterval             # 共多少个点
+            # print (f"数据的时间跨度是{d}秒，Xscale:{bestXscale}, x间隔是{Xinterval}, 共有{amount}个点输出")
+
+            Xinterval = openedXscale.get(Xscale)
+
+            if not Xinterval:
+                raise
+
             overallList = overall.split(',') if overall else []
             signalList = signal.split(',') if signal else []
 
@@ -161,6 +220,7 @@ def holoview_index():
         resp = {}
         resp['Xaxis'] = Xaxis
         resp['dateList'] = dateList
+        resp['Xscale'] = Xscale
         resp['YaxisList'] = []
         resp['YaxisOverall'] = {}
         resp['YaxisSignal'] = {}
