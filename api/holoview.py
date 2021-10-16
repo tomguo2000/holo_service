@@ -100,23 +100,8 @@ def holoview_index():
             endTime             结束时间戳
             overall             整体指标，可选。后台默认值是event_ConnStatusList
             signal              信号指标，可选。后台默认值是IBS有关的10个信号
-            Xscale              时间刻度级数，可选。取值1-15，目前开放5-9
-                                x刻度级数  x刻度时间段  
-                                    15      10  ms
-                                    14      20  ms
-                                    13      50  ms
-                                    12      100 ms
-                                    11      200 ms
-                                    10      500 ms
-                                    9       1   s
-                                    8       5   s
-                                    7       10  s
-                                    6       30  s
-                                    5       1   min
-                                    4       5   min
-                                    3       10  min
-                                    2       30  min
-                                    1       60  min
+            Xscale              时间刻度级数，可选。取值1-17，目前开放5-11
+
             skipInvalidValue    信号指标是否跳过非法值，可选。后台默认是False
             如果同时传了日期和时间戳，已时间戳为准
             '''
@@ -131,23 +116,24 @@ def holoview_index():
 
             # 根据startTime和endTime和Xscale，决定Xscale和Xinterval
             openedXscale = {
-                # '1': 3600,      # 50m
+                # '1': 3600,      # 60m
                 # '2': 1800,      # 30m
                 # '3': 600,       # 10m
                 # '4': 300,       # 5m
-                '5': 60,        # 1m
-                '6': 30,        # 30s
-                '7': 20,        # 20s
-                '8': 10,        # 10s
-                '9': 5,         # 5s
-                '10': 2,        # 2s
-                '11': 1,        # 1s
-                # '12': 0.5,      # 500ms
-                # '13': 0.2,      # 200ms
-                # '14': 0.1,      # 100ms
-                # '15': 0.05,     # 50ms
-                # '16': 0.02,     # 20ms
-                # '17': 0.01,     # 10ms
+                # '5': 120,       # 2m
+                '6': 60,        # 1m
+                '7': 30,        # 30s
+                '8': 20,        # 20s
+                '9': 10,        # 10s
+                '10': 5,         # 5s
+                '11': 2,        # 2s
+                '12': 1,        # 1s
+                # '13': 0.5,      # 500ms
+                # '14': 0.2,      # 200ms
+                # '15': 0.1,      # 100ms
+                # '16': 0.05,     # 50ms
+                # '17': 0.02,     # 20ms
+                # '18': 0.01,     # 10ms
             }
 
             if not Xscale:  # 如果没传，则判断是框选的时间段
@@ -162,24 +148,25 @@ def holoview_index():
 
                 Xscale = bestXscale
 
-            # d = (endTime - startTime) /1000  # 共多少秒的数据
-            # amount = d/Xinterval             # 共多少个点
-            # print (f"数据的时间跨度是{d}秒，Xscale:{bestXscale}, x间隔是{Xinterval}, 共有{amount}个点输出")
-
+            # 根据Xscale决定X轴时间刻度的间隔（秒）
             Xinterval = openedXscale.get(Xscale)
-
-            if not Xinterval:
-                raise
 
             overallList = overall.split(',') if overall else []
             signalList = signal.split(',') if signal else []
 
-            # firstOnly 用来表示是否只处理 某canID在企标秒包里的第一个8字节信息？
+            # firstOnly 用来表示是否只处理 某canID在秒包里的第一个8字节信息？
             # 为True适用于较大时间刻度时, False适用于小时间刻度。
-            firstOnly = True
+            if Xinterval > 1:
+                firstOnly = True
+            else:
+                firstOnly = False
 
         except:
             raise Exception ("110900")
+
+        # 如果查询的数据是30天前，提示不干活
+        if startTime < Timeutils.todayStartTimeStamp(ms=True) - 30*86400*1000:
+            raise Exception("110900", "让小天给你查30天以前的东西，你得加钱")
 
         if not overallList:
             overallList = ['event_ConnStatusList']
