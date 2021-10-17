@@ -303,7 +303,10 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
         # 根据firstOnly，来决定canIDSecAmount从哪里开始。
         # 如果只需要解析关键报文里的一个8字节，取最后的那个8字节
         if firstOnly:
-            where2Start = canIDSecAmount -1
+            if canIDSecAmount > 0:
+                where2Start = canIDSecAmount -1
+            else:
+                where2Start = 0
         else:
             where2Start = 0
 
