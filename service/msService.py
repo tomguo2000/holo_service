@@ -165,11 +165,13 @@ def getSignalInfo(signalName, vehicleModel):
     for x in fullCanDBDict:
         if signalName in fullCanDBDict[x]:
             signalInfo = canDB.get_message_by_name(x).get_signal_by_name(signalName)
+            messageCycleTime = canDB.get_message_by_name(x).cycle_time
             resp['canID'] = x
             resp['comment'] = signalInfo.comment
             resp['choices'] = signalInfo.choices
             resp['maximum'] = signalInfo.maximum
             resp['minimum'] = signalInfo.minimum
+            resp['cycle_time'] = messageCycleTime
             break
 
     return resp
@@ -298,9 +300,17 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
         # 需要解析的signalList和解析结果
         signalNameList = canIDDict[_canID]
 
-        for microSecCount in range(0, canIDSecAmount):
+        # 根据firstOnly，来决定canIDSecAmount从哪里开始。
+        # 如果只需要解析关键报文里的一个8字节，取最后的那个8字节
+        if firstOnly:
+            where2Start = canIDSecAmount -1
+        else:
+            where2Start = 0
 
-            # 取出来第一个8字节
+
+        for microSecCount in range(where2Start, canIDSecAmount):
+
+            # 取出来某个8字节
             _canMessage = canIDSecAllData[microSecCount*16:microSecCount*16 + 16]
 
             # 这个8字节的全部message
@@ -321,9 +331,6 @@ def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=
                     signalValueList.append(_fullSignalMessage[signalName])
                     resp.append((signalName, signalValueList))
 
-            # 如果只需要解析秒包里，高频率canid的第一个can message，就直接跳出循环了
-            if firstOnly:
-                break
 
     return resp
 

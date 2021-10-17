@@ -70,6 +70,23 @@ class Timeutils(object):
         return time.strftime(format, timeArray)
 
     @classmethod
+    def timeStamp2timeStringMS(self, timeStamp, ms=3):
+        "input: timeStamp, ms=3   output: '2021-05-13_08:27:51.123'"
+        timeArray = self.timeStamp2timeArray(timeStamp)
+        resp = "%04d" % timeArray.year
+        resp += "-%02d" % timeArray.month
+        resp += "-%02d" % timeArray.day
+        resp += "_"
+        resp += "%02d" % timeArray.hour
+        resp += ":%02d" % timeArray.minute
+        resp += ":%02d" % timeArray.second
+        if ms:
+            # 由于原始精度，是6位长度的microsecond,所以这里用6-
+            microsecond = timeArray.microsecond/(10**(6-ms))
+            resp += f".%0{ms}d" % microsecond
+        return resp
+
+    @classmethod
     def timeArray2timeStamp(self, timeArray, ms=False):
         if ms:
             return int((time.mktime(timeArray.timetuple())) * 1000)
@@ -88,10 +105,15 @@ class Timeutils(object):
 
     @classmethod
     def timeString2timeStamp(self, timeString, format="%Y-%m-%d_%H:%M:%S", ms=False):
+        _ms = timeString[20:]
+        _ts = timeString[:19]
         if ms:
-            return int(time.mktime(time.strptime(timeString, format)) * 1000)
+            if _ms:
+                return int(time.mktime(time.strptime(_ts, format)) * 1000) + int(_ms)
+            else:
+                return int(time.mktime(time.strptime(_ts, format)) * 1000)
         else:
-            return int(time.mktime(time.strptime(timeString, format)))
+            return int(time.mktime(time.strptime(_ts, format)))
 
     @classmethod
     def timeNS2timeString(self, national_std):
