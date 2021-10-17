@@ -549,8 +549,15 @@ def abstract(sortedMessages, Xaxis):
         pass
     return abstractionMessages
 
-def transformer2Yaxis(canIDDict, contents):
+def transformer2Yaxis(canIDDict, contents, firstOnly=False):
+    # canIDDict like this:
+    # {'BMS_0x100': ['BMS_PackI']}
+    # contents like this:
+    # [('BMS_PackI', '2021-10-17_07:51:28.000', [0.0]),('BMS_PackI', '2021-10-17_07:51:28.000', [0.0])]
     # 得到要输出signal的list
+    # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
+    # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
+
     signalList = []
     for k,v in canIDDict.items():
         for signal in v:

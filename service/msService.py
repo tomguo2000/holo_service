@@ -172,6 +172,12 @@ def getSignalInfo(signalName, vehicleModel):
             resp['maximum'] = signalInfo.maximum
             resp['minimum'] = signalInfo.minimum
             resp['cycle_time'] = messageCycleTime
+
+            if signalInfo.choices:
+                for k,v in signalInfo.choices.items():
+                    if v.lower() == 'invalid':
+                        resp['invalid'] = k
+
             break
 
     return resp
