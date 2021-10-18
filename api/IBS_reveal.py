@@ -214,7 +214,7 @@ def ibsreveal_index():
                 raise Exception("110904")
 
             # 根据singal判断需要解析哪些canid
-            canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,vehicleMode=vehicleModel)
+            canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,vehicleMode=vehicleModel)
 
 
             if not canIDDict:

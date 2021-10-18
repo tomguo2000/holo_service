@@ -128,8 +128,8 @@ def holoview_index():
                 '10': 5,         # 5s
                 '11': 2,        # 2s
                 '12': 1,        # 1s
-                '13': 0.5,      # 500ms
-                '14': 0.2,      # 200ms
+                # '13': 0.5,      # 500ms
+                # '14': 0.2,      # 200ms
                 # '15': 0.1,      # 100ms
                 # '16': 0.05,     # 50ms
                 # '17': 0.02,     # 20ms
@@ -411,12 +411,12 @@ def holoview_index():
             gc.collect()
 
             # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
+            msUploadProtol = None
             if sortedMessages:
                 print(sortedMessages[0][1])
                 msUploadProtol = sortedMessages[0][1][1]
                 if vehicleModel != sortedMessages[0][1][0]:
                     raise Exception("110905", f'小天说了，你告诉我车型是{vehicleModel},可实际上报文是{sortedMessages[0][1][0]},你自己想想清楚先')
-            msUploadProtol = None
 
             # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
             abstractionMessages = abstract(sortedMessages, Xaxis)
@@ -426,11 +426,13 @@ def holoview_index():
 
             # 把canIDDict的生成放在这里，因为确认了用什么样的车型和组包协议
             # 根据singal判断需要解析哪些canid，假设查询时，signal前缀截取的vehicleModel是正确的，后面要跟报文中的实际车型对比
-            canIDDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,
-                                                                   vehicleMode=vehicleModel,
-                                                                   msUploadProtol=msUploadProtol)
+            canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,
+                                                                                   vehicleMode=vehicleModel,
+                                                                                   msUploadProtol=msUploadProtol)
+
 
             # 获取到每个信号的invalid值
+            # TODO 这一步可以优化，上面已经得到了signalInfoDict
             if skipInvalidValue:
                 signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=realSignalList,
                                                                                     vehicleMode=vehicleModel)
@@ -478,8 +480,8 @@ def holoview_index():
             logger.debug(f"7: 多进程异步解析到信号完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
             # 每个信号占1行，每行是所有的秒信号
-            # TODO 这里也扩展成支持关键报文。可以先关键报文的采样率，然后再倒推
-            signalListFor1Line = transformer2Yaxis(canIDDict, respContents)
+            # 支持高于1Hz的报文，传入关键报文的采样率，然后从前一秒倒推
+            signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
             logger.debug(f"8: 把解析信号group完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
             for oneSignalAllSec in signalListFor1Line:
@@ -549,7 +551,7 @@ def abstract(sortedMessages, Xaxis):
         pass
     return abstractionMessages
 
-def transformer2Yaxis(canIDDict, contents, firstOnly=False):
+def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=True):
     # canIDDict like this:
     # {'BMS_0x100': ['BMS_PackI']}
     # contents like this:
@@ -557,6 +559,13 @@ def transformer2Yaxis(canIDDict, contents, firstOnly=False):
     # 得到要输出signal的list
     # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
     # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
+    print(f"transformer2Yaxis, Xinterval: {Xinterval}")
+    print(f"transformer2Yaxis, signalInfos: {signalInfos}")
+    if not firstOnly:
+        print(len(contents))
+        print(contents[0])
+        pass
+
 
     signalList = []
     for k,v in canIDDict.items():

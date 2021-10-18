@@ -36,7 +36,7 @@ def signals():
 
         # 根据singal判断需要解析哪些canid，得到一个canIDList和singalList
         signalList = signal.split(',')
-        canIDDict = service.msService.getCanIDListBySignalList(signalList=signalList,vehicleMode=vehicleMode)
+        canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=signalList,vehicleMode=vehicleMode)
 
         if not canIDDict:
             raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')

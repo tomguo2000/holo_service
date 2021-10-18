@@ -196,28 +196,32 @@ def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
 
     fullCanDBDict = genMessagesSignals(canDB)
 
-    resp = {}
+    canIDDict = {}
+    signalInfoDict = {}
     errorSign = False
     for sig in signalList:
         for x in fullCanDBDict:
             if sig in fullCanDBDict[x]:
-                if resp.get(x):
-                    resp[x].append(sig)
+                if canIDDict.get(x):
+                    canIDDict[x].append(sig)
                 else:
-                    resp[x] = [sig]
+                    canIDDict[x] = [sig]
                 break
         else:
             errorSign = True
 
-    # resp = {
+        signalInfoDict[sig] = getSignalInfo(signalName=sig, vehicleModel=vehicleMode)
+
+    # canIDDict = {
     #     'BMS_0x100': ['BMS_PackU', 'BMS_PackI'],
     #     'BCM_0x310': ['BCM_FL_Door_Sts', 'BCM_FR_Door_Sts', 'BCM_RL_Door_Sts', 'BCM_RR_Door_Sts']
     # }
 
+
     if errorSign:
         return None
     else:
-        return resp
+        return canIDDict, signalInfoDict
 
 
 
