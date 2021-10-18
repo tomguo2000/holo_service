@@ -129,9 +129,9 @@ def holoview_index():
                 '10': 5,         # 5s
                 '11': 2,        # 2s
                 '12': 1,        # 1s
-                # '13': 0.5,      # 500ms
-                # '14': 0.2,      # 200ms
-                # '15': 0.1,      # 100ms
+                '13': 0.5,      # 500ms
+                '14': 0.2,      # 200ms
+                '15': 0.1,      # 100ms
                 # '16': 0.05,     # 50ms
                 # '17': 0.02,     # 20ms
                 # '18': 0.01,     # 10ms
@@ -555,6 +555,30 @@ def abstract(sortedMessages, Xaxis):
         pass
     return abstractionMessages
 
+def seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos={}):
+
+    from itertools import groupby
+    tm_group = groupby(contents,key=lambda x : (x[0], x[1]))
+    resp_seprateMicroSecPack = []
+    for key,group in tm_group:
+        oldTimeMiscoSec = key[1]
+        newTimeStamp = Timeutils.timeString2timeStamp(oldTimeMiscoSec, ms=True) - 1000
+        # print(f"把{key[0]} 这个信号的在{key[1]} 秒收到的内容处理一下.新的时间是：{Timeutils.timeStamp2timeString(newTimeStamp)}")
+        doingList = list(group)
+        _intervalMS = signalInfos.get(key[0]).get('cycle_time')
+        startOffset = 1000 - len(doingList) * _intervalMS
+
+        for _item in doingList:
+            startOffset += _intervalMS
+            # print(f"新的时间是：{Timeutils.timeStamp2timeStringMS(newTimeStamp+startOffset)}, 间隔{_intervalMS} 说你呢: {_item}")
+            # print(_item[0], Timeutils.timeStamp2timeStringMS(newTimeStamp+startOffset), _item[2])
+            resp_seprateMicroSecPack.append((_item[0], Timeutils.timeStamp2timeStringMS(newTimeStamp+startOffset), _item[2]))
+
+    return resp_seprateMicroSecPack
+
+
+
+
 def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=True):
     # canIDDict like this:
     # {'BMS_0x100': ['BMS_PackI']}
@@ -563,12 +587,9 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
     # 得到要输出signal的list
     # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
     # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
-    print(f"transformer2Yaxis, Xinterval: {Xinterval}")
-    print(f"transformer2Yaxis, signalInfos: {signalInfos}")
     if not firstOnly:
-        print(len(contents))
-        print(contents[0])
-        pass
+        _t = seprateMicroSecPack(canIDDict,contents,Xinterval,signalInfos)
+        contents = _t
 
 
     signalList = []
