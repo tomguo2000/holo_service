@@ -83,6 +83,7 @@ def holoview_index():
             logger.info(f"有人调用holoview了，参数如下:{params}")
 
             vin = params['vin']
+            vehicleModel = params.get('vehicleModel')
             date = params.get('date')
             startTime = params.get('startTime')
             endTime = params.get('endTime')
@@ -351,13 +352,16 @@ def holoview_index():
         # 传进来的signalList必须包含ME7_ 或者 ME5_这样的前缀
         if signalList:
             realSignalList = []
-            vehicleModel = ''
-            for x in signalList:
-                vehicleModel = x.split('_')[0]
-                realSignalList.append(x[4:])
+            if vehicleModel:
+                realSignalList = signalList
+            else:
+                vehicleModel = ''
+                for x in signalList:
+                    vehicleModel = x.split('_')[0]
+                    realSignalList.append(x[4:])
 
-            if vehicleModel not in ['ME7', 'ME5']:
-                raise Exception("110904")
+                if vehicleModel not in ['ME7', 'ME5']:
+                    raise Exception("110904")
 
             # 天际企标的报文文件名
             dataSourcesLive = 'message_enterprise_live.txt'
