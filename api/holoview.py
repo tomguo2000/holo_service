@@ -3,7 +3,7 @@ import datetime, math, os, json, psutil
 from flask import Blueprint, request
 from common.setlog2 import logger
 from common.timeUtils import Timeutils
-from common.config import CONFIG, ReturnCode
+from common.config import CONFIG, ReturnCode,EnterpriseTransportProtolVer
 from multiprocessing import Pool
 import service.public, service.msService
 import gc
@@ -157,7 +157,7 @@ def holoview_index():
 
             # firstOnly 用来表示是否只处理 某canID在秒包里的第一个8字节信息？
             # 为True适用于较大时间刻度时, False适用于小时间刻度。
-            if Xinterval > 1:
+            if Xinterval >= 1:
                 firstOnly = True
             else:
                 firstOnly = False
@@ -448,6 +448,14 @@ def holoview_index():
             if not canIDDict:
                 raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')
 
+            # 判断这些can协议中支持的signal以及cannID，是否包含在tbox上报协议中。
+            if msUploadProtol:
+                for k in canIDDict.keys():
+                    if k in EnterpriseTransportProtolVer[vehicleModel][msUploadProtol]:
+                        print("true")
+                    else:
+                        raise Exception("110900", f"小天遗憾的告诉你，{k}这个canID，tbox没给平台上传")
+
             # print(abstractionMessages)
             # Like this:
             # {'2021-07-02_03:47:10': (('ME7', '0a', '328e8026da334...000'),)}
@@ -555,7 +563,7 @@ def abstract(sortedMessages, Xaxis):
         pass
     return abstractionMessages
 
-def seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos={}):
+def seprateMicroSecPack(contents, Xinterval, signalInfos={}):
 
     from itertools import groupby
     tm_group = groupby(contents,key=lambda x : (x[0], x[1]))
@@ -588,8 +596,7 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
     # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
     # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
     if not firstOnly:
-        _t = seprateMicroSecPack(canIDDict,contents,Xinterval,signalInfos)
-        contents = _t
+        contents = seprateMicroSecPack(contents, Xinterval, signalInfos)
 
 
     signalList = []
