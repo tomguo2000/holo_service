@@ -76,7 +76,10 @@ def holoview_getOverall():
 
 @holoview.route('/help', methods=["GET"])
 def holoview_help():
-    return render_template('holoview_help.html')
+    return {
+        "file": 'holoview_help.html'
+    }
+    # return render_template('holoview_help.html')
 
 
 @holoview.route('/', methods=["GET"])
