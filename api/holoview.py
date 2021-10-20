@@ -1,6 +1,6 @@
 import time
 import datetime, math, os, json, psutil
-from flask import Blueprint, request
+from flask import Blueprint, request, render_template, make_response
 from common.setlog2 import logger
 from common.timeUtils import Timeutils
 from common.config import CONFIG, ReturnCode,EnterpriseTransportProtolVer
@@ -72,6 +72,11 @@ def holoview_getOverall():
                "message": "获取整体指标成功",
                "businessObj": overall
            }, 200
+
+
+@holoview.route('/help', methods=["GET"])
+def holoview_help():
+    return render_template('holoview_help.html')
 
 
 @holoview.route('/', methods=["GET"])
