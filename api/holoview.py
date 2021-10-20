@@ -177,19 +177,6 @@ def holoview_index():
         if not overallList:
             overallList = ['event_ConnStatusList']
 
-        if not signalList:
-            signalList = [
-                'ME7_IBS_SOC_STATE',
-                'ME7_IBS_SOC',
-                'ME7_IBS_SOH_SUL',
-                'ME7_IBS_U_BATT',
-                'ME7_VCU_LVSmartChrg_Status',
-                'ME7_VCU_DC_VoltageReq',
-                'ME7_IBS_Status_Voltage',
-                'ME7_BCM_SystemPowerMode',
-                'ME7_ESP_VehicleSpeed',
-                'ME7_DCDC_IdcLvCurr'
-            ]
 
         # # 判断不要跨天，否则不干活
         # if Timeutils.timeStamp2timeString(startTime)[:10] != Timeutils.timeStamp2timeString(endTime)[:10]:
