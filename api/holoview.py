@@ -506,7 +506,8 @@ def holoview_index():
                     "type": "signal",
                     "choices": _signalInfo['choices'],
                     "maximum": _signalInfo['maximum'],
-                    "minimum": _signalInfo['minimum']
+                    "minimum": _signalInfo['minimum'],
+                    "graphType": _signalInfo['graphType']
                 }})
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
