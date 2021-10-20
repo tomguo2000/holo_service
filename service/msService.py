@@ -173,11 +173,16 @@ def getSignalInfo(signalName, vehicleModel):
             resp['minimum'] = signalInfo.minimum
             resp['cycle_time'] = messageCycleTime
 
+            graphType = 'smooth'
+
             if signalInfo.choices:
                 for k,v in signalInfo.choices.items():
                     if v.lower() == 'invalid':
                         resp['invalid'] = k
+                    if v.lower() != 'invalid':
+                        graphType = 'poly'
 
+            resp['graphType'] = graphType
             break
 
     return resp
