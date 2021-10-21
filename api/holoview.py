@@ -7,6 +7,7 @@ from common.config import CONFIG, ReturnCode,EnterpriseTransportProtolVer
 from multiprocessing import Pool
 import service.public, service.msService
 import gc
+import base64
 
 
 
@@ -76,12 +77,11 @@ def holoview_getOverall():
 
 @holoview.route('/help', methods=["GET"])
 def holoview_help():
-    # return {
-    #            "code": 200,
-    #            "message": "获取help成功",
-    #            "businessObj": None
-    #        }, 200
-    return render_template('holoview_help.html')
+    with open('static/imgs/demo.png', 'rb') as f:
+        img_base64data = base64.b64encode(f.read())
+        imgData = img_base64data.decode()
+        imgData = "data:image/png;base64," + imgData
+    return render_template('holoview_help.html', img1data=imgData)
 
 
 @holoview.route('/', methods=["GET"])
