@@ -179,7 +179,12 @@ def getSignalInfo(signalName, vehicleModel):
                 for k,v in signalInfo.choices.items():
                     if v.lower() == 'invalid':
                         resp['invalid'] = k
-                    if v.lower() != 'invalid':
+                    if v.lower() == 'init':
+                        resp['init'] = k
+                    if v.lower() == 'reserved':
+                        resp['reserved'] = k
+
+                    if v.lower() not in ['invalid', 'init', 'reserved']:
                         graphType = 'poly'
 
             resp['graphType'] = graphType

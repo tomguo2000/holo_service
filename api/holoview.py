@@ -561,10 +561,15 @@ def abstract(sortedMessages, Xaxis):
         pass
     return abstractionMessages
 
-def seprateMicroSecPack(contents, Xinterval, signalInfos={}):
+def seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos={}):
+    # 给这个杀千刀的ESP_VehicleSpeed打补丁，非要在tbox降低采样频率，干！
+    if canIDDict.get('ESP_0x121'):
+        for _item in canIDDict.get('ESP_0x121'):
+            signalInfos[_item]['tbox_cycle_time'] = 100
 
     from itertools import groupby
     tm_group = groupby(contents,key=lambda x : (x[0], x[1]))
+
     resp_seprateMicroSecPack = []
     for key,group in tm_group:
         oldTimeMiscoSec = key[1]
@@ -572,14 +577,25 @@ def seprateMicroSecPack(contents, Xinterval, signalInfos={}):
         # print(f"把{key[0]} 这个信号的在{key[1]} 秒收到的内容处理一下.新的时间是：{Timeutils.timeStamp2timeString(newTimeStamp)}")
         doingList = list(group)
         _intervalMS = signalInfos.get(key[0]).get('cycle_time')
-        startOffset = 1000 - len(doingList) * _intervalMS
 
+        if canIDDict.get('ESP_0x121') and key[0] in canIDDict.get('ESP_0x121'):
+            # print("len(doingList)")
+            if (len(doingList)) <= 11:
+                _intervalMS = signalInfos.get(key[0]).get('tbox_cycle_time')
+
+        if len(doingList) == 1:
+            startOffset = 1000
+        else:
+            startOffset = _intervalMS
+
+        # print(f"doingList={doingList}")
         for _item in doingList:
-            startOffset += _intervalMS
             # print(f"新的时间是：{Timeutils.timeStamp2timeStringMS(newTimeStamp+startOffset)}, 间隔{_intervalMS} 说你呢: {_item}")
             # print(_item[0], Timeutils.timeStamp2timeStringMS(newTimeStamp+startOffset), _item[2])
             resp_seprateMicroSecPack.append((_item[0], Timeutils.timeStamp2timeStringMS(newTimeStamp+startOffset), _item[2]))
+            startOffset += _intervalMS
 
+    # print(f"resp_seprateMicroSecPack={resp_seprateMicroSecPack}")
     return resp_seprateMicroSecPack
 
 
@@ -594,7 +610,7 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
     # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
     # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
     if not firstOnly:
-        contents = seprateMicroSecPack(contents, Xinterval, signalInfos)
+        contents = seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos)
 
 
     signalList = []
