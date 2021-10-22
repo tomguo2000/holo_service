@@ -171,7 +171,10 @@ def holoview_index():
             # 根据Xscale决定X轴时间刻度的间隔（秒）
             Xinterval = openedXscale.get(Xscale)
 
-            overallList = overall.split(',') if overall else ['event_ConnStatusList']
+            overallList = overall.split(',') if overall else []
+            if 'event_ConnStatusList' not in overallList:
+                overallList.insert(0, 'event_ConnStatusList')
+
             signalList = signal.split(',') if signal else []
 
             # firstOnly 用来表示是否只处理 某canID在秒包里的第一个8字节信息？
@@ -420,19 +423,16 @@ def holoview_index():
             del(combinedDict)
             gc.collect()
 
-            print(f"sortedMessages 的条数: {len(sortedMessages)}")
-
             # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
             msUploadProtol = None
             if sortedMessages:
-                print(sortedMessages[0][1])
+                # print(sortedMessages[0][1])
                 msUploadProtol = sortedMessages[0][1][1]
                 if vehicleModel != sortedMessages[0][1][0]:
                     raise Exception("110905", f'小天说了，你告诉我车型是{vehicleModel},可实际上报文是{sortedMessages[0][1][0]},你自己想想清楚先')
 
             # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
             abstractionMessages = abstract(sortedMessages, Xaxis)
-            logger.debug(f"abstractionMessages:{abstractionMessages}")
 
             del(sortedMessages)
             gc.collect()
@@ -461,7 +461,7 @@ def holoview_index():
             if msUploadProtol:
                 for k in canIDDict.keys():
                     if k in EnterpriseTransportProtolVer[vehicleModel][msUploadProtol]:
-                        print("true")
+                        pass
                     else:
                         raise Exception("110900", f"小天遗憾的告诉你，{k}这个canID，tbox没给平台上传")
 
@@ -500,22 +500,24 @@ def holoview_index():
 
             logger.debug(f"7: 多进程异步解析到信号完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
+            # 高于1Hz的报文，从前一秒倒推，修改对应的报文时间
+            if not firstOnly:
+                logger.debug(f"8.0, 需要解析秒以下的信号")
+                respContents = seprateMicroSecPack(canIDDict, respContents, Xinterval, signalInfoDict)
+                logger.debug(f"8.1, 秒以下的信号解析完成")
+
             # 每个信号占1行，每行是所有的秒信号
-            # 支持高于1Hz的报文，传入关键报文的采样率，然后从前一秒倒推
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
-            logger.debug(f"8: 把解析信号group完成，到目前为止耗时: {time.time()*1000 - time0} ms")
-
-            # print(f"极限填充前的signalListFor1Line: {signalListFor1Line}")
-
+            logger.debug(f"8: 把解析信号分组完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
             # 极限填充，把上一步的signalListFor1Line。
+            # print(f"极限填充前的signalListFor1Line: {signalListFor1Line}")
             # 1、判断距离，距离小于2秒要填充。 暂定义2秒，以后可以放到config中
             # 2、填充到最小刻度--10ms。
             # 3、取前一个值填充，是否改成线性差值，TBD
             # 4、由于signalListFor1Line的值的部分是字典，可以直接把填充的值set进去，填充后会变成无序的字典
             if not firstOnly:
                 extremeFill(signalListFor1Line)
-
             # print(f"极限填充后的signalListFor1Line: {signalListFor1Line}")
 
             for oneSignalAllSec in signalListFor1Line:
@@ -620,13 +622,15 @@ def abstract(sortedMessages, Xaxis):
     return abstractionMessages
 
 def seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos={}):
+    # TODO 一个canID的多个信号，在高采样时会穿插，所以排序
+    contents.sort()
     # 给这个杀千刀的ESP_VehicleSpeed打补丁，非要在tbox降低采样频率，干！
     if canIDDict.get('ESP_0x121'):
         for _item in canIDDict.get('ESP_0x121'):
             signalInfos[_item]['tbox_cycle_time'] = 100
 
     from itertools import groupby
-    tm_group = groupby(contents,key=lambda x : (x[0], x[1]))
+    tm_group = groupby(contents,key=lambda x : (x[0], x[1]))        # 按信号分组
 
     resp_seprateMicroSecPack = []
     for key,group in tm_group:
@@ -667,8 +671,6 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
     # 得到要输出signal的list
     # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
     # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
-    if not firstOnly:
-        contents = seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos)
 
 
     signalList = []
@@ -698,6 +700,7 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
         else:
             signalYaxisList[signalIndex[_line[0]]][1][_k] = _v
 
+    # print(f"signalYaxisList={signalYaxisList}")
     return signalYaxisList
 
 
