@@ -290,43 +290,43 @@ def holoview_index():
             logger.debug(f"2-4：message_tj32960Resent 的event结果完毕。。。{time.time()*1000-time0}")
 
 
-        # 传入X轴和dateList，获取企标的聚合结果
+        # 传入X轴和dateList，获取企标实发的结果
         if "message_MSLive" in overallList:
             time1 = time.time()*1000
             message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', dateList)
-            logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
+            logger.debug(f"hhhh获取企标实发的报文结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MSLive'] = message_MSLive
             resp['YaxisList'].append({"message_MSLive": {
                 "type": "message",
                 "other": "........."
             }})
-            logger.debug(f"2-5：message_MSLive 的结果完毕。。。{time.time()*1000-time0}")
+            logger.debug(f"2-5：get message_MSLive 的结果完毕。。。{time.time()*1000-time0}")
 
 
-        # 传入X轴和dateList，获取企标的聚合结果
+        # 传入X轴和dateList，获取企标补发的结果
         if "message_MSResent" in overallList:
             time1 = time.time()*1000
             message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', dateList)
-            logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
+            logger.debug(f"hhhh获取企标补发的报文结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MSResent'] = message_MSResent
             resp['YaxisList'].append({"message_MSResent": {
                 "type": "message",
                 "other": "........."
             }})
-            logger.debug(f"2-6：message_MSResent 的结果完毕。。。{time.time()*1000-time0}")
+            logger.debug(f"2-6：get message_MSResent 的结果完毕。。。{time.time()*1000-time0}")
 
 
-        # 传入X轴和dateList，获取企标的聚合结果
+        # 传入X轴和dateList，获取企标告警的结果
         if "message_MSWarning" in overallList:
             time1 = time.time()*1000
             message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', dateList)
-            logger.debug(f"hhhh获取企标的聚合结果完毕。。。{time.time()*1000-time1}")
+            logger.debug(f"hhhh获取企标告警的报文结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MSWarning'] = message_MSWarning
             resp['YaxisList'].append({"message_MSWarning": {
                 "type": "message",
                 "other": "........."
             }})
-            logger.debug(f"2-7：message_MSWarning 的结果完毕。。。{time.time()*1000-time0}")
+            logger.debug(f"2-7：get message_MSWarning 的结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传入X轴和dateList，获取MISC的聚合结果
@@ -1089,10 +1089,17 @@ def assignAmount2TimeSlot(Xaxis, dataList, needSort=False):
         if Xaxis[XaxisCursor] <= dataList[bufferCursor].split(',')[0]:
             XaxisCursor += 1
         else:
+            # 为了解决企标实时数量，在缩放后，对应到了应该位置的前一个，把-1去掉，观察下。
+            '''
             if Yaxis.get(str(Xaxis[XaxisCursor-1])):
                 Yaxis[str(Xaxis[XaxisCursor-1])] += 1
             else:
                 Yaxis[str(Xaxis[XaxisCursor-1])] = 1
+            '''
+            if Yaxis.get(str(Xaxis[XaxisCursor])):
+                Yaxis[str(Xaxis[XaxisCursor])] += 1
+            else:
+                Yaxis[str(Xaxis[XaxisCursor])] = 1
 
             # 如果buffer还没到底，就cursor+1
             if bufferCursor < (len(dataList) - 1):
