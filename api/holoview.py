@@ -127,8 +127,8 @@ def holoview_index():
             else:
                 startTime = int(startTime) * 1000
 
-            if int(endTime) > 9999999999:       # 传入的是ms，取个整
-                endTime = int(int(endTime) / 1000) * 1000
+            if int(endTime) > 9999999999:       # 传入的是ms，向后取个整
+                endTime = int(int(endTime) / 1000 + 1000) * 1000
             else:
                 endTime = int(endTime) * 1000
 
@@ -169,7 +169,7 @@ def holoview_index():
             # 根据Xscale决定X轴时间刻度的间隔（秒）
             Xinterval = openedXscale.get(Xscale)
 
-            overallList = overall.split(',') if overall else []
+            overallList = overall.split(',') if overall else ['event_ConnStatusList']
             signalList = signal.split(',') if signal else []
 
             # firstOnly 用来表示是否只处理 某canID在秒包里的第一个8字节信息？
