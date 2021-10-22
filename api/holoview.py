@@ -411,6 +411,8 @@ def holoview_index():
             del(combinedDict)
             gc.collect()
 
+            print(f"sortedMessages 的条数: {len(sortedMessages)}")
+
             # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
             msUploadProtol = None
             if sortedMessages:
@@ -493,6 +495,18 @@ def holoview_index():
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
             logger.debug(f"8: 把解析信号group完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
+            # print(f"极限填充前的signalListFor1Line: {signalListFor1Line}")
+
+
+            # 极限填充，把上一步的signalListFor1Line。
+            # 1、判断距离，距离小于2秒要填充。 暂定义2秒，以后可以放到config中
+            # 2、填充到最小刻度--10ms。
+            # 3、取前一个值填充，是否改成线性差值，TBD
+            # 4、由于signalListFor1Line的值的部分是字典，可以直接把填充的值set进去，填充后会变成无序的字典
+            extremeFill(signalListFor1Line)
+
+            # print(f"极限填充后的signalListFor1Line: {signalListFor1Line}")
+
             for oneSignalAllSec in signalListFor1Line:
                 _signalName = oneSignalAllSec[0]
                 _signalAllValues = oneSignalAllSec[1]
@@ -524,6 +538,39 @@ def holoview_index():
                    "message": ex.args[1] if len(ex.args) > 1 else ReturnCode[ex.args[0]],
                    "businessObj": None
                }, 200
+
+def extremeFill(signalListFor1Line):
+    TIMEGAP = 2000 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。
+
+    for siganlRealValue in signalListFor1Line:
+
+        # 以下是对一个信号的全部有效报文做处理
+        if siganlRealValue[1]:           # 不是一个没有值的信号
+            _tempKeyList = list(siganlRealValue[1].keys())
+            _tempValueList = list(siganlRealValue[1].values())
+            _fillStartTS = Timeutils.timeString2timeStamp(_tempKeyList[0], ms=True)     # 令第一条记录为填充的起点
+            _filledDict = {}                                        # 定义填充的结果
+            for _i in range(len(_tempKeyList)):
+                # print(_tempKeyList[_i])
+                # print(_tempValueList[_i])
+                _fillEndTS = Timeutils.timeString2timeStamp(_tempKeyList[_i], ms=True)
+                if _fillEndTS - _fillStartTS > TIMEGAP:  # 判断是个断点
+                    _fillStartTS = _fillEndTS     # 这是一个新的填充的起始点
+                else:
+                    # 需要按照极限进行填充 --- 间隔 10ms
+                    # print(f"需要按照极限进行填充: from {Timeutils.timeStamp2timeStringMS(_fillStartTS)}, to {Timeutils.timeStamp2timeStringMS(_fillEndTS)}, value: {_tempValueList[_i]}. "
+                    #       f"OR {_fillStartTS} to {_fillEndTS}")
+
+                    for _x in range(_fillStartTS + 10 , _fillEndTS + 10, 10):
+                        _filledDict[Timeutils.timeStamp2timeStringMS(_x)] = _tempValueList[_i]
+
+                    _fillStartTS = _fillEndTS
+
+            # print("原始的dict:", siganlRealValue[1])
+            # print((siganlRealValue[0], _filledDict))
+
+            # 把filledDict 范围上已经覆盖原始Dict，可以直接使用
+            siganlRealValue[1] = _filledDict
 
 
 def abstract(sortedMessages, Xaxis):
