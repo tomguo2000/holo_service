@@ -503,7 +503,8 @@ def holoview_index():
             # 2、填充到最小刻度--10ms。
             # 3、取前一个值填充，是否改成线性差值，TBD
             # 4、由于signalListFor1Line的值的部分是字典，可以直接把填充的值set进去，填充后会变成无序的字典
-            extremeFill(signalListFor1Line)
+            if not firstOnly:
+                extremeFill(signalListFor1Line)
 
             # print(f"极限填充后的signalListFor1Line: {signalListFor1Line}")
 
