@@ -123,12 +123,14 @@ def holoview_index():
                 endTime = startTime + (86400-1) * 1000
 
             if int(startTime) > 9999999999:     # 传入的是ms，取个整
-                startTime = int(int(startTime) / 1000) * 1000
+                # startTime = int(int(startTime) / 1000) * 1000
+                pass
             else:
                 startTime = int(startTime) * 1000
 
             if int(endTime) > 9999999999:       # 传入的是ms，向后取个整
-                endTime = int(int(endTime) / 1000 + 1000) * 1000
+                # endTime = int(int(endTime) / 1000 + 1000) * 1000
+                pass
             else:
                 endTime = int(endTime) * 1000
 
