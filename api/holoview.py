@@ -122,8 +122,15 @@ def holoview_index():
             if not endTime:
                 endTime = startTime + (86400-1) * 1000
 
-            startTime = int(startTime) if int(startTime) > 9999999999 else int(startTime) * 1000
-            endTime = int(endTime) if int(endTime) > 9999999999 else int(endTime) * 1000
+            if int(startTime) > 9999999999:     # 传入的是ms，取个整
+                startTime = int(startTime / 1000) * 1000
+            else:
+                startTime = int(startTime) * 1000
+
+            if int(endTime) > 9999999999:       # 传入的是ms，取个整
+                endTime = int(endTime / 1000) * 1000
+            else:
+                endTime = int(endTime) * 1000
 
             # 根据startTime和endTime和Xscale，决定Xscale和Xinterval
             openedXscale = {
