@@ -157,7 +157,7 @@ def holoview_index():
             }
 
             if not Xscale:  # 如果没传，则判断是框选的时间段
-                _interval = (endTime - startTime)/1000/1440   # 设1440格，每格约多少秒
+                _interval = (endTime - startTime)/1000/720   # 设1440格，每格约多少秒
                 bestXscale = [x for x in openedXscale.keys()][-1]           # 先取一个最小值
                 for k,v in openedXscale.items():
                     if v > _interval:
