@@ -59,14 +59,14 @@ def holoview_getOverall():
         "event_ConnStatusList": "Tbox到平台连接事件",
         "event_VehicleLoginList": "车辆登录Vehicle服务事件",
         "event_RemoteCmdList": "远程控车指令事件",
-        "message_tj32960Login": "国标登录报文",
-        "message_tj32960Live": "国标实发报文",
-        "message_tj32960Resent": "国标补发报文",
-        "message_MSLive": "企标实发报文",
-        "message_MSResent": "企标补发报文",
-        "message_MSWarning": "企标告警报文",
-        "message_MiscList": "Misc报文",
-        "message_HeartbeatList": "心跳报文"
+        "message_tj32960Login": "国标登录报文数量",
+        "message_tj32960Live": "国标实发报文数量",
+        "message_tj32960Resent": "国标补发报文数量",
+        "message_MSLive": "企标实发报文数量",
+        "message_MSResent": "企标补发报文数量",
+        "message_MSWarning": "企标告警报文数量",
+        "message_MiscList": "Misc报文数量",
+        "message_HeartbeatList": "心跳报文数量"
     }
     return {
                "code": 200,
