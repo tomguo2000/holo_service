@@ -28,7 +28,7 @@ def holoview_checkSignal():
                 raise
 
         except:
-            raise Exception ("110900")
+            raise Exception ("110900", "亲，选个车型先啊。。。")
 
         signalInfo = service.msService.getSignalInfo(signalName=signalName, vehicleModel=vehicleModel)
 
@@ -47,7 +47,7 @@ def holoview_checkSignal():
     except Exception as ex:
         return {
                    "code": ex.args[0],
-                   "message": ReturnCode[ex.args[0]],
+                   "message": ex.args[1] if len(ex.args) > 1 else ReturnCode[ex.args[0]],
                    "businessObj": None
                }, 200
 
