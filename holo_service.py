@@ -35,9 +35,9 @@ def logger_request_info():
 
 @app.after_request
 def logger_response_info(response):
-    # X_Forwarded_For = request.headers.get('X-Forwarded-For')
-    # Fx_Remote_Addr = request.headers.get('Fx-Remote-Addr')
-    # logger.info(f"请求URL:{request.url}. 来源IP地址:{Fx_Remote_Addr}. 来源X_Forwarded_For地址:{X_Forwarded_For}. Response:{type(response.data)}")
+    X_Forwarded_For = request.headers.get('X-Forwarded-For')
+    Fx_Remote_Addr = request.headers.get('Fx-Remote-Addr')
+    logger.info(f"请求URL:{request.url}. 来源IP地址:{Fx_Remote_Addr}. 来源X_Forwarded_For地址:{X_Forwarded_For}. Response:{response.data}")
     return response
 
 
