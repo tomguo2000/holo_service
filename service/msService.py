@@ -8,6 +8,7 @@ from multiprocessing import Pool
 import cantools
 import numpy, binascii
 from service.public import candbPool
+import re
 
 
 
@@ -160,7 +161,7 @@ def getSignalInfo(signalName, vehicleModel):
         canDB = candbPool[vehicleModel]['00']
 
     fullCanDBDict = genMessagesSignals(canDB)
-
+    print(fullCanDBDict)
     resp = {}
     for x in fullCanDBDict:
         if signalName in fullCanDBDict[x]:
@@ -191,6 +192,49 @@ def getSignalInfo(signalName, vehicleModel):
             break
 
     return resp
+
+
+
+def findSignalInfo(signalName, vehicleModel):
+    if vehicleModel == 'ME7':
+        canDB = candbPool[vehicleModel]['0e']
+    else:
+        canDB = candbPool[vehicleModel]['00']
+
+    fullCanDBDict = genMessagesSignals(canDB)
+
+    return fuzzy_finder(signalName, fullCanDBDict)
+
+
+
+def fuzzy_finder(key, data):
+    """
+    模糊查找器
+    :param key: 关键字
+    :param data: 数据
+    :return: list
+    """
+
+    # 结果列表
+    suggestions = []
+    # 非贪婪匹配，转换 'djm' 为 'd.*?j.*?m'
+    # pattern = '.*?'.join(key)
+    pattern = '.*%s.*'%(key)
+    # print("pattern",pattern)
+    # 编译正则表达式
+    regex = re.compile(pattern, re.IGNORECASE)
+    for k,v in data.items():
+        # print("item",item['name'])
+        # 检查当前项是否与regex匹配。
+        for x in v:
+            match = regex.search(str(x))
+            if match:
+                # 如果匹配，就添加到列表中
+                suggestions.append(str(x))
+
+    return suggestions
+
+
 
 def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
     if vehicleMode == 'ME7':

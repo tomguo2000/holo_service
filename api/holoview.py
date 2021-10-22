@@ -53,6 +53,43 @@ def holoview_checkSignal():
 
 
 
+@holoview.route('/findSignal', methods=["GET"])
+def holoview_findSignal():
+    try:
+        # 检查入参
+        try:
+            params = request.args.to_dict()
+            vehicleModel = params['vehicleModel']
+            signalName = params['signalName']
+
+            if vehicleModel not in ['ME7', 'ME5']:
+                raise
+
+        except:
+            raise Exception ("110900", "亲，选个车型先啊。。。")
+
+        signalInfo = service.msService.findSignalInfo(signalName=signalName, vehicleModel=vehicleModel)
+
+        if not signalInfo:
+            return {
+                       "code": 400,
+                       "message": "没有找到了这个信号的信息，小天认为你喝酒了",
+                       "businessObj": None
+                   }, 200
+        else:
+            return {
+                       "code": 200,
+                       "message": "找到了这个信号的信息，小天认为你做的很好",
+                       "businessObj": signalInfo
+                   }, 200
+    except Exception as ex:
+        return {
+                   "code": ex.args[0],
+                   "message": ex.args[1] if len(ex.args) > 1 else ReturnCode[ex.args[0]],
+                   "businessObj": None
+               }, 200
+
+
 @holoview.route('/overall', methods=["GET"])
 def holoview_getOverall():
     overall = {
