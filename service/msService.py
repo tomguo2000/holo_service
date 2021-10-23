@@ -36,7 +36,7 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
     find = False
     while bufferCursor < len(messageListSorted):
 
-        if messageListSorted[bufferCursor].get("MCUTime") < startTimeStr:
+        if messageListSorted[bufferCursor].get("MCUTime") <= startTimeStr:
             # 跳过这条废数据
             bufferCursor += 1
         else:
@@ -98,7 +98,7 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime):
 
     respMessage = {}
 
-    while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] < endTimeStr:
+    while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] <= endTimeStr:
         '''
         _jsondata = json.loads(oriAllMessage[bufferCursor])
 

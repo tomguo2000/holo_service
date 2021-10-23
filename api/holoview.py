@@ -621,7 +621,7 @@ def holoview_index():
             # 3、取前一个值填充，是否改成线性差值，TBD
             # 4、由于signalListFor1Line的值的部分是字典，可以直接把填充的值set进去，填充后会变成无序的字典
             if not firstOnly:
-                extremeFill(signalListFor1Line)
+                extremelyFillUp(signalListFor1Line)
             # print(f"极限填充后的signalListFor1Line: {signalListFor1Line}")
 
             for oneSignalAllSec in signalListFor1Line:
@@ -658,7 +658,7 @@ def holoview_index():
                    "businessObj": None
                }, 200
 
-def extremeFill(signalListFor1Line):
+def extremelyFillUp(signalListFor1Line):
     TIMEGAP = 2000 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。
 
     time00 = time.time() * 1000
@@ -690,9 +690,12 @@ def extremeFill(signalListFor1Line):
             # print((siganlRealValue[0], _filledDict))
 
             # 把filledDict 范围上已经覆盖原始Dict，可以直接使用
-            siganlRealValue[1] = _filledDict
+            # siganlRealValue[1] = _filledDict
+            # siganlRealValue[1]包含起点的kv对，但filledDict不含，所以还是要做字典合并 2021/10/24
+            # 好处是这时候用字典，已经不需要再排序了，从x的任意刻度，直接在这个字典中取输出值即可
+            siganlRealValue[1] = dict(siganlRealValue[1], **_filledDict)
 
-    logger.debug(f"extremeFill done, spent {time.time()*1000-time00} ms")
+    logger.debug(f"extremelyFillUp done, spent {time.time()*1000-time00} ms")
 
 
 def abstract(sortedMessages, Xaxis):
@@ -703,6 +706,10 @@ def abstract(sortedMessages, Xaxis):
     bufferCursor = 0
 
     abstractionMessages = {}
+
+    # 下面的算法，会导致Xaxis的最后一个坐标，即使有对应时间点的sortedMessages，也不能被选中。
+    # 增加一个dummy的Xaxis，由于是浅复制，结束前要删除这个dummy
+    Xaxis.append('dummy')
 
     # 传进来的参数有值再说，否则直接返回空dict
     if sortedMessages:
@@ -726,8 +733,14 @@ def abstract(sortedMessages, Xaxis):
                     bufferCursor += 1
                 else:
                     break
+
     else:
         pass
+
+    # 删除前面的dummy的Xaxis，由于是浅复制，结束前要删除这个dummy
+    if Xaxis[-1] == 'dummy':
+        Xaxis.pop(-1)
+
     return abstractionMessages
 
 def seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos={}):
@@ -817,7 +830,7 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
 def createXaxis(startTime, endTime, interval=10):
 
     workingStartTimeStamp = startTime
-    workingEndTimeStamp = endTime
+    workingEndTimeStamp = endTime + interval
 
     # xAxisTotal: X轴的点位数量
     xAxisTotal = math.ceil((workingEndTimeStamp - workingStartTimeStamp) / (interval*1000))
