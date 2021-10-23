@@ -749,8 +749,7 @@ def modifyMicroSecTime(canIDDict, contents, Xinterval, signalInfos={}):
         for _item in canIDDict.get('ESP_0x121'):
             signalInfos[_item]['tbox_cycle_time'] = 100
 
-    # TODO 不能用这个groupby，在一个canID采两个信号的时候，高采样时，会穿插。
-    # 也不能排序，否则被干死
+    # 前面步骤完成了对同一秒下面多个信号的排序，并且不破坏秒内信号的值的顺序，赞 2021/10/24
     from itertools import groupby
     tm_group = groupby(contents,key=lambda x : (x[0], x[1]))        # 按信号分组
 
@@ -1301,7 +1300,10 @@ def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict, first
     for _signal in signalsValues:
         response.append((_signal[0], MCUTime, _signal[1]))
 
-    return response
+    # 指定排序的范围，只对信号名称进行排序，第2和3个字段不参与排序
+    # ('ESP_VehicleSpeed', '2021-10-21_13:42:41.000', [14.9625])
+    #    排序                     不排序                     不排序
+    return response.sort(key=lambda x:(x[0], 0, 0))
 
 
 
