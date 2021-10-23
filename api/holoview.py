@@ -1303,7 +1303,8 @@ def tjmsParseSignals2List(MCUTime, data, protocol, vehicleMode, canIDDict, first
     # 指定排序的范围，只对信号名称进行排序，第2和3个字段不参与排序
     # ('ESP_VehicleSpeed', '2021-10-21_13:42:41.000', [14.9625])
     #    排序                     不排序                     不排序
-    return response.sort(key=lambda x:(x[0], 0, 0))
+    response.sort(key=lambda x:(x[0], 0, 0))
+    return response
 
 
 
