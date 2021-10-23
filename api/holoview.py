@@ -225,9 +225,17 @@ def holoview_index():
         except:
             raise Exception ("110900")
 
-        # # 如果查询的数据是30天前，提示不干活
-        # if startTime < Timeutils.todayStartTimeStamp(ms=True) - 30*86400*1000:
-        #     raise Exception("110900", "让小天给你查30天以前的东西，你得加钱")
+        # 如果查询的数据是30天前，提示不干活
+        if startTime < Timeutils.todayStartTimeStamp(ms=True) - 30*86400*1000:
+            raise Exception("110900", "让小天给你查30天以前的东西，你得加钱才能办")
+
+        # 控制查询的时间段，不要跨太多天
+        if (endTime - startTime) / (86400*1000) > 10:
+            raise Exception("110900", "让小天查10天跨度的东西，累死了，不干！")
+
+        # 如果查询的日期早于2021/06/01，提示不知道
+        if startTime < Timeutils.timeString2timeStamp('2021-06-01_00:00:00', ms=True):
+            raise Exception("110900", "让小天查2021年6月1日前的数据？小天那时候还不记事呢！")
 
         if not overallList:
             overallList = ['event_ConnStatusList']
