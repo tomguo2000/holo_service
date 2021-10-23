@@ -69,7 +69,7 @@ def parse_tjms_message(data, vehicleMode='ME7', protocol='0e', signal=False):
 
             if signal:
                 canID = CanIDList[x]
-                signalMessageList.append(canDb.decode_message(canID,binascii.unhexlify(_canMessage),0,0))
+                signalMessageList.append(canDb.decode_message(canID,binascii.unhexlify(_canMessage),0,1))
 
                 resp[CanIDList[x]] = signalMessageList
             else:

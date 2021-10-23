@@ -606,9 +606,9 @@ def holoview_index():
 
             # 高于1Hz的报文，从前一秒倒推，修改对应的报文时间
             if not firstOnly:
-                logger.debug(f"8.0, 需要解析秒以下的信号")
-                respContents = seprateMicroSecPack(canIDDict, respContents, Xinterval, signalInfoDict)
-                logger.debug(f"8.1, 秒以下的信号解析完成")
+                logger.debug(f"8.0, 需要拆解秒以下的信号")
+                respContents = modifyMicroSecTime(canIDDict, respContents, Xinterval, signalInfoDict)
+                logger.debug(f"8.1, 秒以下的信号拆解完成")
 
             # 每个信号占1行，每行是所有的秒信号
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
@@ -743,14 +743,14 @@ def abstract(sortedMessages, Xaxis):
 
     return abstractionMessages
 
-def seprateMicroSecPack(canIDDict, contents, Xinterval, signalInfos={}):
-    # TODO 一个canID的多个信号，在高采样时会穿插，所以排序
-    contents.sort()
+def modifyMicroSecTime(canIDDict, contents, Xinterval, signalInfos={}):
     # 给这个杀千刀的ESP_VehicleSpeed打补丁，非要在tbox降低采样频率，干！
     if canIDDict.get('ESP_0x121'):
         for _item in canIDDict.get('ESP_0x121'):
             signalInfos[_item]['tbox_cycle_time'] = 100
 
+    # TODO 不能用这个groupby，在一个canID采两个信号的时候，高采样时，会穿插。
+    # 也不能排序，否则被干死
     from itertools import groupby
     tm_group = groupby(contents,key=lambda x : (x[0], x[1]))        # 按信号分组
 
