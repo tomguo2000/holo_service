@@ -161,7 +161,6 @@ def getSignalInfo(signalName, vehicleModel):
         canDB = candbPool[vehicleModel]['00']
 
     fullCanDBDict = genMessagesSignals(canDB)
-    print(fullCanDBDict)
     resp = {}
     for x in fullCanDBDict:
         if signalName in fullCanDBDict[x]:

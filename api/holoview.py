@@ -208,6 +208,7 @@ def holoview_index():
             # 根据Xscale决定X轴时间刻度的间隔（秒）
             Xinterval = openedXscale.get(Xscale)
 
+            # 默认添加event_ConnStatusList到overallList里面，用于UI的连接/断开的背景色
             overallList = overall.split(',') if overall else []
             if 'event_ConnStatusList' not in overallList:
                 overallList.insert(0, 'event_ConnStatusList')
@@ -250,9 +251,15 @@ def holoview_index():
         Xaxis = createXaxis(startTime, endTime, interval=Xinterval)
         logger.debug(f"1：构建一个X轴完毕。。。{time.time()*1000-time0}")
 
+        # Xaxis的点数超过10000，就抛异常
+        XaxisTotalPlots = len(Xaxis)
+        if XaxisTotalPlots > 10000:
+            raise Exception("110900", "让小天给你返10000个点的信息，不是你把我累死就是你被浏览器拖死，不行！")
+
         # 定义返回的resp
         resp = {}
         resp['Xaxis'] = Xaxis
+        resp['XaxisTotalPlots'] = len(Xaxis)
         resp['dateList'] = dateList
 
         # 2021/10/17新增，给前端描述缩放比例的字段
@@ -274,7 +281,15 @@ def holoview_index():
             resp['YaxisOverall']['event_ConnStatusList'] = event_ConnStatusList
             resp['YaxisList'].append({"event_ConnStatusList": {
                 "type": "event",
-                "other": "........."
+                "choices": {
+                    "1": "client.connected",
+                    "0": "client.disconnected"
+                },
+                "maximum": 1,
+                "minimum": 0,
+                "graphType": 'poly',
+                "comment": '判断Tbox和MQTT的连接状态',
+                "cycle_time": None
             }})
             logger.debug(f"2-1：event_ConnStatusList的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -287,7 +302,15 @@ def holoview_index():
             resp['YaxisOverall']['event_VehicleLoginList'] = event_VehicleLoginList
             resp['YaxisList'].append({"event_VehicleLoginList": {
                 "type": "message",
-                "other": "........."
+                "choices": {
+                    "1": "登录车辆服务",
+                    "0": "无"
+                },
+                "maximum": 1,
+                "minimum": 0,
+                "graphType": 'poly',
+                "comment": 'Tbox登录TSP车辆服务的动作',
+                "cycle_time": None
             }})
             logger.debug(f"2-2：event_VehicleLoginList的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -299,7 +322,15 @@ def holoview_index():
             resp['YaxisOverall']['event_RemoteCmdList'] = event_RemoteCmdList
             resp['YaxisList'].append({"event_RemoteCmdList": {
                 "type": "message",
-                "other": "........."
+                "choices": {
+                    "1": "登录车辆服务",
+                    "0": "无"
+                },
+                "maximum": 10,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '4G控车的动作',
+                "cycle_time": None
             }})
             logger.debug(f"2-3：event_RemoteCmdList 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -312,7 +343,12 @@ def holoview_index():
             resp['YaxisOverall']['message_tj32960Live'] = message_tj32960Live
             resp['YaxisList'].append({"message_tj32960Live": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 10,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '国标实发报文条数',
+                "cycle_time": 100000
             }})
             logger.debug(f"2-4：message_tj32960Live 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -325,7 +361,12 @@ def holoview_index():
             resp['YaxisOverall']['message_tj32960Resent'] = message_tj32960Resent
             resp['YaxisList'].append({"message_tj32960Resent": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 100,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '国标补发报文条数',
+                "cycle_time": None
             }})
             logger.debug(f"2-4：message_tj32960Resent 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -338,7 +379,12 @@ def holoview_index():
             resp['YaxisOverall']['message_MSLive'] = message_MSLive
             resp['YaxisList'].append({"message_MSLive": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 100,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '企标实发报文条数',
+                "cycle_time": 100000
             }})
             logger.debug(f"2-5：get message_MSLive 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -351,7 +397,12 @@ def holoview_index():
             resp['YaxisOverall']['message_MSResent'] = message_MSResent
             resp['YaxisList'].append({"message_MSResent": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 100,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '企标补发报文条数',
+                "cycle_time": None
             }})
             logger.debug(f"2-6：get message_MSResent 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -364,7 +415,12 @@ def holoview_index():
             resp['YaxisOverall']['message_MSWarning'] = message_MSWarning
             resp['YaxisList'].append({"message_MSWarning": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 100,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '企标告警报文条数',
+                "cycle_time": None
             }})
             logger.debug(f"2-7：get message_MSWarning 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -377,7 +433,12 @@ def holoview_index():
             resp['YaxisOverall']['message_MiscList'] = message_MiscList
             resp['YaxisList'].append({"message_MiscList": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 10,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": 'MISC报文条数',
+                "cycle_time": 100000
             }})
             logger.debug(f"2-8：message_MiscList 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -390,24 +451,22 @@ def holoview_index():
             resp['YaxisOverall']['message_HeartbeatList'] = message_HeartbeatList
             resp['YaxisList'].append({"message_HeartbeatList": {
                 "type": "message",
-                "other": "........."
+                "choices": {},
+                "maximum": 10,
+                "minimum": 0,
+                "graphType": 'smooth',
+                "comment": '国标登录登出报文',
+                "cycle_time": None
             }})
             logger.debug(f"2-9：message_HeartbeatList 的结果完毕。。。{time.time()*1000-time0}")
 
 
         # 传进来的signalList必须包含ME7_ 或者 ME5_这样的前缀
         if signalList:
-            realSignalList = []
-            if vehicleModel:
-                realSignalList = signalList
-            else:
-                vehicleModel = ''
-                for x in signalList:
-                    vehicleModel = x.split('_')[0]
-                    realSignalList.append(x[4:])
 
-                if vehicleModel not in ['ME7', 'ME5']:
-                    raise Exception("110904")
+            # signalList有值，必须vehicleModel也要有有效值
+            if vehicleModel not in ['ME7', 'ME5']:
+                raise Exception("110904")
 
             # 天际企标的报文文件名
             dataSourcesLive = 'message_enterprise_live.txt'
@@ -476,7 +535,7 @@ def holoview_index():
 
             # 把canIDDict的生成放在这里，因为确认了用什么样的车型和组包协议
             # 根据singal判断需要解析哪些canid，假设查询时，signal前缀截取的vehicleModel是正确的，后面要跟报文中的实际车型对比
-            canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=realSignalList,
+            canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=signalList,
                                                                                    vehicleMode=vehicleModel,
                                                                                    msUploadProtol=msUploadProtol)
 
@@ -484,7 +543,7 @@ def holoview_index():
             # 获取到每个信号的invalid值
             # TODO 这一步可以优化，上面已经得到了signalInfoDict
             if skipInvalidValue:
-                signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=realSignalList,
+                signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=signalList,
                                                                                     vehicleMode=vehicleModel)
             else:
                 signalsInvalidValueDict = {}
@@ -568,7 +627,9 @@ def holoview_index():
                     "choices": _signalInfo['choices'],
                     "maximum": _signalInfo['maximum'],
                     "minimum": _signalInfo['minimum'],
-                    "graphType": _signalInfo['graphType']
+                    "graphType": _signalInfo['graphType'],
+                    "comment": _signalInfo['comment'],
+                    "cycle_time": _signalInfo['cycle_time'],
                 }})
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
@@ -592,6 +653,7 @@ def holoview_index():
 def extremeFill(signalListFor1Line):
     TIMEGAP = 2000 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。
 
+    time00 = time.time() * 1000
     for siganlRealValue in signalListFor1Line:
 
         # 以下是对一个信号的全部有效报文做处理
@@ -621,6 +683,8 @@ def extremeFill(signalListFor1Line):
 
             # 把filledDict 范围上已经覆盖原始Dict，可以直接使用
             siganlRealValue[1] = _filledDict
+
+    logger.debug(f"extremeFill done, spent {time.time()*1000-time00} ms")
 
 
 def abstract(sortedMessages, Xaxis):
@@ -991,6 +1055,7 @@ def getPreviousConnStatus(vin, date):
 def makeResponse(resp):
     makeResp = {}
     makeResp['Xaxis'] = resp['Xaxis']
+    makeResp['XaxisTotalPlots'] = resp['XaxisTotalPlots']
     makeResp['dateList'] = resp['dateList']
     makeResp['Xscale'] = resp['Xscale']
     makeResp['YaxisList'] = resp['YaxisList']
