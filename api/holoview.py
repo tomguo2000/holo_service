@@ -225,6 +225,15 @@ def holoview_index():
         except:
             raise Exception ("110900")
 
+        # 再兼容一会ibs_reveal,如果没有vehicleMode，从signalList里裁剪出一个 2021/10/24
+        if not vehicleModel:
+            realSignalList = []
+            for x in signalList:
+                vehicleModel = x.split('_')[0]
+                realSignalList.append(x[4:])
+            signalList = realSignalList[:]
+
+
         # 如果查询的数据是30天前，提示不干活
         if startTime < Timeutils.todayStartTimeStamp(ms=True) - 30*86400*1000:
             raise Exception("110900", "让小天给你查30天以前的东西，你得加钱才能办")
@@ -236,9 +245,6 @@ def holoview_index():
         # 如果查询的日期早于2021/06/01，提示不知道
         if startTime < Timeutils.timeString2timeStamp('2021-06-01_00:00:00', ms=True):
             raise Exception("110900", "让小天查2021年6月1日前的数据？小天那时候还不记事呢！")
-
-        if not overallList:
-            overallList = ['event_ConnStatusList']
 
 
         # # 判断不要跨天，否则不干活
@@ -469,7 +475,8 @@ def holoview_index():
             logger.debug(f"2-9：message_HeartbeatList 的结果完毕。。。{time.time()*1000-time0}")
 
 
-        # 传进来的signalList必须包含ME7_ 或者 ME5_这样的前缀
+        # 传进来的signalList必须包含ME7_ 或者 ME5_这样的前缀 废弃这个要求
+        # 传进来的signalList是干净的信号全称    2021/10/24
         if signalList:
 
             # signalList有值，必须vehicleModel也要有有效值
@@ -790,7 +797,6 @@ def transformer2Yaxis(canIDDict, contents, Xinterval, signalInfos={}, firstOnly=
     # contents like this:
     # [('BMS_PackI', '2021-10-17_07:51:28.000', [0.0]),('BMS_PackI', '2021-10-17_07:51:28.000', [0.0])]
     # 得到要输出signal的list
-    # TODO 这里需要传入是否firstOnly，如果不是firstOnly，要处理秒包里的高频。
     # 处理方法要根据信号的cycle_time，把contents里的内容，不需要考虑Xscale，按照cycle_time还原。
 
 
