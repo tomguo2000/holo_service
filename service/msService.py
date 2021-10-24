@@ -225,6 +225,14 @@ def fuzzy_finder(key, data):
     for k,v in data.items():
         # print("item",item['name'])
         # 检查当前项是否与regex匹配。
+        # 先搜索canID部分
+        match = regex.search(str(k))
+        if match:
+            suggestions.append(str(k))
+            # 添加这个canID下的全部信号
+            for x in data.get(k):
+                suggestions.append(x)
+
         for x in v:
             match = regex.search(str(x))
             if match:

@@ -73,13 +73,13 @@ def holoview_findSignal():
         if not signalInfo:
             return {
                        "code": 400,
-                       "message": "没有找到了这个信号的信息，小天认为你喝酒了",
+                       "message": "啥也没找到，小天认为你喝酒了",
                        "businessObj": None
                    }, 200
         else:
             return {
                        "code": 200,
-                       "message": "找到了这个信号的信息，小天认为你做的很好",
+                       "message": "找到了一些，小天认为你做的很好",
                        "businessObj": signalInfo
                    }, 200
     except Exception as ex:
