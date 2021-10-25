@@ -222,24 +222,36 @@ def fuzzy_finder(key, data):
     # print("pattern",pattern)
     # 编译正则表达式
     regex = re.compile(pattern, re.IGNORECASE)
-    for k,v in data.items():
+    for canID, signalList in data.items():
         # print("item",item['name'])
         # 检查当前项是否与regex匹配。
         # 先搜索canID部分
-        match = regex.search(str(k))
+        match = regex.search(str(canID))
         if match:
-            suggestions.append(str(k))
+            _content = {
+                "canID": canID,
+                "signalName": None
+            }
+            suggestions.append(_content)
             # 添加这个canID下的全部信号
-            for x in data.get(k):
-                suggestions.append(x)
+            for _signal in data.get(canID):
+                _content = {
+                    "canID": "|--------",
+                    "signalName": _signal
+                }
+                suggestions.append(_content)
 
-        for x in v:
-            match = regex.search(str(x))
+        for _c in signalList:
+            match = regex.search(str(_c))
             if match:
                 # 如果匹配，就添加到列表中
-                suggestions.append(str(x))
+                _content = {
+                    "canID": canID,
+                    "signalName": _c
+                }
+                suggestions.append(_content)
 
-    return suggestions
+    return suggestions[:10]
 
 
 
