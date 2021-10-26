@@ -470,7 +470,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": 'Tbox心跳报文',
-                "cycle_time": None
+                "cycle_time": "180秒"
             }})
             logger.debug(f"2-9：message_HeartbeatList 的结果完毕。。。{time.time()*1000-time0}")
 
