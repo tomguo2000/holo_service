@@ -362,7 +362,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '国标实发报文条数',
-                "cycle_time": 100000
+                "cycle_time": '10秒'
             }})
             logger.debug(f"2-4：message_tj32960Live 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -398,7 +398,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '企标实发报文条数',
-                "cycle_time": 100000
+                "cycle_time": '10秒'
             }})
             logger.debug(f"2-5：get message_MSLive 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -452,7 +452,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": 'MISC报文条数',
-                "cycle_time": 100000
+                "cycle_time": '10秒'
             }})
             logger.debug(f"2-8：message_MiscList 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -469,7 +469,7 @@ def holoview_index():
                 "maximum": 10,
                 "minimum": 0,
                 "graphType": 'smooth',
-                "comment": '国标登录登出报文',
+                "comment": 'Tbox心跳报文',
                 "cycle_time": None
             }})
             logger.debug(f"2-9：message_HeartbeatList 的结果完毕。。。{time.time()*1000-time0}")
@@ -644,7 +644,7 @@ def holoview_index():
                     "minimum": _signalInfo['minimum'],
                     "graphType": _signalInfo['graphType'],
                     "comment": _signalInfo['comment'],
-                    "cycle_time": _signalInfo['cycle_time'],
+                    "cycle_time": str(_signalInfo['cycle_time'])+' ms',
                 }})
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
