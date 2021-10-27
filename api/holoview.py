@@ -303,7 +303,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'poly',
                 "comment": '判断Tbox和MQTT的连接状态',
-                "cycle_time": None
+                "cycle_time": '原始频率 事件型'
             }})
             logger.debug(f"2-1：event_ConnStatusList的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -324,7 +324,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'poly',
                 "comment": 'Tbox登录TSP车辆服务的动作',
-                "cycle_time": None
+                "cycle_time": '原始频率 事件型'
             }})
             logger.debug(f"2-2：event_VehicleLoginList的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -344,7 +344,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '4G控车的动作',
-                "cycle_time": None
+                "cycle_time": '原始频率 事件型'
             }})
             logger.debug(f"2-3：event_RemoteCmdList 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -362,7 +362,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '国标实发报文条数',
-                "cycle_time": '10秒'
+                "cycle_time": '原始频率 10秒'
             }})
             logger.debug(f"2-4：message_tj32960Live 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -380,7 +380,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '国标补发报文条数',
-                "cycle_time": None
+                "cycle_time": '原始频率 事件型'
             }})
             logger.debug(f"2-4：message_tj32960Resent 的event结果完毕。。。{time.time()*1000-time0}")
 
@@ -398,7 +398,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '企标实发报文条数',
-                "cycle_time": '10秒'
+                "cycle_time": '原始频率 10秒'
             }})
             logger.debug(f"2-5：get message_MSLive 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -416,7 +416,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '企标补发报文条数',
-                "cycle_time": None
+                "cycle_time": '原始频率 事件型'
             }})
             logger.debug(f"2-6：get message_MSResent 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -434,7 +434,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": '企标告警报文条数',
-                "cycle_time": None
+                "cycle_time": '原始频率 事件型'
             }})
             logger.debug(f"2-7：get message_MSWarning 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -452,7 +452,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": 'MISC报文条数',
-                "cycle_time": '10秒'
+                "cycle_time": '原始频率 10秒'
             }})
             logger.debug(f"2-8：message_MiscList 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -470,7 +470,7 @@ def holoview_index():
                 "minimum": 0,
                 "graphType": 'smooth',
                 "comment": 'Tbox心跳报文',
-                "cycle_time": "180秒"
+                "cycle_time": "原始频率 180秒"
             }})
             logger.debug(f"2-9：message_HeartbeatList 的结果完毕。。。{time.time()*1000-time0}")
 
@@ -644,7 +644,7 @@ def holoview_index():
                     "minimum": _signalInfo['minimum'],
                     "graphType": _signalInfo['graphType'],
                     "comment": _signalInfo['comment'],
-                    "cycle_time": str(_signalInfo['cycle_time'])+' ms',
+                    "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
                 }})
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
