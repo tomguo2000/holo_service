@@ -140,6 +140,8 @@ def holoview_index():
             Xscale = params.get('Xscale')
             skipInvalidValue = params.get('skipInvalidValue') if params.get('skipInvalidValue') else False
 
+            logger.debug(f"初始访问的请求参数: {params}")
+            env='online'
             '''
             参数说明
             vin                 必选
