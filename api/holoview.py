@@ -290,7 +290,7 @@ def holoview_index():
         # 传入X轴和dateList，获取emq连接的event结果
         if "event_ConnStatusList" in overallList:
             time1 = time.time()*1000
-            event_ConnStatusList = getConnStatus(vin, Xaxis, dateList)
+            event_ConnStatusList = getConnStatus(vin, Xaxis, dateList, env=env)
             logger.debug(f"hhhh获取emq连接的event结果 完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['event_ConnStatusList'] = event_ConnStatusList
             resp['YaxisList'].append({"event_ConnStatusList": {
@@ -311,7 +311,7 @@ def holoview_index():
         # 传入X轴和dateList，获取SDK初始化的聚合结果
         if "event_VehicleLoginList" in overallList:
             time1 = time.time()*1000
-            event_VehicleLoginList = getVehicleLoginEvents(vin, Xaxis, dateList)
+            event_VehicleLoginList = getVehicleLoginEvents(vin, Xaxis, dateList, env=env)
             logger.debug(f"hhhh获取SDK初始化的聚合结果 完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['event_VehicleLoginList'] = event_VehicleLoginList
             resp['YaxisList'].append({"event_VehicleLoginList": {
@@ -331,7 +331,7 @@ def holoview_index():
         # 传入X轴和dateList，获取控车event的结果
         if "event_RemoteCmdList" in overallList:
             time1 = time.time()*1000
-            event_RemoteCmdList = getRemoteCmdEvents(vin, Xaxis, dateList)
+            event_RemoteCmdList = getRemoteCmdEvents(vin, Xaxis, dateList, env=env)
             logger.debug(f"hhhh获取控车event的结果 完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['event_RemoteCmdList'] = event_RemoteCmdList
             resp['YaxisList'].append({"event_RemoteCmdList": {
@@ -352,7 +352,7 @@ def holoview_index():
         # 传入X轴和dateList，获取国标的报文条数结果
         if "message_tj32960Live" in overallList:
             time1 = time.time()*1000
-            message_tj32960Live = getTJ32960(vin, Xaxis, 'message_national_live.txt', dateList)
+            message_tj32960Live = getTJ32960(vin, Xaxis, 'message_national_live.txt', dateList, env=env)
             logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_tj32960Live'] = message_tj32960Live
             resp['YaxisList'].append({"message_tj32960Live": {
@@ -370,7 +370,7 @@ def holoview_index():
         # 传入X轴和dateList，获取国标补发的报文条数结果
         if "message_tj32960Resent" in overallList:
             time1 = time.time()*1000
-            message_tj32960Resent = getTJ32960(vin, Xaxis, 'message_national_resent.txt', dateList)
+            message_tj32960Resent = getTJ32960(vin, Xaxis, 'message_national_resent.txt', dateList, env=env)
             logger.debug(f"hhhh获取国标的报文条数结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_tj32960Resent'] = message_tj32960Resent
             resp['YaxisList'].append({"message_tj32960Resent": {
@@ -388,7 +388,7 @@ def holoview_index():
         # 传入X轴和dateList，获取企标实发的结果
         if "message_MSLive" in overallList:
             time1 = time.time()*1000
-            message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', dateList)
+            message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', dateList, env=env)
             logger.debug(f"hhhh获取企标实发的报文结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MSLive'] = message_MSLive
             resp['YaxisList'].append({"message_MSLive": {
@@ -406,7 +406,7 @@ def holoview_index():
         # 传入X轴和dateList，获取企标补发的结果
         if "message_MSResent" in overallList:
             time1 = time.time()*1000
-            message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', dateList)
+            message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', dateList, env=env)
             logger.debug(f"hhhh获取企标补发的报文结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MSResent'] = message_MSResent
             resp['YaxisList'].append({"message_MSResent": {
@@ -424,7 +424,7 @@ def holoview_index():
         # 传入X轴和dateList，获取企标告警的结果
         if "message_MSWarning" in overallList:
             time1 = time.time()*1000
-            message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', dateList)
+            message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', dateList, env=env)
             logger.debug(f"hhhh获取企标告警的报文结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MSWarning'] = message_MSWarning
             resp['YaxisList'].append({"message_MSWarning": {
@@ -442,7 +442,7 @@ def holoview_index():
         # 传入X轴和dateList，获取MISC的聚合结果
         if "message_MiscList" in overallList:
             time1 = time.time()*1000
-            message_MiscList = getMisc(vin, Xaxis, dateList)
+            message_MiscList = getMisc(vin, Xaxis, dateList, env=env)
             logger.debug(f"hhhh获取MISC的聚合结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_MiscList'] = message_MiscList
             resp['YaxisList'].append({"message_MiscList": {
@@ -460,7 +460,7 @@ def holoview_index():
         # 传入X轴和dateList，获取登入登出心跳的聚合结果
         if "message_HeartbeatList" in overallList:
             time1 = time.time()*1000
-            message_HeartbeatList = getHeartbeat(vin, Xaxis, dateList)
+            message_HeartbeatList = getHeartbeat(vin, Xaxis, dateList, env=env)
             logger.debug(f"hhhh获取登入登出心跳的聚合结果完毕。。。{time.time()*1000-time1}")
             resp['YaxisOverall']['message_HeartbeatList'] = message_HeartbeatList
             resp['YaxisList'].append({"message_HeartbeatList": {
@@ -491,9 +491,9 @@ def holoview_index():
             dataSourcesWaining = 'message_enterprise_warning.txt'
 
             # 获取需要读取的完整文件路径的列表
-            fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
-            fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent)
-            fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWaining)
+            fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
+            fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent, env=env)
+            fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWaining, env=env)
 
             logger.debug(f"4：获取到了需要读取的文件列表:{fullPathList1},{fullPathList2},{fullPathList3}。。。{time.time()*1000-time0}")
 
@@ -854,12 +854,12 @@ def createXaxis(startTime, endTime, interval=10):
     return respXaxis
 
 
-def getTJ32960(vin, Xaxis, messagetype, dateList):
+def getTJ32960(vin, Xaxis, messagetype, dateList, env):
     # 天际国标的报文文件名
     dataSources = messagetype
 
     # 获取需要读取的文件列表
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources, env=env)
 
     # readKeys = [['MPUTime'], ['TYPE_CMD']]
     readKeys = [['MPUTime']]
@@ -872,7 +872,7 @@ def getTJ32960(vin, Xaxis, messagetype, dateList):
     return Y32960
 
 
-def getMS(vin, Xaxis, messagetype, dateList):
+def getMS(vin, Xaxis, messagetype, dateList, env):
     time0 = time.time()*1000
 
     # 天际企标的报文文件名
@@ -881,7 +881,7 @@ def getMS(vin, Xaxis, messagetype, dateList):
 
     # 获取需要读取的文件列表
     time1 = time.time()*1000
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
 
 
     # 读取必要的message
@@ -897,12 +897,12 @@ def getMS(vin, Xaxis, messagetype, dateList):
     return YMSdict
 
 
-def getMisc(vin, Xaxis, dateList):
+def getMisc(vin, Xaxis, dateList, env):
     # 天际的报文文件名
     dataSources = 'message_misc.txt'
 
     # 获取需要读取的文件列表
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources, env=env)
 
     readKeys = [['MPUTime']]
     oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
@@ -912,12 +912,12 @@ def getMisc(vin, Xaxis, dateList):
     return YMisc
 
 
-def getHeartbeat(vin, Xaxis, dateList):
+def getHeartbeat(vin, Xaxis, dateList, env):
     # 天际的报文文件名
     dataSources = 'message_hearbeat.txt'
 
     # 获取需要读取的文件列表
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources, env=env)
 
     readKeys = [['MPUTime']]
     oriMessageList = service.public.getOriMessageList(fullPathList1, readKeys)
@@ -927,12 +927,12 @@ def getHeartbeat(vin, Xaxis, dateList):
     return YHeartbeat
 
 
-def getVehicleLoginEvents(vin, Xaxis, dateList):
+def getVehicleLoginEvents(vin, Xaxis, dateList, env):
     # 天际的报文文件名
     dataSources = 'event_vehicle.txt'
 
     # 获取需要读取的文件列表
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources, env=env)
 
     # readKeys = [['timestamp'], ['event']]
     readKeys = ['.']
@@ -955,12 +955,12 @@ def getVehicleLoginEvents(vin, Xaxis, dateList):
     return YHeartbeat
 
 
-def getRemoteCmdEvents(vin, Xaxis, dateList):
+def getRemoteCmdEvents(vin, Xaxis, dateList, env):
     # 天际的报文文件名
     dataSources = 'event_remote_cmd.txt'
 
     # 获取需要读取的文件列表
-    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources)
+    fullPathList1 = service.public.getFullPathList(vin, dateList, dataSources, env=env)
 
     # readKeys = [['timestamp'], ['event']]
     readKeys = ['.']
@@ -1021,11 +1021,11 @@ def getRemoteCmdEvents(vin, Xaxis, dateList):
     return YHeartbeat
 
 
-def getConnStatus(vin, Xaxis, dateList):
-    previousConnStatus = getPreviousConnStatus(vin, dateList[0])
+def getConnStatus(vin, Xaxis, dateList, env):
+    previousConnStatus = getPreviousConnStatus(vin, dateList[0], env=env)
 
     dataSource = 'event_emq_conn.txt'
-    fullPathList = service.public.getFullPathList(vin, dateList, dataSource)
+    fullPathList = service.public.getFullPathList(vin, dateList, dataSource, env=env)
 
     respMessageList = []
     respMessageList.append({'timestamp': Timeutils.timeString2timeStamp(Xaxis[0], ms=True),
@@ -1052,14 +1052,15 @@ def getConnStatus(vin, Xaxis, dateList):
     return YConnList
 
 
-def getPreviousConnStatus(vin, date):
+def getPreviousConnStatus(vin, date, env):
     dataSource = 'event_emq_conn.txt'
     startDateStr = Timeutils.timeArray2timeString(Timeutils.timeString2timeArray(date, format="%Y-%m-%d")
                                                   + datetime.timedelta(days=-1), format="%Y-%m-%d")
     while True:
         fullPathList = service.public.getFullPathList(vin=vin,
                                                       dateList=[startDateStr],
-                                                      dataSources=dataSource)
+                                                      dataSources=dataSource,
+                                                      env=env)
         if os.path.exists(fullPathList[0]) or startDateStr < '2021-06-01':
             break
         else:

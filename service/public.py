@@ -286,7 +286,7 @@ def transformer2TimelineDict(contents):
     return _timelineDict
 
 
-def getFullPathList(vin, dateList, dataSources):
+def getFullPathList(vin, dateList, dataSources, env=None):
     # 通过环境变量找到主程序的名字
     env_dist = os.environ
     for key in env_dist:
@@ -298,8 +298,10 @@ def getFullPathList(vin, dateList, dataSources):
     except NameError:
         logger.error("HOLO_APPNAME这个环境变量没有定义，检查入口程序的设置")
 
-    # 通过引入的CONFIG得到运行环境
-    env = CONFIG['env']
+    # 2021/10/27 上线前修改：去掉这里对env的判断，用函数传入的env参数，如果没有传，则用原来的判断逻辑
+    if not env:
+        # 通过引入的CONFIG得到运行环境
+        env = CONFIG['env']
 
     # 拼接完整path
     fullPathList = []
