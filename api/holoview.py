@@ -141,7 +141,7 @@ def holoview_index():
             skipInvalidValue = params.get('skipInvalidValue') if params.get('skipInvalidValue') else False
 
             logger.debug(f"初始访问的请求参数: {params}")
-            env='online'
+
             '''
             参数说明
             vin                 必选
@@ -512,7 +512,7 @@ def holoview_index():
             del(oriMessageList)
             gc.collect()
 
-            oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime) \
+            oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime, needSort=True) \
                 if oriMessageListResent else {}
             logger.debug(f"5-2：获取企标补发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
             del(oriMessageListResent)

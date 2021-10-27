@@ -70,7 +70,11 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
 
 
 
-def cropAndTransformer2dict(oriAllMessage, startTime, endTime):
+def cropAndTransformer2dict(oriAllMessage, startTime, endTime, needSort=None):
+    # 企标的补发报文，不是按照MCU时间顺序补发的，所以需要指定排序
+    if needSort:
+        oriAllMessage.sort(key=lambda x: x.split('MCUTime')[1])
+
     startTimeStr = Timeutils.timeStamp2timeString(startTime)
     endTimeStr = Timeutils.timeStamp2timeString(endTime)
 
