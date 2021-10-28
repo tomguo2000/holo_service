@@ -114,11 +114,22 @@ def holoview_getOverall():
 
 @holoview.route('/help', methods=["GET"])
 def holoview_help():
-    with open('static/imgs/demo.png', 'rb') as f:
+    with open('static/imgs/xiaotian_1.png', 'rb') as f:
         img_base64data = base64.b64encode(f.read())
-        imgData = img_base64data.decode()
-        imgData = "data:image/png;base64," + imgData
-    return render_template('holoview_help.html', img1data=imgData)
+        imgData_1 = img_base64data.decode()
+        imgData_1 = "data:image/png;base64," + imgData_1
+
+    with open('static/imgs/xiaotian_2.png', 'rb') as f:
+        img_base64data = base64.b64encode(f.read())
+        imgData_2 = img_base64data.decode()
+        imgData_2 = "data:image/png;base64," + imgData_2
+
+    with open('static/imgs/xiaotian_3.png', 'rb') as f:
+        img_base64data = base64.b64encode(f.read())
+        imgData_3 = img_base64data.decode()
+        imgData_3 = "data:image/png;base64," + imgData_3
+
+    return render_template('holoview_help.html', img1data=imgData_1, img2data=imgData_2, img3data=imgData_3)
 
 
 @holoview.route('/', methods=["GET"])
