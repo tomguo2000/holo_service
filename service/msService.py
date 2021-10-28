@@ -160,7 +160,7 @@ def getSignalsInvalidValues(signalList, vehicleMode):
 
 def getSignalInfo(signalName, vehicleModel):
     if vehicleModel == 'ME7':
-        canDB = candbPool[vehicleModel]['0a']
+        canDB = candbPool[vehicleModel]['20']
     else:
         canDB = candbPool[vehicleModel]['01']
 
