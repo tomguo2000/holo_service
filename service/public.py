@@ -10,9 +10,9 @@ import numpy, binascii
 
 
 # candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
-candb_0a = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V309.210409_500km_SOP+6_TBOX.DBC', encoding='GBK')
+# candb_0a = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V309.210409_500km_SOP+6_TBOX.DBC', encoding='GBK')
+candb_0a = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
 candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC', encoding='GBK')
-candb_20 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
 candb_ME5_00 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V1.8.dbc', encoding='GBK')
 candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
 
@@ -25,8 +25,7 @@ candbPool = {
         '0e': candb_0e,
         '0f': candb_0e,
         '10': candb_0e,
-        '11': candb_0e,
-        '20': candb_20
+        '11': candb_0e
     },
     'ME5': {
         '00': candb_ME5_00,
