@@ -8,24 +8,34 @@ from multiprocessing import Pool
 import cantools
 import numpy, binascii
 
+'''
+版本10,11	A223_500KM_A点 A223_500KM_B点	ME7_TboxCAN_CMatrix_V307.201203_500km_SOP+2.dbc
+版本12,13	A223_400KM 						ME7_TboxCAN_CMatrix_V305.201203_400km_SOP+2.dbc	
+版本14，15	A226_500KM_A点，A226_500KM_B点	ME7_TboxCAN_CMatrix_V309.210409_500km_SOP+6_TBOX.DBC
+版本16，17	A221_400KM A226_400KM			ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC
+
+V310版本是最终版，tbox发送的10----17，都可以用V310进行报文解析    2021/10/29 郭亮
+'''
 
 # candb = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC',cache_dir='./cache')
 # candb_0a = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V309.210409_500km_SOP+6_TBOX.DBC', encoding='GBK')
 candb_0a = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
 candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_SOP+6_TBOX.DBC', encoding='GBK')
+candb_ME7_310_500 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
+candb_ME7_310_400 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_400km.dbc', encoding='GBK')
 candb_ME5_00 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V1.8.dbc', encoding='GBK')
 candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
 
 candbPool = {
     'ME7': {
-        '0a': candb_0a,
-        '0b': candb_0a,
-        '0c': candb_0e,
-        '0d': candb_0e,
-        '0e': candb_0e,
-        '0f': candb_0e,
-        '10': candb_0e,
-        '11': candb_0e
+        '0a': candb_ME7_310_500,
+        '0b': candb_ME7_310_500,
+        '0c': candb_ME7_310_400,
+        '0d': candb_ME7_310_400,
+        '0e': candb_ME7_310_500,
+        '0f': candb_ME7_310_500,
+        '10': candb_ME7_310_400,
+        '11': candb_ME7_310_400
     },
     'ME5': {
         '00': candb_ME5_00,
