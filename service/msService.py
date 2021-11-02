@@ -255,11 +255,20 @@ def fuzzy_finder(key, data):
                 }
                 suggestions.append(_content)
 
-    return suggestions[:10]
+    # 返回前10条匹配结果，改成返回全部匹配结果，由前端展示前10条
+    # return suggestions[:10]
+    return suggestions
 
 
 
 def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
+    '''
+    这里要改成从redis进行获取。如果redis为空，则实际操作一遍后，写入redis
+    :param signalList:
+    :param vehicleMode:
+    :param msUploadProtol:
+    :return:
+    '''
     if vehicleMode == 'ME7':
         if msUploadProtol:
             canDB = candbPool[vehicleMode][msUploadProtol]

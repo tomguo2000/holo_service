@@ -555,7 +555,7 @@ def holoview_index():
                 if vehicleModel != sortedMessages[0][1][0]:
                     raise Exception("110905", f'小天说了，你告诉我车型是{vehicleModel},可实际上报文是{sortedMessages[0][1][0]},你自己想想清楚先')
 
-            # 输入一段连续的报文list，根据X轴的实际情况，选取一组真正需要解析的报文。
+            # 输入一段连续的报文list，根据X轴的实际情况，进行抽稀。
             abstractionMessages = abstract(sortedMessages, Xaxis)
 
             del(sortedMessages)
@@ -719,6 +719,12 @@ def extremelyFillUp(signalListFor1Line):
 
 
 def abstract(sortedMessages, Xaxis):
+    '''
+    把传入的有序的dict，按照x轴的秒，进行抽稀
+    :param sortedMessages:
+    :param Xaxis:
+    :return:
+    '''
     # print(sortedMessages[0])
 
     # 设2个指针. XaxisCursor:X时间轴的指针， bufferCursor:要处理的sortedMessages的指针。
