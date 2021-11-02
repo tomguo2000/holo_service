@@ -170,7 +170,7 @@ def holoview_index():
             if not startTime:
                 startTime = Timeutils.timeString2timeStamp(date, format="%Y-%m-%d", ms=True)
             if not endTime:
-                endTime = startTime + (86400-1) * 1000
+                endTime = startTime + (86400-2) * 1000
 
             if int(startTime) > 9999999999:     # 传入的是ms，取个整
                 startTime = int(int(startTime) / 1000) * 1000

@@ -31,7 +31,7 @@ class CacheDBCService(object):
     def __init__(self):
         if not hasattr(CacheDBCService, 'pool'):
             CacheDBCService.create_pool()
-        self._connection = redis.Redis(connection_pool = CacheDBCService.pool)
+        self._connection = redis.Redis(connection_pool=CacheDBCService.pool)
 
     @staticmethod
     def create_pool():
@@ -63,13 +63,24 @@ class CacheDBCService(object):
     def uploadDBCDict(self):
         candb_ME7_310_500 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
         candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
-        self._connection.hset('ME7', 'fullCanDBDict', json.dumps(self.genMessagesSignals(candb_ME7_310_500)))
-        self._connection.hset('ME5', 'fullCanDBDict', json.dumps(self.genMessagesSignals(candb_ME5_01)))
+
+        ME7_fullCanDBDict = self.genMessagesSignals(candb_ME7_310_500)
+        ME5_fullCanDBDict = self.genMessagesSignals(candb_ME5_01)
+
+
+        self._connection.hset('ME7', 'fullCanDBDict', json.dumps(ME7_fullCanDBDict))
+        self._connection.hset('ME5', 'fullCanDBDict', json.dumps(ME5_fullCanDBDict))
         return True
 
 
-    def downloadFromRedis(self, vehicleMode):
-        return self._connection.hget(vehicleMode, 'fullCanDBDict')
+    def downloadFromRedis(self, vehicleMode, categary):
+        """
+        get CanDB dict or signal list
+        :param vehicleMode: like 'ME7'
+        :param categary: like 'fullCanDBDict'
+        :return:
+        """
+        return self._connection.hget(vehicleMode, categary)
 
 
     def genMessagesSignals(self, canDB):
@@ -79,15 +90,3 @@ class CacheDBCService(object):
             signals = _msg.signals
             respDict[_msg.name] = [_sig.name for _sig in signals]
         return respDict
-
-
-
-if __name__ == '__main__':
-
-    time0 = time.time()
-    print(CacheDBCService().uploadDBCDict())
-    print (f"uploaded all dict. spent me {time.time() - time0 } s")
-
-    time0 = time.time()
-    print(CacheDBCService().downloadFromRedis('ME7'))
-    print (f"download. spent me {time.time() - time0 } s")
