@@ -4,40 +4,72 @@
 # 提供管理端主动更新redis的dict的接口
 
 import redis, time, cantools, json, ujson
+from common.config import CONFIG, env
 
-class RedisPool(object):
+
+class RedisDBConfig:
+    HOST = CONFIG['redis_setting'][env]['server']
+    PORT = CONFIG['redis_setting'][env]['port']
+    DBID = 10
+    PASSWORD = CONFIG['redis_setting'][env]['password']
+
+
+def operator_status(func):
+    '''''get operatoration status
+    '''
+    def gen_status(*args, **kwargs):
+        error, result = None, None
+        try:
+            result = func(*args, **kwargs)
+        except Exception as e:
+            error = str(e)
+        return {'result': result, 'error': error}
+    return gen_status
+
+
+class CacheDBCService(object):
     def __init__(self):
-        self.pool = redis.ConnectionPool(host='192.168.0.239', port=6379, db=10, password='Dearccbj2018@02', decode_responses=True)
-        # self.pool = redis.ConnectionPool(host='192.168.10.89', port=6379, db=10, password='Dearcc2021_11!',  decode_responses=True)
-        self.r = redis.Redis(connection_pool=self.pool)
+        if not hasattr(CacheDBCService, 'pool'):
+            CacheDBCService.create_pool()
+        self._connection = redis.Redis(connection_pool = CacheDBCService.pool)
 
-class DBCCache(RedisPool):
-    candb_ME7_310_500 = cantools.db.load_file('../dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
-    # candb_ME7_310_400 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_400km.dbc', encoding='GBK')
-    # candb_ME5_00 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V1.8.dbc', encoding='GBK')
-    candb_ME5_01 = cantools.db.load_file('../dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
-    candbPool = {
-        'ME7': {
-            # '0a': candb_ME7_310_500,
-            # '0b': candb_ME7_310_500,
-            # '0c': candb_ME7_310_400,
-            # '0d': candb_ME7_310_400,
-            # '0e': candb_ME7_310_500,
-            # '0f': candb_ME7_310_500,
-            # '10': candb_ME7_310_400,
-            # '11': candb_ME7_310_400,
-            'last': candb_ME7_310_500
-        },
-        'ME5': {
-            # '00': candb_ME5_00,
-            # '01': candb_ME5_01,
-            'last': candb_ME5_01
-        }
-    }
+    @staticmethod
+    def create_pool():
+        CacheDBCService.pool = redis.ConnectionPool(
+            host = RedisDBConfig.HOST,
+            port = RedisDBConfig.PORT,
+            db  = RedisDBConfig.DBID,
+            password = RedisDBConfig.PASSWORD)
 
-    def __init__(self):
-        super().__init__()
+    @operator_status
+    def set_data(self, key, value):
+        '''''set data with (key, value)
+        '''
+        return self._connection.set(key, value)
 
+    @operator_status
+    def get_data(self, key):
+        '''''get data by key
+        '''
+        return self._connection.get(key)
+
+    @operator_status
+    def del_data(self, key):
+        '''''delete cache by key
+        '''
+        return self._connection.delete(key)
+
+
+    def uploadDBCDict(self):
+        candb_ME7_310_500 = cantools.db.load_file('../dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
+        candb_ME5_01 = cantools.db.load_file('../dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
+        self._connection.hset('ME7', 'fullCanDBDict', json.dumps(self.genMessagesSignals(candb_ME7_310_500)))
+        self._connection.hset('ME5', 'fullCanDBDict', json.dumps(self.genMessagesSignals(candb_ME5_01)))
+        return True
+
+
+    def downloadFromRedis(self, vehicleMode):
+        return self._connection.hget(vehicleMode, 'fullCanDBDict')
 
 
     def genMessagesSignals(self, canDB):
@@ -49,39 +81,13 @@ class DBCCache(RedisPool):
         return respDict
 
 
-    def uploadToRedis(self):
-        me7_fullCanDBDict = self.genMessagesSignals(self.candbPool['ME7']['last'])
-        me5_fullCanDBDict = self.genMessagesSignals(self.candbPool['ME5']['last'])
-        self.r.hset('ME7', 'fullCanDBDict', json.dumps(me7_fullCanDBDict))
-        self.r.hset('ME5', 'fullCanDBDict', json.dumps(me5_fullCanDBDict))
-
-
-    def downloadFromRedis(self, vehicleMode):
-        return self.r.hget(vehicleMode, 'fullCanDBDict')
-
 
 if __name__ == '__main__':
-    pool = redis.ConnectionPool(host='192.168.10.89', port=6379, db=10, password='Dearcc2021_11!',  decode_responses=True)
-    r = redis.Redis(connection_pool=pool)
-
-
-    a=DBCCache()
-    time0 = time.time()
-    a.uploadToRedis()
-    print (f"upload to redis. spent me {time.time() - time0 } s")
 
     time0 = time.time()
-    a.downloadFromRedis('ME7')
-    print (f"download. spent me {time.time() - time0 } s")
+    print(CacheDBCService().uploadDBCDict())
+    print (f"uploaded all dict. spent me {time.time() - time0 } s")
 
     time0 = time.time()
-    b=DBCCache()
-    b.downloadFromRedis('ME7')
-    print (f"download. spent me {time.time() - time0 } s")
-
-
-    time0 = time.time()
-
-    _str = r.hget('ME7', 'fullCanDBDict')
-    _json = json.loads(_str)
+    print(CacheDBCService().downloadFromRedis('ME7'))
     print (f"download. spent me {time.time() - time0 } s")

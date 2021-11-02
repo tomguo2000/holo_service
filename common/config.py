@@ -305,6 +305,23 @@ CONFIG = {
             'Storage_Prefix': '/Users/guoliang/data'
         }
     },
+    'redis_setting': {
+        'online': {
+            'server': '192.168.0.239',
+            'port': 6379,
+            'password': 'Dearccbj2018@02'
+        },
+        'test': {
+            'server': '192.168.0.239',
+            'port': 6379,
+            'password': 'Dearccbj2018@02'
+        },
+        'local': {
+            'server': '192.168.0.239',
+            'port': 6379,
+            'password': 'Dearccbj2018@02'
+        }
+    }
 }
 
 EnterpriseTransportProtolVer = {
