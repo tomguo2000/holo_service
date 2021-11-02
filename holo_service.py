@@ -11,7 +11,7 @@ from api.holoview import *
 from api.IBS_reveal import *
 from common.setlog2 import set_logger
 from flask_gzip import Gzip
-
+from service.cacheDBCService import CacheDBCService
 
 app = Flask(__name__)
 app.register_blueprint(overall_by_vin, url_prefix="/api")
@@ -49,4 +49,11 @@ os.environ['HOLO_APPNAME']=appname
 
 if __name__ == "__main__":
     logger.info (f"{appname}开始运行了...")
+    time0 = time.time()
+    print(CacheDBCService().uploadDBCDict())
+    print (f"uploaded all dict. spent me {time.time() - time0 } s")
+
+    time0 = time.time()
+    print(CacheDBCService().downloadFromRedis('ME7'))
+    print (f"download. spent me {time.time() - time0 } s")
     app.run(host='0.0.0.0', port=8678, debug=False)

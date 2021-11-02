@@ -61,8 +61,8 @@ class CacheDBCService(object):
 
 
     def uploadDBCDict(self):
-        candb_ME7_310_500 = cantools.db.load_file('../dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
-        candb_ME5_01 = cantools.db.load_file('../dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
+        candb_ME7_310_500 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
+        candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
         self._connection.hset('ME7', 'fullCanDBDict', json.dumps(self.genMessagesSignals(candb_ME7_310_500)))
         self._connection.hset('ME5', 'fullCanDBDict', json.dumps(self.genMessagesSignals(candb_ME5_01)))
         return True
