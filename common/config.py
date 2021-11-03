@@ -317,9 +317,11 @@ CONFIG = {
             'password': 'Dearccbj2018@02'
         },
         'local': {
-            'server': '192.168.10.89',
+            # 'server': '192.168.10.89',
+            'server': '192.168.0.239',
             'port': 6379,
-            'password': 'Dearcc2021_11!'
+            # 'password': 'Dearcc2021_11!'
+            'password': 'Dearccbj2018@02'
         }
     }
 }

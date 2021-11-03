@@ -543,9 +543,10 @@ def holoview_index():
 
             # 对字典进行排序后转成list
             sortedMessages = sorted(combinedDict.items(), key=lambda x:x[0])
-            logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
             del(combinedDict)
             gc.collect()
+            logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
+
 
             # 判断下传入的车型，和报文里读到的车型是否匹配，如不匹配，就别做下去了
             msUploadProtol = None
@@ -557,30 +558,25 @@ def holoview_index():
 
             # 输入一段连续的报文list，根据X轴的实际情况，进行抽稀。
             abstractionMessages = abstract(sortedMessages, Xaxis)
-
             del(sortedMessages)
             gc.collect()
+            logger.debug(f"6+1：根据X轴的实际情况，进行抽稀完成。。。{time.time()*1000-time0}")
 
             # 把canIDDict的生成放在这里，因为确认了用什么样的车型和组包协议
             # 根据singal判断需要解析哪些canid，假设查询时，signal前缀截取的vehicleModel是正确的，后面要跟报文中的实际车型对比
             canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=signalList,
                                                                                    vehicleMode=vehicleModel,
                                                                                    msUploadProtol=msUploadProtol)
-            logger.debug(f"要优化这里了。canIDDict={canIDDict}")
-            logger.debug(f"要优化这里了。signalInfoDict={signalInfoDict}")
-            signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=signalList,
-                                                                                vehicleMode=vehicleModel)
-            logger.debug(f"要优化这里了。signalsInvalidValueDict={signalsInvalidValueDict}")
 
             # 获取到每个信号的invalid值
-            # TODO 这一步可以优化，上面已经得到了signalInfoDict
+            signalsInvalidValueDict = {}
             if skipInvalidValue:
-                signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=signalList,
-                                                                                    vehicleMode=vehicleModel)
-            else:
-                signalsInvalidValueDict = {}
+                for k, v in signalInfoDict.items():
+                    if v.get('invalid'):
+                        signalsInvalidValueDict[k] = v.get('invalid')
 
-            logger.debug(f"6+1：根据singal判断需要解析哪些canid 的结果完毕:{canIDDict}。。。{time.time()*1000-time0}")
+
+            logger.debug(f"6+2：根据singal判断需要解析哪些canid 的结果完毕。。。{time.time()*1000-time0}")
 
             if not canIDDict:
                 raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')

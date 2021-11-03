@@ -9,6 +9,7 @@ import cantools
 import numpy, binascii
 from service.public import candbPool
 import re
+import ujson
 
 
 
@@ -143,7 +144,8 @@ def genMessagesSignals(canDB):
         respDict[_msg.name] = {_sig.name for _sig in signals}
     return respDict
 
-
+'''
+2021/11/03 废弃，功能合并到 getCanIDListBySignalList 里
 def getSignalsInvalidValues(signalList, vehicleMode):
     # print(f"getSignalsInvalidValues参数：  signalList:{signalList},vehicleMode:{vehicleMode}")
     respDict = {}
@@ -156,15 +158,19 @@ def getSignalsInvalidValues(signalList, vehicleMode):
                     respDict[_signalName] = k
     # print(respDict)
     return respDict
+'''
 
+def getSignalInfo(signalName, vehicleModel, fullCanDBDict=None):
 
-def getSignalInfo(signalName, vehicleModel):
     if vehicleModel == 'ME7':
         canDB = candbPool[vehicleModel]['0a']
     else:
         canDB = candbPool[vehicleModel]['01']
 
-    fullCanDBDict = genMessagesSignals(canDB)
+    # 如果传入了fullCanDBDict，就不需要在生成一遍，为了提速和兼容 2021/11/03
+    if not fullCanDBDict:
+        fullCanDBDict = genMessagesSignals(canDB)
+
     resp = {}
     for x in fullCanDBDict:
         if signalName in fullCanDBDict[x]:
@@ -263,7 +269,7 @@ def fuzzy_finder(key, data):
 
 def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
     '''
-    这里要改成从redis进行获取。如果redis为空，则实际操作一遍后，写入redis
+    从redis获取full然后jsonload很慢，还是直接解析来的快
     :param signalList:
     :param vehicleMode:
     :param msUploadProtol:
@@ -296,7 +302,7 @@ def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
         else:
             errorSign = True
 
-        signalInfoDict[sig] = getSignalInfo(signalName=sig, vehicleModel=vehicleMode)
+        signalInfoDict[sig] = getSignalInfo(signalName=sig, vehicleModel=vehicleMode, fullCanDBDict=fullCanDBDict)
 
     # canIDDict = {
     #     'BMS_0x100': ['BMS_PackU', 'BMS_PackI'],
