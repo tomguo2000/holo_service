@@ -566,7 +566,11 @@ def holoview_index():
             canIDDict, signalInfoDict = service.msService.getCanIDListBySignalList(signalList=signalList,
                                                                                    vehicleMode=vehicleModel,
                                                                                    msUploadProtol=msUploadProtol)
-
+            logger.debug(f"要优化这里了。canIDDict={canIDDict}")
+            logger.debug(f"要优化这里了。signalInfoDict={signalInfoDict}")
+            signalsInvalidValueDict = service.msService.getSignalsInvalidValues(signalList=signalList,
+                                                                                vehicleMode=vehicleModel)
+            logger.debug(f"要优化这里了。signalsInvalidValueDict={signalsInvalidValueDict}")
 
             # 获取到每个信号的invalid值
             # TODO 这一步可以优化，上面已经得到了signalInfoDict
