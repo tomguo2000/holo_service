@@ -635,9 +635,9 @@ def holoview_index():
             logger.debug(f"8: 把解析信号分组完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
 
-            signalListFor1Line_ver2 = signalListFor1Line[:]
+            # signalListFor1Line_ver2 = signalListFor1Line[:]
             if not firstOnly:
-                smartFillUp(signalListFor1Line_ver2, resp['Xaxis'])
+                smartFillUp(signalListFor1Line, resp['Xaxis'])
 
 
 
@@ -647,8 +647,8 @@ def holoview_index():
             # 2、填充到最小刻度--10ms。
             # 3、取前一个值填充，是否改成线性差值，TBD
             # 4、由于signalListFor1Line的值的部分是字典，可以直接把填充的值set进去，填充后会变成无序的字典
-            if not firstOnly:
-                extremelyFillUp(signalListFor1Line)
+            # if not firstOnly:
+            #     extremelyFillUp(signalListFor1Line)
             # print(f"极限填充后的signalListFor1Line: {signalListFor1Line}")
 
             for oneSignalAllSec in signalListFor1Line:
@@ -687,67 +687,37 @@ def holoview_index():
 
 
 def smartFillUp(signalListFor1Line, Xaxis):
-    print("smartFillUp is comming")
-    print(signalListFor1Line)
-    print(Xaxis)
-    TIMEGAP = 2000 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。
-
+    import bisect
+    TIMEGAP = 2 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。单位：秒
     time00 = time.time() * 1000
-    for siganlRealValue in signalListFor1Line:
 
+    for siganlRealValue in signalListFor1Line:
         # 以下是对一个信号的全部有效报文做处理
         if siganlRealValue[1]:           # 不是一个没有值的信号，开始搞
-
-            _tempKeyList = list(siganlRealValue[1].keys())
-            _tempValueList = list(siganlRealValue[1].values())
+            ordered_origin_key = list(siganlRealValue[1].keys())
             _virtualValueDict = {}
             for _x in Xaxis:
-                if _x in _tempKeyList:
-                    # 这个x刻度，在实值的列表里有，不需要处理
-                    print(f"{siganlRealValue[0]}, {_x} is a good boy")
-                    pass
-                else:
-                    # 这里给这个x刻度，寻找一个恰当的值，作为本刻度的虚值
-                    print(f"{siganlRealValue[0]}, {_x} need smart fullup")
-                    _forKeyOrderList = _tempKeyList[:]      # 临时copy一份key的list，用于做_x的填充对象的寻找
-                    _forKeyOrderList.append(_x)
-                    _forKeyOrderList.sort()
-                    _valueFromIndex = _forKeyOrderList.index(_x) - 1  # 从这个index对应的值来进行填充
-                    # 判断一下这个填充的index和当前要填充的x轴，差多少时间，差的多了就不填了
-                    print( f"from {_tempKeyList[_valueFromIndex]} to {_x} , fill this {siganlRealValue[0]} sig, value:{_tempValueList[_valueFromIndex]}")
+                if siganlRealValue[1].get(_x) is None:
+                    _guess = bisect.bisect_left(ordered_origin_key, _x)
+                    if _guess > 0:
+                        _guess -= 1
+                    # print(_x, ordered_origin_key[_guess])
 
-                    # _virtualValueDict[_x] = _tempValueList[]
+                    if _x < ordered_origin_key[_guess]:
+                        pass
+                    else:
+                        # 判断最近的_guess是否大于阈值，大于就不填充，小于则填充
+                        _distance = float(_x[17:]) - float(ordered_origin_key[_guess][17:])
+                        if _distance < 0:
+                            _distance += 60
 
+                        if _distance < TIMEGAP:
+                            _virtualValueDict[_x] = siganlRealValue[1].get(_guess)
 
-    #
-    #         _fillStartTS = Timeutils.timeString2timeStamp(_tempKeyList[0], ms=True)     # 令第一条记录为填充的起点
-    #         _filledDict = {}                                        # 定义填充的结果
-    #         for _i in range(len(_tempKeyList)):
-    #             # print(_tempKeyList[_i])
-    #             # print(_tempValueList[_i])
-    #             _fillEndTS = Timeutils.timeString2timeStamp(_tempKeyList[_i], ms=True)
-    #             if _fillEndTS - _fillStartTS > TIMEGAP:  # 判断是个断点
-    #                 _fillStartTS = _fillEndTS     # 这是一个新的填充的起始点
-    #             else:
-    #                 # 需要按照极限进行填充 --- 间隔 10ms
-    #                 # print(f"需要按照极限进行填充: from {Timeutils.timeStamp2timeStringMS(_fillStartTS)}, to {Timeutils.timeStamp2timeStringMS(_fillEndTS)}, value: {_tempValueList[_i]}. "
-    #                 #       f"OR {_fillStartTS} to {_fillEndTS}")
-    #
-    #                 for _x in range(_fillStartTS + 10 , _fillEndTS + 10, 10):
-    #                     _filledDict[Timeutils.timeStamp2timeStringMS(_x)] = _tempValueList[_i]
-    #
-    #                 _fillStartTS = _fillEndTS
-    #
-    #         # print("原始的dict:", siganlRealValue[1])
-    #         # print((siganlRealValue[0], _filledDict))
-    #
-    #         # 把filledDict 范围上已经覆盖原始Dict，可以直接使用
-    #         # siganlRealValue[1] = _filledDict
-    #         # siganlRealValue[1]包含起点的kv对，但filledDict不含，所以还是要做字典合并 2021/10/24
-    #         # 好处是这时候用字典，已经不需要再排序了，从x的任意刻度，直接在这个字典中取输出值即可
-    #         siganlRealValue[1] = dict(siganlRealValue[1], **_filledDict)
-    #
-    # logger.debug(f"extremelyFillUp done, spent {time.time()*1000-time00} ms")
+            # 合并这两个字典
+            siganlRealValue[1] = dict(siganlRealValue[1], **_virtualValueDict)
+
+    logger.debug(f"smartFillUp done, spent {time.time()*1000-time00} ms")
 
 
 def extremelyFillUp(signalListFor1Line):
