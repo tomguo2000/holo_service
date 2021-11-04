@@ -193,8 +193,10 @@ def getSignalInfo(signalName, vehicleModel, fullCanDBDict=None):
                         resp['init'] = k
                     if v.lower() == 'reserved':
                         resp['reserved'] = k
+                    if v.lower() == 'failure':
+                        resp['failure'] = k
 
-                    if v.lower() not in ['invalid', 'init', 'reserved']:
+                    if v.lower() not in ['invalid', 'init', 'reserved', 'failure']:
                         graphType = 'poly'
 
             resp['graphType'] = graphType
