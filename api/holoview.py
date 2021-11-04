@@ -708,11 +708,12 @@ def smartFillUp(signalListFor1Line, Xaxis):
                     else:
                         # 判断最近的_guess是否大于阈值，大于就不填充，小于则填充
                         _distance = float(_x[17:]) - float(ordered_origin_key[_guess][17:])
+                        # print(_x, ordered_origin_key[_guess], _distance)
                         if _distance < 0:
                             _distance += 60
 
                         if _distance < TIMEGAP:
-                            _virtualValueDict[_x] = siganlRealValue[1].get(_guess)
+                            _virtualValueDict[_x] = siganlRealValue[1].get(ordered_origin_key[_guess])
 
             # 合并这两个字典
             siganlRealValue[1] = dict(siganlRealValue[1], **_virtualValueDict)
