@@ -19,6 +19,18 @@ CONFIG = {
             'topic': ['ONLINE-INPUT-MSD'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
+            'topic': ['ONLINE-INPUT-MSD'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-MSD'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName': 'message_msd.txt'
     },
     'holo_inject_message_security': {
@@ -39,6 +51,18 @@ CONFIG = {
             'topic': ['ONLINE-INPUT-SECURITY'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
+            'topic': ['ONLINE-INPUT-SECURITY'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-SECURITY'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName': 'message_security.txt'
     },
     'holo_inject_message_tbox_selfcheck': {
@@ -58,6 +82,18 @@ CONFIG = {
             'server':  ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             'topic': ['ONLINE-INPUT-CHECK'],
             'Storage_Prefix': '/tmp/baowen/holodata',
+        },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
+            'topic': ['ONLINE-INPUT-CHECK'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-CHECK'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
         },
         'outputFileName': 'message_tbox_selfcheck.txt'
     },
@@ -81,6 +117,18 @@ CONFIG = {
             'topic': ['ONLINE-EMQ-RemoteControlCmd-ALL'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
+            'topic': ['ONLINE-EMQ-RemoteControlCmd-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['TEST-EMQ-RemoteControlCmd-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName': 'event_remote_cmd.txt'
     },
     'holo_inject_message_tbox_ack': {
@@ -102,6 +150,19 @@ CONFIG = {
             'topic': ['ONLINE-SERVICE-TboxCmdAck-ALL'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
+            # ONLINE-SERVICE-TboxCmdAck-ALL: 转发了INPUT_ACK的报文（tbox的ACK1/ACK2)
+            'topic': ['ONLINE-SERVICE-TboxCmdAck-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['TEST-SERVICE-TboxCmdAck-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName': 'event_remote_cmd.txt'
     },
     'holo_inject_event_ecus_info': {
@@ -122,11 +183,23 @@ CONFIG = {
             'topic': ['ONLINE-SERVICE-VehicleCurrentEcusInfo-ALL'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.116:9092', '192.168.3.13:9092', '192.168.3.182:9092'],
+            'topic': ['ONLINE-SERVICE-VehicleCurrentEcusInfo-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['TEST-SERVICE-VehicleCurrentEcusInfo-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName': 'event_ecus_info.txt'
     },
     'holo_inject_event_vehicle_login': {
         'online': {
-            'server': ['192.168.3.116:9092'],
+            'server': ['192.168.3.116:9092', '192.168.3.13:9092', '192.168.3.182:9092'],
             'topic': ['ONLINE-SERVICE-VehicleLogin-ALL'],
             'group_id': 'holo_inject',
             'Storage_Prefix': '/holo/holodata',
@@ -141,6 +214,18 @@ CONFIG = {
             'server': ['192.168.3.116:9092'],
             'topic': ['ONLINE-SERVICE-VehicleLogin-ALL'],
             'Storage_Prefix': '/tmp/baowen/holodata',
+        },
+        'gpuonline': {
+            'server': ['192.168.3.116:9092', '192.168.3.13:9092', '192.168.3.182:9092'],
+            'topic': ['ONLINE-SERVICE-VehicleLogin-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['TEST-SERVICE-VehicleLogin-ALL'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
         },
         'outputFileName': 'event_vehicle.txt'
     },
@@ -161,6 +246,18 @@ CONFIG = {
             'server':  ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
             'topic': ['ONLINE-EMQ-ClientDisconnect-ALL', 'CLIENT-CONNECTED-HOOK'],
             'Storage_Prefix': '/tmp/baowen/holodata',
+        },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092', '192.168.3.181:9092', '192.168.3.203:9092'],
+            'topic': ['ONLINE-EMQ-ClientDisconnect-ALL', 'CLIENT-CONNECTED-HOOK'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['TEST-EMQ-ClientDisconnect-ALL', 'CLIENT-CONNECTED-HOOK'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
         },
         'outputFileName': 'event_emq_conn.txt'
     },
@@ -183,6 +280,18 @@ CONFIG = {
             'group_id': None,
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-MISC'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-MISC'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName': 'message_misc.txt'
     },
     'holo_inject_message_national': {
@@ -202,6 +311,18 @@ CONFIG = {
             'server': ['192.168.3.165:9092'],
             'topic': ['ONLINE-INPUT-NS'],
             'Storage_Prefix': '/tmp/baowen/holodata',
+        },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-NS'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-NS'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
         },
         'outputFileName_live': 'message_national_live.txt',
         'outputFileName_resent': 'message_national_resent.txt'
@@ -224,6 +345,18 @@ CONFIG = {
             'topic': ['ONLINE-INPUT-HEARTBEAT'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-HEARTBEAT'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-HEARTBEAT'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName_loginout': 'message_national_loginout.txt',
         'outputFileName_heartbeat': 'message_hearbeat.txt'
     },
@@ -244,6 +377,18 @@ CONFIG = {
             'server': ['192.168.3.165:9092'],
             'topic': ['ONLINE-INPUT-MS'],
             'Storage_Prefix': '/tmp/baowen/holodata',
+        },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-MS'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-MS'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
         },
         'outputFileName_live': 'message_enterprise_live.txt',
         'outputFileName_resent': 'message_enterprise_resent.txt',
@@ -267,6 +412,18 @@ CONFIG = {
             'topic': ['ONLINE-INPUT-MS-ME5'],
             'Storage_Prefix': '/tmp/baowen/holodata',
         },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-MS-ME5'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-MS-ME5'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'outputFileName_live': 'message_enterprise_live.txt',
         'outputFileName_resent': 'message_enterprise_resent.txt',
         'outputFileName_warning': 'message_enterprise_warning.txt'
@@ -281,6 +438,12 @@ CONFIG = {
         'local': {
             'Storage_Prefix': '/Users/guoliang/data',
         },
+        'gpuonline': {
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
         'pack_days_before': 30
     },
     'holo_scp': {
@@ -292,6 +455,12 @@ CONFIG = {
         },
         'local': {
             'remote_path': 'root@navtest:/dearcc/holodata'
+        },
+        'gpuonline': {
+            'remote_path': 'guoliang@ai:/AIdata/guoliang/holodata'
+        },
+        'gputest': {
+            'remote_path': 'guoliang@ai:/AIdata/guoliang/holodata'
         }
     },
     'holo_service': {
@@ -303,7 +472,13 @@ CONFIG = {
         },
         'local': {
             'Storage_Prefix': '/Users/guoliang/data'
-        }
+        },
+        'gpuonline': {
+            'Storage_Prefix': '/AIdata/guoliang/holodata'
+        },
+        'gputest': {
+            'Storage_Prefix': '/AIdata/guoliang/holodata'
+        },
     },
     'redis_setting': {
         'online': {
@@ -317,11 +492,19 @@ CONFIG = {
             'password': 'Dearccbj2018@02'
         },
         'local': {
-            # 'server': '192.168.10.89',
-            'server': '192.168.0.239',
+            'server': '192.168.10.89',
             'port': 6379,
-            # 'password': 'Dearcc2021_11!'
-            'password': 'Dearccbj2018@02'
+            'password': 'Dearcc2021_11!'
+        },
+        'gpuonline': {
+            'server': '192.168.10.89',
+            'port': 6379,
+            'password': 'Dearcc2021_11!'
+        },
+        'gputest': {
+            'server': '192.168.10.89',
+            'port': 6379,
+            'password': 'Dearcc2021_11!'
         }
     }
 }
@@ -2012,5 +2195,9 @@ if env == 'local':
     CONFIG['env'] = 'local'
 elif env == 'test':
     CONFIG['env'] = 'test'
+elif env == 'gpuonline':
+    CONFIG['env'] = 'gpuonline'
+elif env == 'gputest':
+    CONFIG['env'] = 'gputest'
 else:
     CONFIG['env'] = 'online'
