@@ -300,6 +300,8 @@ def holoview_index():
         resp['YaxisList'] = []
         resp['YaxisOverall'] = {}
         resp['YaxisSignal'] = {}
+        resp['YaxisSignal_RealValue'] = {}
+
 
 
         # 传入X轴和dateList，获取emq连接的event结果
@@ -636,6 +638,11 @@ def holoview_index():
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
             logger.debug(f"8: 把解析信号分组完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
+            for oneSignalRealValue in signalListFor1Line:
+                _signalName = oneSignalRealValue[0]
+                _signalRealValues = oneSignalRealValue[1]
+                resp['YaxisSignal_RealValue'][_signalName] = _signalRealValues
+
 
             # signalListFor1Line_ver2 = signalListFor1Line[:]
             if not firstOnly:
@@ -722,7 +729,7 @@ def smartFillUp(signalListFor1Line, Xaxis):
 
     logger.debug(f"smartFillUp done, spent {time.time()*1000-time00} ms")
 
-
+# 已经被smartFillUp代替
 def extremelyFillUp(signalListFor1Line):
     TIMEGAP = 2000 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。
 
@@ -1150,11 +1157,13 @@ def makeResponse(resp):
     makeResp['dateList'] = resp['dateList']
     makeResp['Xscale'] = resp['Xscale']
     makeResp['YaxisList'] = resp['YaxisList']
+    makeResp['YaxisSignal_RealValue'] = resp['YaxisSignal_RealValue']
     makeResp['YaxisSignal'] = {}
     makeResp['YaxisOverall'] = {}
     del(resp['Xaxis'])
     del(resp['dateList'])
     del(resp['YaxisList'])
+    del(resp['YaxisSignal_RealValue'])
 
     # 归类输出YaxisSignal
     for _item in resp['YaxisSignal']:
