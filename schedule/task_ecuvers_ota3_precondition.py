@@ -1,4 +1,4 @@
-import time, datetime, sys, os, json
+import time, datetime, sys, os, json, orjson
 sys.path.append('/Users/guoliang/PycharmProjects/holo_service/')
 sys.path.append('/home/baowen/holo_service/')
 
@@ -33,7 +33,7 @@ def ecuversion_allRecordFlow(date, vinList=None):
             contents = service.public.getOriMessageList(vin_fullPathList, readKeys)
             refinedContents = []
             for c in contents:
-                refinedContents.append(ujson.loads(c))
+                refinedContents.append(orjson.loads(c))
             vinsContents[vin] = refinedContents
 
 
