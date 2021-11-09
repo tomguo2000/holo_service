@@ -638,10 +638,19 @@ def holoview_index():
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
             logger.debug(f"8: 把解析信号分组完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
-            for oneSignalRealValue in signalListFor1Line:
-                _signalName = oneSignalRealValue[0]
-                _signalRealValues = oneSignalRealValue[1]
-                resp['YaxisSignal_RealValue'][_signalName] = _signalRealValues
+
+            # 达到一定scale的，需要标记实值，给echars放大后，标记一个代表实值的原点
+            if Xscale >= '16':
+                for oneSignalRealValue in signalListFor1Line:
+                    _signalName = oneSignalRealValue[0]
+                    _signalAllValues = oneSignalRealValue[1]
+                    _signal_RealValue = []
+                    for k, v in _signalAllValues.items():
+                        _plot = {}
+                        _plot['coord'] = [dict({k: v})]
+                        _signal_RealValue.append(_plot)
+
+                    resp['YaxisSignal_RealValue'][_signalName] = _signal_RealValue
 
 
             # signalListFor1Line_ver2 = signalListFor1Line[:]
