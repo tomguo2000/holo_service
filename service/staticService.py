@@ -1,4 +1,4 @@
-import json
+import json, ujson
 
 def allRecordFlow(contents):
     waterFlowRecords = []
@@ -46,7 +46,7 @@ def allRecordFlow(contents):
     b.sort()
     waterFlowRecords = []
     for x in b:
-        waterFlowRecords.append(json.loads(x))
+        waterFlowRecords.append(ujson.loads(x))
 
 
     return waterFlowRecords
@@ -100,7 +100,7 @@ def errorRecordFlow(contents):
 
     waterFlowRecords = []
     for x in b:
-        waterFlowRecords.append(json.loads(x))
+        waterFlowRecords.append(ujson.loads(x))
 
     return waterFlowRecords
 

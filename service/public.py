@@ -7,6 +7,7 @@ from common.config import CONFIG, ReturnCode, EnterpriseTransportProtolVer
 from multiprocessing import Pool
 import cantools
 import numpy, binascii
+import ujson
 
 '''
 版本10,11	A223_500KM_A点 A223_500KM_B点	ME7_TboxCAN_CMatrix_V307.201203_500km_SOP+2.dbc
@@ -245,7 +246,7 @@ def getOriMessageSingleFileAsync(_path, readKeys):
         try:
             for _row in _contents:
                 try:
-                    _rowDict = json.loads(_row)
+                    _rowDict = ujson.loads(_row)
                 except:
                     continue
 
@@ -291,7 +292,7 @@ def getOriMessageSingleFileAsync(_path, readKeys):
 def transformer2TimelineDict(contents):
     _timelineDict = {}
     for _line in contents:
-        _dict = json.loads(_line)
+        _dict = ujson.loads(_line)
         if _dict.get('MCUTime') and _dict.get('contents'):
             _timelineDict[_dict['MCUTime']] = _dict['contents']
     return _timelineDict

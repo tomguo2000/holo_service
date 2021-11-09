@@ -6,6 +6,7 @@ from common.timeUtils import Timeutils
 from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
 import service.public
+import ujson
 
 overall_by_vin = Blueprint("overall_by_vin", __name__)
 
@@ -268,7 +269,7 @@ def getVehicleLoginEvents(vin, Xaxis, dateList):
     # readKeys用['.']的时候，通畅需要对返回的List做二次加工
     respMessageList = []
     for _item in oriMessageList:
-        _temp = json.loads(_item)
+        _temp = ujson.loads(_item)
 
         if _temp['timestamp'] < 9999999999:
             _temp['timestamp'] = _temp['timestamp'] * 1000
@@ -296,7 +297,7 @@ def getRemoteCmdEvents(vin, Xaxis, dateList):
     # readKeys用['.']的时候，通畅需要对返回的List做二次加工
     respMessageList = []
     for _item in oriMessageList:
-        _temp = json.loads(_item)
+        _temp = ujson.loads(_item)
 
         if _temp['timestamp'] < 9999999999:
             _temp['timestamp'] = _temp['timestamp'] * 1000
@@ -327,7 +328,7 @@ def getConnStatus(vin, Xaxis, dateList):
 
     # readKeys用['.']的时候，通畅需要对返回的List做二次加工
     for _item in oriMessageList:
-        _temp = json.loads(_item)
+        _temp = ujson.loads(_item)
 
         if _temp['timestamp'] < 9999999999:
             _temp['timestamp'] = _temp['timestamp'] * 1000
@@ -360,7 +361,7 @@ def getPreviousConnStatus(vin, date):
         previousConnStatus = {'event': 'unknown'}
     else:
         connStatusList = service.public.getOriMessageList([_fullPath], ['.'])
-        connEvent = json.loads(connStatusList[-1])
+        connEvent = ujson.loads(connStatusList[-1])
         previousConnStatus = {'event': connEvent.get('event')}
 
     return previousConnStatus

@@ -19,7 +19,7 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
 
     messageList = []
     for line in oriAllMessage:
-        _jsondata = json.loads(line)
+        _jsondata = ujson.loads(line)
         del(_jsondata['serverTime'])
         del(_jsondata['MPUTime'])
         del(_jsondata['TYPE_CMD'])
@@ -29,7 +29,7 @@ def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
 
     messageListSorted = []
     for line in messageList:
-        messageListSorted.append(json.loads(line))
+        messageListSorted.append(ujson.loads(line))
 
     bufferCursor = 0
 
@@ -105,7 +105,7 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime, needSort=None):
 
     while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] <= endTimeStr:
         '''
-        _jsondata = json.loads(oriAllMessage[bufferCursor])
+        _jsondata = ujson.loads(oriAllMessage[bufferCursor])
 
         # 6月1日至7月8日的企标报文中，不含有'vehicleMode'这个节点，所以默认补一个ME7，这里不严谨，后续要去掉或者根据其他条件修改
         _vehicleMode = _jsondata.get('vehicleMode') if _jsondata.get('vehicleMode') else 'ME7'

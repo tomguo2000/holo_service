@@ -33,7 +33,7 @@ def ecuversion_allRecordFlow(date, vinList=None):
             contents = service.public.getOriMessageList(vin_fullPathList, readKeys)
             refinedContents = []
             for c in contents:
-                refinedContents.append(json.loads(c))
+                refinedContents.append(ujson.loads(c))
             vinsContents[vin] = refinedContents
 
 

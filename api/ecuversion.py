@@ -37,7 +37,7 @@ def ecuversion_stat():
             contents = service.public.getOriMessageList(vin_fullPathList, readKeys)
             refinedContents = []
             for c in contents:
-                refinedContents.append(json.loads(c))
+                refinedContents.append(ujson.loads(c))
             vinsContents[vin] = refinedContents
 
         staticReport = service.staticService.static_ecu_ver(vinsContents)
