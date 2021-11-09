@@ -647,7 +647,7 @@ def holoview_index():
                     _signal_RealValue = []
                     for k, v in _signalAllValues.items():
                         _plot = {}
-                        _plot['coord'] = [dict({k: v})]
+                        _plot['coord'] = [k, v]
                         _signal_RealValue.append(_plot)
 
                     resp['YaxisSignal_RealValue'][_signalName] = _signal_RealValue
