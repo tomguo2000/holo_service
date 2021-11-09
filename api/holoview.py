@@ -521,20 +521,20 @@ def holoview_index():
                 if oriMessageList else {}
             logger.debug(f"5-1：获取企标实发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
             del(oriMessageList)
-            gc.collect()
+            # gc.collect()
 
             oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime, needSort=True) \
                 if oriMessageListResent else {}
             logger.debug(f"5-2：获取企标补发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
             del(oriMessageListResent)
-            gc.collect()
+            # gc.collect()
 
             # 告警报文，是实发和补发混杂，要特殊处理下，先排序在去crop
             oriMessageWarningCropedDict = service.msService.cropWarningAndTransformer2dict(oriMessageListWarning, startTime, endTime) \
                 if oriMessageListWarning else {}
             logger.debug(f"5-3：获取企标告警报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
             del(oriMessageListWarning)
-            gc.collect()
+            # gc.collect()
 
 
             # 组合实发,补发,告警报文， 组合后是乱序的
@@ -544,7 +544,7 @@ def holoview_index():
             # 对字典进行排序后转成list
             sortedMessages = sorted(combinedDict.items(), key=lambda x:x[0])
             del(combinedDict)
-            gc.collect()
+            # gc.collect()
             logger.debug(f"6: 实发补发告警组合完毕，开始要解析到信号了，到目前为止耗时: {time.time()*1000 - time0} ms")
 
 
