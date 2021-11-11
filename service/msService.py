@@ -314,7 +314,7 @@ def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
 
 
     if errorSign:
-        return None
+        return None, None
     else:
         return canIDDict, signalInfoDict
 

@@ -585,13 +585,22 @@ def holoview_index():
             if not canIDDict:
                 raise Exception("110900", '传入的signal,又一个或多个找不到对应的canid')
 
-            # 判断这些can协议中支持的signal以及cannID，是否包含在tbox上报协议中。
+            # 判断这些can协议中支持的signal以及cannID，是否包含在tbox上报协议中。如果有不上传的信号，放在missedSignalList中
+            missedSignalList = []
+            missedCanIDList = []
             if msUploadProtol:
                 for k in canIDDict.keys():
                     if k in EnterpriseTransportProtolVer[vehicleModel][msUploadProtol]:
                         pass
                     else:
-                        raise Exception("110900", f"小天遗憾的告诉你，{k}这个canID，tbox没给平台上传")
+                        missedCanIDList.append(k)
+                        for _s in canIDDict[k]:
+                            missedSignalList.append(_s)
+
+
+            if missedSignalList:
+                for _canID in missedCanIDList:
+                    del(canIDDict[_canID])
 
             # print(abstractionMessages)
             # Like this:
@@ -674,7 +683,9 @@ def holoview_index():
                 _signalAllValues = oneSignalAllSec[1]
 
                 resp['YaxisSignal'][_signalName] = _signalAllValues
-                _signalInfo = service.msService.getSignalInfo(signalName=_signalName,vehicleModel=vehicleModel)
+                # _signalInfo = service.msService.getSignalInfo(signalName=_signalName,vehicleModel=vehicleModel)
+                _signalInfo = signalInfoDict[_signalName]
+
                 resp['YaxisList'].append({_signalName: {
                     "type": "signal",
                     "choices": _signalInfo['choices'],
@@ -684,6 +695,22 @@ def holoview_index():
                     "comment": _signalInfo['comment'],
                     "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
                 }})
+
+            # 补充上tbox没有传到平台的那些canid信息
+            for oneSignalMissed in missedSignalList:
+                resp['YaxisSignal'][oneSignalMissed] = {}
+                _signalInfo = signalInfoDict[oneSignalMissed]
+                resp['YaxisList'].append({oneSignalMissed: {
+                    "type": "signal",
+                    "choices": _signalInfo['choices'],
+                    "maximum": _signalInfo['maximum'],
+                    "minimum": _signalInfo['minimum'],
+                    "graphType": _signalInfo['graphType'],
+                    "comment": _signalInfo['comment'],
+                    "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
+                    "warning": '这个信号Tbox没有传给平台！'
+                }})
+
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
