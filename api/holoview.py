@@ -404,10 +404,24 @@ def holoview_index():
 
         # 传入X轴和dateList，获取企标实发的结果
         if "message_MSLive" in overallList:
-            time1 = time.time()*1000
-            message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', dateList, env=env)
-            logger.debug(f"hhhh获取企标实发的报文结果完毕。。。{time.time()*1000-time1}")
-            resp['YaxisOverall']['message_MSLive'] = message_MSLive
+
+            # 1. 得到oriMessageLiveCropedDict，后面signal继续用这个数据
+            dataSourcesLive = 'message_enterprise_live.txt'
+            fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
+            oriMessageList = service.public.getPureContents(fullPathList1)
+            oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
+                if oriMessageList else {}
+            # MCUTimeList = [x.split('"MCUTime": "')[1].split('", "TYPE_CMD')[0] for x in oriMessageList]
+            MPUTimeList = [x.split('"MPUTime": "')[1].split('", "MCUTime')[0] for x in oriMessageList]
+
+            del(oriMessageList)
+
+            # 2. 分发到Y轴
+            YMSdict = assignAmount2TimeSlot(Xaxis, MPUTimeList, needSort=False)
+
+            # 3. 上装配到resp输出
+            # message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', dateList, env=env)
+            resp['YaxisOverall']['message_MSLive'] = YMSdict
             resp['YaxisList'].append({"message_MSLive": {
                 "type": "message",
                 "choices": {},
@@ -422,10 +436,18 @@ def holoview_index():
 
         # 传入X轴和dateList，获取企标补发的结果
         if "message_MSResent" in overallList:
-            time1 = time.time()*1000
-            message_MSResent = getMS(vin, Xaxis, 'message_enterprise_resent.txt', dateList, env=env)
-            logger.debug(f"hhhh获取企标补发的报文结果完毕。。。{time.time()*1000-time1}")
-            resp['YaxisOverall']['message_MSResent'] = message_MSResent
+
+            # 天际企标补发报文文件名
+            dataSourcesResent = 'message_enterprise_resent.txt'
+            fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent, env=env)
+            oriMessageListResent = service.public.getPureContents(fullPathList2)
+            oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime, needSort=True) \
+                if oriMessageListResent else {}
+            MPUTimeList = [x.split('"MPUTime": "')[1].split('", "MCUTime')[0] for x in oriMessageListResent]
+            MPUTimeList.sort()
+            YMSdict = assignAmount2TimeSlot(Xaxis, MPUTimeList, needSort=False)
+
+            resp['YaxisOverall']['message_MSResent'] = YMSdict
             resp['YaxisList'].append({"message_MSResent": {
                 "type": "message",
                 "choices": {},
@@ -440,10 +462,19 @@ def holoview_index():
 
         # 传入X轴和dateList，获取企标告警的结果
         if "message_MSWarning" in overallList:
-            time1 = time.time()*1000
-            message_MSWarning = getMS(vin, Xaxis, 'message_enterprise_warning.txt', dateList, env=env)
-            logger.debug(f"hhhh获取企标告警的报文结果完毕。。。{time.time()*1000-time1}")
-            resp['YaxisOverall']['message_MSWarning'] = message_MSWarning
+
+            # 天际企标报警报文文件名
+            dataSourcesWaining = 'message_enterprise_warning.txt'
+            fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWaining, env=env)
+            oriMessageListWarning = service.public.getPureContents(fullPathList3)
+            oriMessageWarningCropedDict = service.msService.cropAndTransformer2dict(oriMessageListWarning, startTime, endTime, needSort=True) \
+                if oriMessageListWarning else {}
+
+            MPUTimeList = [x.split('"MPUTime": "')[1].split('", "MCUTime')[0] for x in oriMessageListWarning]
+            MPUTimeList.sort()
+            YMSdict = assignAmount2TimeSlot(Xaxis, MPUTimeList, needSort=False)
+
+            resp['YaxisOverall']['message_MSWarning'] = YMSdict
             resp['YaxisList'].append({"message_MSWarning": {
                 "type": "message",
                 "choices": {},
@@ -500,45 +531,39 @@ def holoview_index():
             if vehicleModel not in ['ME7', 'ME5']:
                 raise Exception("110904")
 
-            # 天际企标的报文文件名
-            dataSourcesLive = 'message_enterprise_live.txt'
-            # 天际企标补发报文文件名
-            dataSourcesResent = 'message_enterprise_resent.txt'
-            # 天际企标报警报文文件名
-            dataSourcesWaining = 'message_enterprise_warning.txt'
 
-            # 获取需要读取的完整文件路径的列表
-            fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
-            fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent, env=env)
-            fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWaining, env=env)
+            # 如果前面overall的时候没有处理企标实发报文，在这里补上
+            if 'oriMessageLiveCropedDict' not in locals().keys():
+                # 天际企标的报文文件名
+                dataSourcesLive = 'message_enterprise_live.txt'
+                fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
+                oriMessageList = service.public.getPureContents(fullPathList1)
+                oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
+                    if oriMessageList else {}
+                del(oriMessageList)
+                logger.debug(f"5-1：获取企标实发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
-            logger.debug(f"4：获取到了需要读取的文件列表:{fullPathList1},{fullPathList2},{fullPathList3}。。。{time.time()*1000-time0}")
 
-            # 获取三类报文的原始内容
-            oriMessageList = service.public.getPureContents(fullPathList1)
-            oriMessageListResent = service.public.getPureContents(fullPathList2)
-            oriMessageListWarning = service.public.getPureContents(fullPathList3)
-            logger.debug(f"5-0：获取三类报文的原始内容完毕。。。{time.time()*1000-time0}")
+            if 'oriMessageResentCropedDict' not in locals().keys():
+                # 天际企标补发报文文件名
+                dataSourcesResent = 'message_enterprise_resent.txt'
+                fullPathList2 = service.public.getFullPathList(vin, dateList, dataSourcesResent, env=env)
+                oriMessageListResent = service.public.getPureContents(fullPathList2)
+                oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime, needSort=True) \
+                    if oriMessageListResent else {}
+                del(oriMessageListResent)
+                logger.debug(f"5-2：获取企标补发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
-            # 按照秒格式，把三类报文的原始内容，根据时间段crop，然后转成字典格式
-            oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
-                if oriMessageList else {}
-            logger.debug(f"5-1：获取企标实发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
-            del(oriMessageList)
-            # gc.collect()
 
-            oriMessageResentCropedDict = service.msService.cropAndTransformer2dict(oriMessageListResent, startTime, endTime, needSort=True) \
-                if oriMessageListResent else {}
-            logger.debug(f"5-2：获取企标补发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
-            del(oriMessageListResent)
-            # gc.collect()
-
-            # 告警报文，是实发和补发混杂，要特殊处理下，先排序在去crop
-            oriMessageWarningCropedDict = service.msService.cropWarningAndTransformer2dict(oriMessageListWarning, startTime, endTime) \
-                if oriMessageListWarning else {}
-            logger.debug(f"5-3：获取企标告警报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
-            del(oriMessageListWarning)
-            # gc.collect()
+            if 'oriMessageWarningCropedDict' not in locals().keys():
+                # 天际企标报警报文文件名
+                dataSourcesWaining = 'message_enterprise_warning.txt'
+                fullPathList3 = service.public.getFullPathList(vin, dateList, dataSourcesWaining, env=env)
+                oriMessageListWarning = service.public.getPureContents(fullPathList3)
+                oriMessageWarningCropedDict = service.msService.cropAndTransformer2dict(oriMessageListWarning, startTime, endTime, needSort=True) \
+                    if oriMessageListWarning else {}
+                del(oriMessageListWarning)
+                logger.debug(f"5-3：获取企标告警报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")
 
 
             # 组合实发,补发,告警报文， 组合后是乱序的

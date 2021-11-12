@@ -11,6 +11,7 @@ from service.public import candbPool
 import re
 import ujson
 import orjson
+import collections
 
 
 
@@ -102,7 +103,8 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime, needSort=None):
         logger.debug(f'最后一个文件读完了，啥也没有')
         return {}
 
-    respMessage = {}
+    # respMessage = {}
+    respMessage = collections.OrderedDict()
 
     while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] <= endTimeStr:
         '''
