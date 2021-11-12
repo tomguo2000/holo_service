@@ -107,7 +107,7 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime, needSort=None):
     respMessage = collections.OrderedDict()
 
     while oriAllMessage[bufferCursor].split('"MCUTime": "')[1][:19] <= endTimeStr:
-        '''
+
         _jsondata = orjson.loads(oriAllMessage[bufferCursor])
 
         # 6月1日至7月8日的企标报文中，不含有'vehicleMode'这个节点，所以默认补一个ME7，这里不严谨，后续要去掉或者根据其他条件修改
@@ -129,6 +129,7 @@ def cropAndTransformer2dict(oriAllMessage, startTime, endTime, needSort=None):
         seq = (_vehicleMode, _MSPacketVer, _MSSecondPacket)
 
         respMessage[_MCUTime] = seq
+        '''
 
         # 如果buffer还没到底，就cursor+1
         if bufferCursor < (len(oriAllMessage) - 1):

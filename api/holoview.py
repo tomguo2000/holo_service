@@ -404,20 +404,30 @@ def holoview_index():
 
         # 传入X轴和dateList，获取企标实发的结果
         if "message_MSLive" in overallList:
-
+            logger.debug(f"2-5-0：get message_MSLive 开始。。{time.time()*1000-time0}")
             # 1. 得到oriMessageLiveCropedDict，后面signal继续用这个数据
             dataSourcesLive = 'message_enterprise_live.txt'
             fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
             oriMessageList = service.public.getPureContents(fullPathList1)
+
+            logger.debug(f"2-5-1：oriMessageList完成。。{time.time()*1000-time0}")
+
             oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
                 if oriMessageList else {}
+
+            logger.debug(f"2-5-2：oriMessageLiveCropedDict 完成。。{time.time()*1000-time0}")
+
             # MCUTimeList = [x.split('"MCUTime": "')[1].split('", "TYPE_CMD')[0] for x in oriMessageList]
             MPUTimeList = [x.split('"MPUTime": "')[1].split('", "MCUTime')[0] for x in oriMessageList]
+
+            logger.debug(f"2-5-3：MPUTimeList 完成。。{time.time()*1000-time0}")
 
             del(oriMessageList)
 
             # 2. 分发到Y轴
             YMSdict = assignAmount2TimeSlot(Xaxis, MPUTimeList, needSort=False)
+
+            logger.debug(f"2-5-3：YMSdict 完成。。{time.time()*1000-time0}")
 
             # 3. 上装配到resp输出
             # message_MSLive = getMS(vin, Xaxis, 'message_enterprise_live.txt', dateList, env=env)
