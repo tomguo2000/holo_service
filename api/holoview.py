@@ -249,6 +249,11 @@ def holoview_index():
             signalList = realSignalList[:]
 
 
+        # 如果没选择配置文件，提示不干
+        if len(signalList) + len(overallList) <= 1:
+            raise Exception("110900", "帅气的小哥哥，选了vin码，还要加载个配置文件再来问我")
+
+
         # # 如果查询的数据是30天前，提示不干活
         # if startTime < Timeutils.todayStartTimeStamp(ms=True) - 30*86400*1000:
         #     raise Exception("110900", "让小天给你查30天以前的东西，你得加钱才能办")
