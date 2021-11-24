@@ -923,7 +923,8 @@ def modifyMicroSecTime(canIDDict, contents, Xinterval, signalInfos={}):
         if len(doingList) == 1:
             startOffset = 1000
         else:
-            startOffset = _intervalMS
+            # 后对齐，如:32秒应该发10帧，结果发了9帧，则从:31.200--:32.000会有值
+            startOffset = _intervalMS + (1000 - len(doingList) * _intervalMS)
 
         # print(f"doingList={doingList}")
         for _item in doingList:
