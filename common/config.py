@@ -428,6 +428,38 @@ CONFIG = {
         'outputFileName_resent': 'message_enterprise_resent.txt',
         'outputFileName_warning': 'message_enterprise_warning.txt'
     },
+    'holo_inject_message_charge': {
+        'online': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-CHARGE'],
+            'group_id': 'holo_inject',
+            'Storage_Prefix': '/holo/holodata',
+        },
+        'test': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-CHARGE'],
+            'group_id': 'holo_inject',
+            'Storage_Prefix': '/holo/holodata',
+        },
+        'local': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-CHARGE'],
+            'Storage_Prefix': '/tmp/baowen/holodata',
+        },
+        'gpuonline': {
+            'server': ['192.168.3.165:9092'],
+            'topic': ['ONLINE-INPUT-CHARGE'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'gputest': {
+            'server': ['192.168.0.11:9092'],
+            'topic': ['STG-INPUT-CHARGE'],
+            'group_id': 'holo_inject_gpu',
+            'Storage_Prefix': '/AIdata/guoliang/holodata',
+        },
+        'outputFileName': 'message_charge.txt',
+    },
     'holo_pack': {
         'online': {
             'Storage_Prefix': '/holo/holodata',

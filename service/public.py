@@ -26,7 +26,7 @@ candb_0e = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V307.210409_400km_
 candb_ME7_310_500 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_500km.dbc', encoding='GBK')
 candb_ME7_310_400 = cantools.db.load_file('dbcfile/ME7_TboxCAN_CMatrix_V310.210712_400km.dbc', encoding='GBK')
 candb_ME5_00 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V1.8.dbc', encoding='GBK')
-candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.0.dbc', encoding='GBK')
+candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.1.dbc', encoding='GBK')
 
 candbPool = {
     'ME7': {
