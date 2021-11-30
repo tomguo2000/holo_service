@@ -760,17 +760,17 @@ def holoview_index():
                 else:
                     resp['YaxisSignal'][oneSignalMissed] = {}
 
-                    _signalInfo = signalInfoDict[oneSignalMissed]
-                    resp['YaxisList'].append({oneSignalMissed: {
-                        "type": "signal",
-                        "choices": _signalInfo['choices'],
-                        "maximum": _signalInfo['maximum'],
-                        "minimum": _signalInfo['minimum'],
-                        "graphType": _signalInfo['graphType'],
-                        "comment": _signalInfo['comment'],
-                        "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
-                        "warning": '这个信号Tbox没有传给平台！'
-                    }})
+                _signalInfo = signalInfoDict[oneSignalMissed]
+                resp['YaxisList'].append({oneSignalMissed: {
+                    "type": "signal",
+                    "choices": _signalInfo['choices'],
+                    "maximum": _signalInfo['maximum'],
+                    "minimum": _signalInfo['minimum'],
+                    "graphType": _signalInfo['graphType'],
+                    "comment": _signalInfo['comment'],
+                    "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
+                    "warning": '这个信号Tbox没有传给平台！'
+                }})
 
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
