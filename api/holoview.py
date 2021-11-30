@@ -10,7 +10,9 @@ import gc
 import base64
 import ujson
 import orjson
-
+import collections
+from dbcfile.additionalCanDB import additionalCanDB
+import bisect
 
 
 holoview = Blueprint("holoview", __name__)
@@ -628,6 +630,8 @@ def holoview_index():
             # 判断这些can协议中支持的signal以及cannID，是否包含在tbox上报协议中。如果有不上传的信号，放在missedSignalList中
             missedSignalList = []
             missedCanIDList = []
+            additionalCanIDDict = {}
+
             if msUploadProtol:
                 for k in canIDDict.keys():
                     if k in EnterpriseTransportProtolVer[vehicleModel][msUploadProtol]:
@@ -640,6 +644,9 @@ def holoview_index():
 
             if missedSignalList:
                 for _canID in missedCanIDList:
+                    # 2021/11/30 补充了额外的canDB，这里筛选一下，miss的信号，是否可以在补充的canDB中找到
+                    if _canID in additionalCanDB.get_message_signals():
+                        additionalCanIDDict[_canID] = canIDDict[_canID]
                     del(canIDDict[_canID])
 
             # print(abstractionMessages)
@@ -686,6 +693,16 @@ def holoview_index():
             # 每个信号占1行，每行是所有的秒信号
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
             logger.debug(f"8: 把解析信号分组完成，到目前为止耗时: {time.time()*1000 - time0} ms")
+
+
+            # 2021/11/30在这里补充上additional的报文解析
+            if additionalCanIDDict:
+                for key in additionalCanIDDict.keys():
+                    if key == 'misc':
+                        # 补充misc的解析结果
+                        additionalMisc_parse(vin, env, Xaxis, dateList, additionalCanIDDict['misc'], signalListFor1Line)
+                    else:
+                        logger.error(f"这是要我干啥啊，不懂了。additionalCanIDDict: {additionalCanIDDict}")
 
 
             # 达到一定scale的，需要标记实值，给echars放大后，标记一个代表实值的原点
@@ -738,18 +755,22 @@ def holoview_index():
 
             # 补充上tbox没有传到平台的那些canid信息
             for oneSignalMissed in missedSignalList:
-                resp['YaxisSignal'][oneSignalMissed] = {}
-                _signalInfo = signalInfoDict[oneSignalMissed]
-                resp['YaxisList'].append({oneSignalMissed: {
-                    "type": "signal",
-                    "choices": _signalInfo['choices'],
-                    "maximum": _signalInfo['maximum'],
-                    "minimum": _signalInfo['minimum'],
-                    "graphType": _signalInfo['graphType'],
-                    "comment": _signalInfo['comment'],
-                    "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
-                    "warning": '这个信号Tbox没有传给平台！'
-                }})
+                if resp['YaxisSignal'][oneSignalMissed]:    # 有的missedSignal，会在additionalCanDB中得到处理
+                    pass
+                else:
+                    resp['YaxisSignal'][oneSignalMissed] = {}
+
+                    _signalInfo = signalInfoDict[oneSignalMissed]
+                    resp['YaxisList'].append({oneSignalMissed: {
+                        "type": "signal",
+                        "choices": _signalInfo['choices'],
+                        "maximum": _signalInfo['maximum'],
+                        "minimum": _signalInfo['minimum'],
+                        "graphType": _signalInfo['graphType'],
+                        "comment": _signalInfo['comment'],
+                        "cycle_time": '信号原始频率 ' + str(_signalInfo['cycle_time'])+' ms',
+                        "warning": '这个信号Tbox没有传给平台！'
+                    }})
 
 
             logger.debug(f"9: 把每个信号的全部value，对应到统一的X轴上完成，到目前为止耗时: {time.time()*1000 - time0} ms")
@@ -770,9 +791,96 @@ def holoview_index():
                    "businessObj": None
                }, 200
 
+def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signalListFor1Line):
+    # 读时间段的报文到usefulMessage
+    dataSources = 'message_misc.txt'
+
+    # 获取需要读取的文件列表
+    fullPathList = service.public.getFullPathList(vin, dateList, dataSources, env=env)
+    _pureContents = service.public.getPureContents(fullPathList)
+
+    startTimeStr = Xaxis[0]
+    endTimeStr = Xaxis[-1]
+
+    # 找到需要处理的第一条
+    bufferCursor = 0
+    find = False
+    while bufferCursor < len(_pureContents):
+        if _pureContents[bufferCursor].split('"MCUTime": "')[1][:19] < startTimeStr:
+            # 跳过这条废数据
+            bufferCursor += 1
+        else:
+            find = True
+            break
+
+    if not find:
+        return {}
+
+    usefulMessage = collections.OrderedDict()
+
+    while _pureContents[bufferCursor].split('"MCUTime": "')[1][:19] <= endTimeStr:
+
+        _jsondata = orjson.loads(_pureContents[bufferCursor])
+
+        _flatJson = {}
+
+        _modemMode = _jsondata['contents']['modemMode']
+        if _modemMode == '4G':
+            _modemMode = '01'
+
+        _flatJson['modemMode'] = int(_modemMode, 16)
+        _flatJson['modemSignal'] = int(_jsondata['contents']['modemSignal'], 16)
+        _flatJson['locationStatus'] = int(_jsondata['contents']['miscData']['locationStatus'], 16)
+        _flatJson['longitude'] = int(_jsondata['contents']['miscData']['longitude'], 16) / 1000000
+        _flatJson['latitude'] = int(_jsondata['contents']['miscData']['latitude'], 16) / 1000000
+        _flatJson['UTC'] = _jsondata['contents']['miscData']['UTC']
+        _flatJson['UTCms'] = int(_jsondata['contents']['miscData']['UTCms'], 16)
+        _flatJson['groundSpeed'] = int(_jsondata['contents']['miscData']['groundSpeed'], 16) / 10
+        _flatJson['speedDirection'] = int(_jsondata['contents']['miscData']['speedDirection'], 16)
+
+        seq = [_flatJson.get(x) for x in additionalSignalList]
+
+        usefulMessage[_jsondata['MCUTime']] = seq
+
+        # 如果buffer还没到底，就cursor+1
+        if bufferCursor < (len(_pureContents) - 1):
+            bufferCursor += 1
+        else:
+            break
+
+    # 选出X轴上要显示的content
+    ordered_origin_key = list(usefulMessage.keys())
+    outputContent = {}
+    if len(Xaxis) >= 2:
+        _interval = Timeutils.timeString2timeStamp(Xaxis[1], ms=True) - Timeutils.timeString2timeStamp(Xaxis[0], ms=True)
+    else:
+        _interval = 0
+    for _x in Xaxis:
+        if usefulMessage.get(_x):
+            outputContent[_x] = usefulMessage.get(_x)
+        else:
+            _guess = bisect.bisect_left(ordered_origin_key, _x)
+
+            if ordered_origin_key[_guess - 1] == _x[:19]:        # 如果_x带ms，则可能和-1位置的是同一时刻
+                outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess - 1])
+            elif Timeutils.timeString2timeStamp(ordered_origin_key[_guess], ms=True) - Timeutils.timeString2timeStamp(_x) < _interval:
+                outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess])
+            else:
+                pass
+
+    # 根据additionalSignalList，添加到最后的输出结果signalListFor1Line
+    for seq, signalName in enumerate(additionalSignalList):
+        _signalDict = {}
+        for k,v in outputContent.items():
+            _signalDict[k] = v[seq]
+
+        # 这个是总输出
+        signalListFor1Line.append([signalName, _signalDict])
+    return True
+
 
 def smartFillUp(signalListFor1Line, Xaxis):
-    import bisect
+
     TIMEGAP = 2 # 两个信号之间的时间距离，超过这个值，判断是发生了中断。单位：秒
     time00 = time.time() * 1000
 
@@ -992,7 +1100,7 @@ def createXaxis(startTime, endTime, interval=10):
     respXaxis = []
     timeCursor = workingStartTimeStamp
     while xAxisTotal:
-        if interval >=1:
+        if interval >= 1:
             respXaxis.append(Timeutils.timeStamp2timeString(timeCursor))
         else:
             respXaxis.append(Timeutils.timeStamp2timeStringMS(timeCursor))

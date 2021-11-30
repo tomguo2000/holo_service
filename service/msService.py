@@ -12,6 +12,7 @@ import re
 import ujson
 import orjson
 import collections
+from dbcfile.additionalCanDB import additionalCanDB
 
 
 
@@ -146,23 +147,13 @@ def genMessagesSignals(canDB):
     for _msg in messages:
         signals = _msg.signals
         respDict[_msg.name] = {_sig.name for _sig in signals}
+
+    # 增加misc报文为代表的补充message和signal 2021/11/30
+    additionalDict = additionalCanDB.get_message_signals()
+    for key in additionalDict.keys():
+        respDict[key] = additionalDict[key]
     return respDict
 
-'''
-2021/11/03 废弃，功能合并到 getCanIDListBySignalList 里
-def getSignalsInvalidValues(signalList, vehicleMode):
-    # print(f"getSignalsInvalidValues参数：  signalList:{signalList},vehicleMode:{vehicleMode}")
-    respDict = {}
-    for _signalName in signalList:
-        _signalDetail = getSignalInfo(signalName=_signalName, vehicleModel=vehicleMode)
-        _signalChoices = _signalDetail.get('choices')
-        if _signalChoices:
-            for k,v in _signalChoices.items():
-                if v.lower() == 'invalid':
-                    respDict[_signalName] = k
-    # print(respDict)
-    return respDict
-'''
 
 def getSignalInfo(signalName, vehicleModel, fullCanDBDict=None):
 
@@ -178,8 +169,15 @@ def getSignalInfo(signalName, vehicleModel, fullCanDBDict=None):
     resp = {}
     for x in fullCanDBDict:
         if signalName in fullCanDBDict[x]:
-            signalInfo = canDB.get_message_by_name(x).get_signal_by_name(signalName)
-            messageCycleTime = canDB.get_message_by_name(x).cycle_time
+            try:
+                signalInfo = canDB.get_message_by_name(x).get_signal_by_name(signalName)
+                messageCycleTime = canDB.get_message_by_name(x).cycle_time
+            except:
+                print(f"要从补充的canDB中找这个的信息 {signalName}")
+                signalInfo = additionalCanDB.get_signal(signalName)
+                messageCycleTime = additionalCanDB.get_cycle_time(signalName)
+
+
             resp['canID'] = x
             resp['comment'] = signalInfo.comment
             resp['choices'] = signalInfo.choices
