@@ -857,18 +857,25 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
     ordered_origin_key_MAX = len(ordered_origin_key)
     outputContent = {}
 
-    for _x in Xaxis:
-        if usefulMessage.get(_x):
-            outputContent[_x] = usefulMessage.get(_x)
-        else:
-            _guess = bisect.bisect_left(ordered_origin_key, _x)
-
-            if _guess != 0 and ordered_origin_key[_guess - 1] == _x[:19]:        # 如果_x带ms，则可能和-1位置的是同一时刻
-                outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess - 1])
-            elif _guess < ordered_origin_key_MAX and Timeutils.timeString2timeStamp(ordered_origin_key[_guess], ms=True) - Timeutils.timeString2timeStamp(_x, ms=True) < _interval:
-                outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess])
+    # 秒及以上的，这个算法非常好，但毫秒Xaxis，就会出现过多的实值
+    if _interval >= 1000:   # 秒及以上
+        for _x in Xaxis:
+            if usefulMessage.get(_x):
+                outputContent[_x] = usefulMessage.get(_x)
             else:
-                pass
+                _guess = bisect.bisect_left(ordered_origin_key, _x)
+
+                if _guess != 0 and ordered_origin_key[_guess - 1] == _x[:19]:        # 如果_x带ms，则可能和-1位置的是同一时刻
+                    outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess - 1])
+                elif _guess < ordered_origin_key_MAX and Timeutils.timeString2timeStamp(ordered_origin_key[_guess], ms=True) - Timeutils.timeString2timeStamp(_x, ms=True) < _interval:
+                    outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess])
+                else:
+                    pass
+    else:       # 毫秒时
+        for _x in Xaxis:
+            if _x[-3:] == '000':    # 代表这是个整秒的刻度
+                if usefulMessage.get(_x[0:19]):
+                    outputContent[_x] = usefulMessage.get(_x[0:19])
 
     logger.debug(f"additionalMisc_parse: 选出X轴上要显示的content完成")
     # 根据additionalSignalList，添加到最后的输出结果signalListFor1Line
