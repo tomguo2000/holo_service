@@ -849,6 +849,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
         else:
             break
 
+    logger.debug(f"additionalMisc_parse: 读时间段的报文到usefulMessage完成")
     # 选出X轴上要显示的content
     ordered_origin_key = list(usefulMessage.keys())
     outputContent = {}
@@ -869,6 +870,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
             else:
                 pass
 
+    logger.debug(f"additionalMisc_parse: 选出X轴上要显示的content完成")
     # 根据additionalSignalList，添加到最后的输出结果signalListFor1Line
     for seq, signalName in enumerate(additionalSignalList):
         _signalDict = {}
@@ -877,6 +879,8 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
 
         # 这个是总输出
         signalListFor1Line.append([signalName, _signalDict])
+
+    logger.debug(f"additionalMisc_parse: 添加到最后的输出结果signalListFor1Line完成")
     return True
 
 
