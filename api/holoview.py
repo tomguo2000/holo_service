@@ -805,7 +805,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
     bufferCursor = 0
     find = False
     while bufferCursor < len(_pureContents):
-        if _pureContents[bufferCursor].split('"MCUTime": "')[1][:19] < startTimeStr:
+        if _pureContents[bufferCursor].split('"MCUTime": "')[1][:19] < startTimeStr[0:19]:
             # 跳过这条废数据
             bufferCursor += 1
         else:
