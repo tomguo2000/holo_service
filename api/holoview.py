@@ -847,7 +847,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
         else:
             break
 
-    logger.debug(f"additionalMisc_parse: 读时间段的报文到usefulMessage完成")
+    logger.debug(f"additionalMisc_parse: 读时间段的报文到usefulMessage: {usefulMessage}")
     # 选出X轴上要显示的content
     if len(Xaxis) >= 2:
         _interval = Timeutils.timeString2timeStamp(Xaxis[1], ms=True) - Timeutils.timeString2timeStamp(Xaxis[0], ms=True)
@@ -877,7 +877,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
                 if usefulMessage.get(_x[0:19]):
                     outputContent[_x] = usefulMessage.get(_x[0:19])
 
-    logger.debug(f"additionalMisc_parse: 选出X轴上要显示的content完成")
+    logger.debug(f"additionalMisc_parse: 选出X轴上要显示的content:{outputContent}")
     # 根据additionalSignalList，添加到最后的输出结果signalListFor1Line
     for seq, signalName in enumerate(additionalSignalList):
         _signalDict = {}
