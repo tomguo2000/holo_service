@@ -787,7 +787,8 @@ def holoview_index():
     except Exception as ex:
         return {
                    "code": ex.args[0],
-                   "message": ex.args[1] if len(ex.args) > 1 else ReturnCode[ex.args[0]],
+                   # "message": ex.args[1] if len(ex.args) > 1 else ReturnCode[ex.args[0]],
+                   "message": str(ex),
                    "businessObj": None
                }, 200
 
