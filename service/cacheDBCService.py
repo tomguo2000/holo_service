@@ -3,7 +3,7 @@
 # 提供其他函数的读接口。如果redis已经失效，则先写入redis。再返回函数调用结果
 # 提供管理端主动更新redis的dict的接口
 
-import redis, time, cantools, json, ujson
+import redis, time, cantools, json
 from common.config import CONFIG, env
 
 

@@ -9,7 +9,6 @@ import cantools
 import numpy, binascii
 from service.public import candbPool
 import re
-import ujson
 import orjson
 import collections
 from dbcfile.additionalCanDB import additionalCanDB

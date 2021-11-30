@@ -8,7 +8,6 @@ from multiprocessing import Pool
 import service.public, service.msService
 import gc
 import base64
-import ujson
 import orjson
 import collections
 from dbcfile.additionalCanDB import additionalCanDB
@@ -795,7 +794,6 @@ def holoview_index():
 def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signalListFor1Line):
     # 读时间段的报文到usefulMessage
     dataSources = 'message_misc.txt'
-
     # 获取需要读取的文件列表
     fullPathList = service.public.getFullPathList(vin, dateList, dataSources, env=env)
     _pureContents = service.public.getPureContents(fullPathList)
@@ -851,12 +849,14 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
 
     logger.debug(f"additionalMisc_parse: 读时间段的报文到usefulMessage完成")
     # 选出X轴上要显示的content
-    ordered_origin_key = list(usefulMessage.keys())
-    outputContent = {}
     if len(Xaxis) >= 2:
         _interval = Timeutils.timeString2timeStamp(Xaxis[1], ms=True) - Timeutils.timeString2timeStamp(Xaxis[0], ms=True)
     else:
         _interval = 0
+    ordered_origin_key = list(usefulMessage.keys())
+    ordered_origin_key_MAX = len(ordered_origin_key)
+    outputContent = {}
+
     for _x in Xaxis:
         if usefulMessage.get(_x):
             outputContent[_x] = usefulMessage.get(_x)
@@ -865,7 +865,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
 
             if _guess != 0 and ordered_origin_key[_guess - 1] == _x[:19]:        # 如果_x带ms，则可能和-1位置的是同一时刻
                 outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess - 1])
-            elif Timeutils.timeString2timeStamp(ordered_origin_key[_guess], ms=True) - Timeutils.timeString2timeStamp(_x, ms=True) < _interval:
+            elif _guess < ordered_origin_key_MAX and Timeutils.timeString2timeStamp(ordered_origin_key[_guess], ms=True) - Timeutils.timeString2timeStamp(_x, ms=True) < _interval:
                 outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess])
             else:
                 pass

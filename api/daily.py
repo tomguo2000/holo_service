@@ -6,7 +6,6 @@ from common.timeUtils import Timeutils
 from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
 import service.public
-import ujson
 import orjson
 
 daily = Blueprint("daily", __name__)

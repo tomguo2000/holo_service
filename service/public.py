@@ -7,7 +7,6 @@ from common.config import CONFIG, ReturnCode, EnterpriseTransportProtolVer
 from multiprocessing import Pool
 import cantools
 import numpy, binascii
-import ujson
 import orjson
 
 '''

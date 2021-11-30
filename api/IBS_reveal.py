@@ -6,7 +6,6 @@ from common.timeUtils import Timeutils
 from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
 import service.public, service.msService
-import ujson
 import orjson
 
 

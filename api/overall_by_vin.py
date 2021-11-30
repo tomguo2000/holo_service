@@ -6,7 +6,6 @@ from common.timeUtils import Timeutils
 from common.config import CONFIG, ReturnCode
 from multiprocessing import Pool
 import service.public
-import ujson
 import orjson
 
 overall_by_vin = Blueprint("overall_by_vin", __name__)
