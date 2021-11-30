@@ -863,7 +863,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
         else:
             _guess = bisect.bisect_left(ordered_origin_key, _x)
 
-            if ordered_origin_key[_guess - 1] == _x[:19]:        # 如果_x带ms，则可能和-1位置的是同一时刻
+            if _guess != 0 and ordered_origin_key[_guess - 1] == _x[:19]:        # 如果_x带ms，则可能和-1位置的是同一时刻
                 outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess - 1])
             elif Timeutils.timeString2timeStamp(ordered_origin_key[_guess], ms=True) - Timeutils.timeString2timeStamp(_x) < _interval:
                 outputContent[_x] = usefulMessage.get(ordered_origin_key[_guess])
