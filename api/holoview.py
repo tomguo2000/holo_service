@@ -630,6 +630,12 @@ def holoview_index():
             missedSignalList = []
             missedCanIDList = []
             additionalCanIDDict = {}
+            # print(f"检查canIDDict.keys()里要有misc这个补充canID: {canIDDict.keys()}")
+
+            for _canID in canIDDict.keys():
+                # 2021/11/30 补充了额外的canDB，这里筛选一下信号，是否可以在补充的canDB中找到
+                if _canID in additionalCanDB.get_message_signals():
+                    additionalCanIDDict[_canID] = canIDDict[_canID]
 
             if msUploadProtol:
                 for k in canIDDict.keys():
@@ -643,9 +649,6 @@ def holoview_index():
 
             if missedSignalList:
                 for _canID in missedCanIDList:
-                    # 2021/11/30 补充了额外的canDB，这里筛选一下，miss的信号，是否可以在补充的canDB中找到
-                    if _canID in additionalCanDB.get_message_signals():
-                        additionalCanIDDict[_canID] = canIDDict[_canID]
                     del(canIDDict[_canID])
 
             # print(abstractionMessages)
@@ -695,6 +698,7 @@ def holoview_index():
 
 
             # 2021/11/30在这里补充上additional的报文解析
+            # print(f"为什么没有进入additionalCanIDDict，检查一下: {additionalCanIDDict}")
             if additionalCanIDDict:
                 for key in additionalCanIDDict.keys():
                     if key == 'misc':
@@ -847,7 +851,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
         else:
             break
 
-    logger.debug(f"additionalMisc_parse: 读时间段的报文到usefulMessage: {usefulMessage}")
+    # logger.debug(f"additionalMisc_parse: 读时间段的报文到usefulMessage: {usefulMessage}")
     # 选出X轴上要显示的content
     if len(Xaxis) >= 2:
         _interval = Timeutils.timeString2timeStamp(Xaxis[1], ms=True) - Timeutils.timeString2timeStamp(Xaxis[0], ms=True)
@@ -877,7 +881,7 @@ def additionalMisc_parse(vin, env, Xaxis, dateList, additionalSignalList, signal
                 if usefulMessage.get(_x[0:19]):
                     outputContent[_x] = usefulMessage.get(_x[0:19])
 
-    logger.debug(f"additionalMisc_parse: 选出X轴上要显示的content:{outputContent}")
+    # logger.debug(f"additionalMisc_parse: 选出X轴上要显示的content:{outputContent}")
     # 根据additionalSignalList，添加到最后的输出结果signalListFor1Line
     for seq, signalName in enumerate(additionalSignalList):
         _signalDict = {}
