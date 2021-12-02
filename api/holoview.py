@@ -12,6 +12,7 @@ import orjson
 import collections
 from dbcfile.additionalCanDB import additionalCanDB
 import bisect
+import random
 
 
 holoview = Blueprint("holoview", __name__)
@@ -74,9 +75,15 @@ def holoview_findSignal():
         signalInfo = service.msService.findSignalInfo(signalName=signalName, vehicleModel=vehicleModel)
 
         if not signalInfo:
+            respMessage = [
+                "没有找到了这个信号的信息，小天认为你喝酒了",
+                "啥也搜不到，去给小姐姐买杯咖啡提提神吧",
+                "实在搜不出你要的东西，小天尽力了，发会呆。。。",
+                "没有没有没有，你搜的啥啊，就是没有没有没有",
+            ]
             return {
                        "code": 400,
-                       "message": "啥也没找到，小天认为你喝酒了",
+                       "message": respMessage[int(random.random()*len(respMessage))],
                        "businessObj": None
                    }, 200
         else:
