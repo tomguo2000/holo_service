@@ -29,6 +29,10 @@ candb_ME5_01 = cantools.db.load_file('dbcfile/IC321_TboxCAN_CMatrix_V3.1.dbc', e
 
 candbPool = {
     'ME7': {
+        '06': candb_ME7_310_500,
+        '07': candb_ME7_310_500,
+        '08': candb_ME7_310_400,
+        '09': candb_ME7_310_400,
         '0a': candb_ME7_310_500,
         '0b': candb_ME7_310_500,
         '0c': candb_ME7_310_400,
