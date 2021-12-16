@@ -106,7 +106,6 @@ def singleCheckJob(seq, vin, startDateStr, endDateStr):
         workingDateArray = workingDateArray + datetime.timedelta(days=1)
         workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
 
-    print(vin,resultList)
     resp = strictly_increasing(resultList)
     return vin, resp
 
