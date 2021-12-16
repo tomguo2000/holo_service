@@ -117,7 +117,7 @@ if __name__ == '__main__':
     logger = set_logger(f"{appname}.{env}")
     os.environ['HOLO_APPNAME']=appname
 
-    workingDataOffset = -5    # calculate the date from now
+    workingDataOffset = -14    # calculate the date from now
 
     currentDateStr = Timeutils.serverTimeNow()[:10]      # '2021-12-16'
     _currentDateArray = Timeutils.timeString2timeArray(currentDateStr, format='%Y-%m-%d')
