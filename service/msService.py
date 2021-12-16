@@ -14,6 +14,32 @@ import collections
 from dbcfile.additionalCanDB import additionalCanDB
 
 
+def getCanIDMessageFromFile(fullFilename, canIDDict):
+
+    resp = {}
+    resp['ICM_ODOTotal'] = []
+
+    try:
+        with open(fullFilename, 'r') as f:
+            lines = f.readlines()
+
+        lines.sort()
+        for line in lines:
+            _json = orjson.loads(line)
+
+            _canMessage = parse_tjms_signals_2_list(_json['contents']['MSSecondPacket'],
+                                                    _json['vehicleMode'],
+                                                    _json['contents']['MSPacketVer'],
+                                                    canIDDict,
+                                                    firstOnly=True,
+                                                    signalsInvalidValueDict={'ICM_ODOTotal': 16777215}
+                                                    )
+            resp['ICM_ODOTotal'].append(_canMessage[0][1][0])
+    except:
+        pass
+
+    return resp['ICM_ODOTotal']
+
 
 def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):
     startTimeStr = Timeutils.timeStamp2timeString(startTime)
@@ -322,7 +348,6 @@ def getCanIDListBySignalList(signalList, vehicleMode, msUploadProtol):
 
 def parse_tjms_signals(data, vehicleMode, protocol, canIDDict):
 
-    time1 = time.time() * 1000
 
     canDb = candbPool[vehicleMode][protocol]
     CanIDList = EnterpriseTransportProtolVer[vehicleMode][protocol]
@@ -367,7 +392,6 @@ def parse_tjms_signals(data, vehicleMode, protocol, canIDDict):
 
 def parse_tjms_signals_2_list(data, vehicleMode, protocol, canIDDict, firstOnly=False, signalsInvalidValueDict={}):
 
-    time1 = time.time() * 1000
     canDb = candbPool[vehicleMode][protocol]
 
     CanIDList = EnterpriseTransportProtolVer[vehicleMode][protocol]
