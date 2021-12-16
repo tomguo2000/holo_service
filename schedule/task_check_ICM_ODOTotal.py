@@ -99,8 +99,7 @@ def singleCheckJob(seq, vin, startDateStr, endDateStr):
 
         _temp = get_ICM_ODOTotal(vin=vin, date=workingDateStr)
 
-        for _i in _temp:
-            resultList.append(_i)
+        resultList = resultList + _temp
 
         workingDateArray = Timeutils.timeString2timeArray(workingDateStr, format='%Y-%m-%d')
         workingDateArray = workingDateArray + datetime.timedelta(days=1)
