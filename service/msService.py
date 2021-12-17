@@ -23,7 +23,6 @@ def getCanIDMessageFromFile(fullFilename, canIDDict):
         with open(fullFilename, 'r') as f:
             lines = f.readlines()
 
-        lines.sort()
         for line in lines:
             _json = orjson.loads(line)
 
@@ -34,11 +33,11 @@ def getCanIDMessageFromFile(fullFilename, canIDDict):
                                                     firstOnly=True,
                                                     signalsInvalidValueDict={'ICM_ODOTotal': 16777215}
                                                     )
-            resp['ICM_ODOTotal'].append(_canMessage[0][1][0])
+            resp['ICM_ODOTotal'].append((_json['contents']['MCUTime'], _canMessage[0][1][0]))
     except:
         pass
 
-    return resp['ICM_ODOTotal']
+    return (resp['ICM_ODOTotal'])
 
 
 def cropWarningAndTransformer2dict(oriAllMessage, startTime, endTime):

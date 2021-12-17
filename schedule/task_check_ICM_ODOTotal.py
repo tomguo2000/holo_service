@@ -81,12 +81,30 @@ def get_ICM_ODOTotal(vin, date):
     # HU_0x322
 
     fullPathList1 = service.public.getFullPathList(vin, [date], dataSourcesLive, env=env)
-    ss = service.msService.getCanIDMessageFromFile(fullPathList1[0], canIDDict)
-    return ss
+    return service.msService.getCanIDMessageFromFile(fullPathList1[0], canIDDict)
 
 
 def strictly_increasing(dataList):
     return all(x <= y for x, y in zip(dataList, dataList[1:]))
+
+
+def check_increasing(resultList):
+    resp = {}
+    resp['result'] = True
+    x = 0
+    for item in resultList:
+        # item[0] 时间
+        # item[1] value
+        if x > item[1]:
+            x = item[1]
+            resp['result'] = False
+            if resp.get('errorAt'):
+                resp['errorAt'].append({item[0]: item[1]})
+            else:
+                resp['errorAt'] = [{item[0]:item[1]}]
+        else:
+            x = item[1]
+    return resp
 
 
 def singleCheckJob(seq, vin, startDateStr, endDateStr):
@@ -105,8 +123,14 @@ def singleCheckJob(seq, vin, startDateStr, endDateStr):
         workingDateArray = workingDateArray + datetime.timedelta(days=1)
         workingDateStr = Timeutils.timeArray2timeString(workingDateArray)[:10]
 
-    resp = strictly_increasing(resultList)
-    return vin, resp
+    # time0 = time.time()*1000
+    # resp = strictly_increasing(resultList)
+    # print(f"strictly_increasing method check {vin}, cost me {time.time()*1000 - time0} ms")
+
+    time0 = time.time()*1000
+    resp = check_increasing(resultList)
+    print(f"check_increasing method check {vin}, cost me {time.time()*1000 - time0} ms")
+    return vin, resp['result'], resp.get('errorAt')
 
 
 if __name__ == '__main__':
