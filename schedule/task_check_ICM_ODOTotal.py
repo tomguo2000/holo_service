@@ -93,18 +93,22 @@ def check_increasing(resultList):
     resp = {}
     resp['result'] = True
     x = 0
+    when = ''
     for item in resultList:
         # item[0] 时间
         # item[1] value
         if x > item[1]:
-            x = item[1]
             resp['result'] = False
             if resp.get('errorAt'):
-                resp['errorAt'].append({item[0]: item[1]})
+                resp['errorAt'].append({when: x, item[0]: item[1]})
             else:
-                resp['errorAt'] = [{item[0]:item[1]}]
+                resp['errorAt'] = [{when: x, item[0]:item[1]}]
+
+            x = item[1]
+            when = item[0]
         else:
             x = item[1]
+            when = item[0]
     return resp
 
 
