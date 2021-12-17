@@ -1,6 +1,7 @@
 import time, datetime, sys, os, json
 sys.path.append('/Users/guoliang/PycharmProjects/holo_service/')
 sys.path.append('/home/baowen/holo_service/')
+sys.path.append('/home/guoliang/holo/fuxi-holo-service/')
 
 os.chdir('../')
 print(sys.path)
@@ -129,7 +130,7 @@ def singleCheckJob(seq, vin, startDateStr, endDateStr):
 
     time0 = time.time()*1000
     resp = check_increasing(resultList)
-    print(f"check_increasing method check {vin}, cost me {time.time()*1000 - time0} ms")
+    print(f"check_increasing method check {vin}, cost me {time.time()*1000 - time0} ms. result is :{resp}")
     return vin, resp['result'], resp.get('errorAt')
 
 
@@ -155,7 +156,7 @@ if __name__ == '__main__':
 
 
     # 开进程池并行处理
-    Pools = Pool(8)
+    Pools = Pool(4)
     asyncResult = []
 
     for seq, vin in enumerate(vinList):
