@@ -425,7 +425,7 @@ def holoview_index():
 
             logger.debug(f"2-5-1：oriMessageList完成。。{time.time()*1000-time0}")
 
-            oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
+            oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime, needSort=True) \
                 if oriMessageList else {}
 
             logger.debug(f"2-5-2：oriMessageLiveCropedDict 完成。。{time.time()*1000-time0}")
@@ -561,7 +561,7 @@ def holoview_index():
                 dataSourcesLive = 'message_enterprise_live.txt'
                 fullPathList1 = service.public.getFullPathList(vin, dateList, dataSourcesLive, env=env)
                 oriMessageList = service.public.getPureContents(fullPathList1)
-                oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime) \
+                oriMessageLiveCropedDict = service.msService.cropAndTransformer2dict(oriMessageList, startTime, endTime, needSort=True) \
                     if oriMessageList else {}
                 del(oriMessageList)
                 logger.debug(f"5-1：获取企标实发报文的string结果，裁剪后转为dict结果完毕。。。{time.time()*1000-time0}")

@@ -23,6 +23,9 @@ def getCanIDMessageFromFile(fullFilename, canIDDict):
         with open(fullFilename, 'r') as f:
             lines = f.readlines()
 
+        # 防止tbox发报文卡滞，导致的MPU时间相同的两条上传包，MCU时间颠倒。这里引入根据MCU时间排序
+        lines.sort(key=lambda x: x.split('MCUTime')[1])
+
         for line in lines:
             _json = orjson.loads(line)
 
