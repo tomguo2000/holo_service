@@ -396,13 +396,16 @@ def checkPathArchived(vin, dateList, env):
         _path = os.path.join(CONFIG[appname][env]['Storage_Prefix'], env, vin, _item)
         fullPathList.append(_path)
 
+    print(fullPathList)
+
     for _path in fullPathList:
-        _pathFileList = os.listdir(_path)
-        for _filename in _pathFileList:
-            if _filename.split('.')[-1] == 'gz':
-                # print(f"{_path} 的数据已经被封印")
-                _thread.start_new_thread(decompressArchivedPath, (_path,))
-                return False
+        if os.path.isdir(_path):
+            _pathFileList = os.listdir(_path)
+            for _filename in _pathFileList:
+                if _filename.split('.')[-1] == 'gz':
+                    # print(f"{_path} 的数据已经被封印")
+                    _thread.start_new_thread(decompressArchivedPath, (_path,))
+                    return False
     return True
 
 
