@@ -286,6 +286,10 @@ def holoview_index():
         # 得到日期List，用于拼接数据源的path
         dateList = service.public.createDateListByDuration(startTimestamp=startTime, endTimestamp=endTime)
 
+        # 检查对应的目录，是否包含gz文件，如果是，提示数据已经被封印，运气爆棚，不用咒语就解封完毕。。。再来一次吧
+        if not service.public.checkPathArchived(vin, dateList, env):
+            raise Exception("110900", "大侠，你查的日期太久了，数据已经被封印! 不过你今天运气好，不用咒语就已经解封，几秒钟再查一次就有了")
+
         time0 = time.time()*1000
         logger.debug(f"0：可以了，咱现在从头开始。。。。。。{time0}")
 

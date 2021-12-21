@@ -7,6 +7,7 @@ from common.config import CONFIG, ReturnCode, EnterpriseTransportProtolVer
 from multiprocessing import Pool
 import cantools
 import numpy, binascii
+import _thread
 import orjson
 
 '''
@@ -370,3 +371,42 @@ def getVINList():
                 vinList.append(file)
 
     return vinList
+
+
+def checkPathArchived(vin, dateList, env):
+    # 通过环境变量找到主程序的名字
+    env_dist = os.environ
+    for key in env_dist:
+        if key == 'HOLO_APPNAME':
+            appname = env_dist[key]
+
+    try:
+        appname
+    except NameError:
+        logger.error("HOLO_APPNAME这个环境变量没有定义，检查入口程序的设置")
+
+    # 2021/10/27 上线前修改：去掉这里对env的判断，用函数传入的env参数，如果没有传，则用原来的判断逻辑
+    if not env:
+        # 通过引入的CONFIG得到运行环境
+        env = CONFIG['env']
+
+    # 拼接完整path
+    fullPathList = []
+    for _item in dateList:
+        _path = os.path.join(CONFIG[appname][env]['Storage_Prefix'], env, vin, _item)
+        fullPathList.append(_path)
+
+    for _path in fullPathList:
+        _pathFileList = os.listdir(_path)
+        for _filename in _pathFileList:
+            if _filename.split('.')[-1] == 'gz':
+                # print(f"{_path} 的数据已经被封印")
+                _thread.start_new_thread(decompressArchivedPath, (_path,))
+                return False
+    return True
+
+
+def decompressArchivedPath(path):
+    logger.info (f"unpacking this dir: {path}/*")
+    os.system("gunzip -f "+path+"/*")
+    return True
