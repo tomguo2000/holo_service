@@ -158,7 +158,6 @@ if __name__ == '__main__':
     for seq, line in enumerate(vinList):
         vinList[seq] = line.strip()
 
-
     # 开进程池并行处理
     Pools = Pool(4)
     asyncResult = []
