@@ -28,7 +28,6 @@ def getCanIDMessageFromFile(fullFilename, canIDDict):
 
         for line in lines:
             _json = orjson.loads(line)
-
             _canMessage = parse_tjms_signals_2_list(_json['contents']['MSSecondPacket'],
                                                     _json['vehicleMode'],
                                                     _json['contents']['MSPacketVer'],
@@ -36,7 +35,8 @@ def getCanIDMessageFromFile(fullFilename, canIDDict):
                                                     firstOnly=True,
                                                     signalsInvalidValueDict={'ICM_ODOTotal': 16777215}
                                                     )
-            resp['ICM_ODOTotal'].append((_json['contents']['MCUTime'], _canMessage[0][1][0]))
+            if _canMessage:
+                resp['ICM_ODOTotal'].append((_json['contents']['MCUTime'], _canMessage[0][1][0]))
     except:
         pass
 
