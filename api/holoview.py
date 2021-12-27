@@ -707,7 +707,7 @@ def holoview_index():
             signalListFor1Line = transformer2Yaxis(canIDDict, respContents, Xinterval=Xinterval, signalInfos=signalInfoDict, firstOnly=firstOnly)
             logger.debug(f"8: 把解析信号分组完成，到目前为止耗时: {time.time()*1000 - time0} ms")
 
-
+            print(signalListFor1Line)
             # 2021/11/30在这里补充上additional的报文解析
             # print(f"为什么没有进入additionalCanIDDict，检查一下: {additionalCanIDDict}")
             if additionalCanIDDict:
@@ -915,25 +915,51 @@ def smartFillUp(signalListFor1Line, Xaxis):
         # 以下是对一个信号的全部有效报文做处理
         if siganlRealValue[1]:           # 不是一个没有值的信号，开始搞
             ordered_origin_key = list(siganlRealValue[1].keys())
+            ordered_origin_key_total = len(ordered_origin_key)
             _virtualValueDict = {}
             for _x in Xaxis:
+                # 没有从实值里get到，需要填充
                 if siganlRealValue[1].get(_x) is None:
-                    _guess = bisect.bisect_left(ordered_origin_key, _x)
-                    if _guess > 0:
-                        _guess -= 1
+                    _guessLeft = bisect.bisect_left(ordered_origin_key, _x)
+
+                    # 送进去的_x在队尾，说明不需要填充了，把right置为None
+                    if _guessLeft == ordered_origin_key_total:
+                        _guessRight = None
+
+                    # 送进去的_x不在队尾，也不在排头，则把right赋值
+                    if _guessLeft > 0:
+                        _guessRight = _guessLeft
+                        _guessLeft -= 1
+                    else:
+                        # 送进去的_x排最前面，把right赋值为0。这里这个right不会用到。
+                        _guessRight = _guessLeft
                     # print(_x, ordered_origin_key[_guess])
 
-                    if _x < ordered_origin_key[_guess]:
+                    if _x < ordered_origin_key[_guessLeft]:
+                        # 实际填充时，小于队列第一个，不需要对left和right比对，直接跳过。
                         pass
                     else:
-                        # 判断最近的_guess是否大于阈值，大于就不填充，小于则填充
-                        _distance = float(_x[17:]) - float(ordered_origin_key[_guess][17:])
-                        # print(_x, ordered_origin_key[_guess], _distance)
-                        if _distance < 0:
-                            _distance += 60
+                        # 如果right没有值，说明已经在实值队列的后面，不填充。
+                        if not _guessRight:
+                            pass
 
-                        if _distance < TIMEGAP:
-                            _virtualValueDict[_x] = siganlRealValue[1].get(ordered_origin_key[_guess])
+                        else:
+                            # _x在实值队列的中部，需要判断到left的距离，和right距离left的距离，决定是否填充
+
+                            # 判断最近的_guess是否大于阈值，大于就不填充，小于则填充
+                            _distanceLeft = float(_x[17:]) - float(ordered_origin_key[_guessLeft][17:])
+
+                            _distanceRightLeft = float(ordered_origin_key[_guessRight][17:]) - float(ordered_origin_key[_guessLeft][17:])
+                            # print(_x, ordered_origin_key[_guess], _distance)
+                            if _distanceLeft < 0:
+                                _distanceLeft += 60
+
+                            if _distanceRightLeft < 0:
+                                _distanceRightLeft += 60
+
+                            # 如果_x距离left不到TIMEGAP，且right距离left也不到TIMEGAP时，进行填充。否则就判定是个间断，不填充了。
+                            if _distanceLeft < TIMEGAP and _distanceRightLeft < TIMEGAP:
+                                _virtualValueDict[_x] = siganlRealValue[1].get(ordered_origin_key[_guessLeft])
 
             # 合并这两个字典
             siganlRealValue[1] = dict(siganlRealValue[1], **_virtualValueDict)
