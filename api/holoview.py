@@ -769,7 +769,7 @@ def holoview_index():
 
             # 补充上tbox没有传到平台的那些canid信息
             for oneSignalMissed in missedSignalList:
-                if resp['YaxisSignal'][oneSignalMissed]:    # 有的missedSignal，会在additionalCanDB中得到处理
+                if resp['YaxisSignal'].get(oneSignalMissed):    # 有的missedSignal，会在additionalCanDB中得到处理
                     pass
                 else:
                     resp['YaxisSignal'][oneSignalMissed] = {}
