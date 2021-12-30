@@ -925,15 +925,17 @@ def smartFillUp(signalListFor1Line, Xaxis):
                     # 送进去的_x在队尾，说明不需要填充了，把right置为None
                     if _guessLeft == ordered_origin_key_total:
                         _guessRight = None
-
-                    # 送进去的_x不在队尾，也不在排头，则把right赋值
-                    if _guessLeft > 0:
-                        _guessRight = _guessLeft
                         _guessLeft -= 1
+
                     else:
-                        # 送进去的_x排最前面，把right赋值为0。这里这个right不会用到。
-                        _guessRight = _guessLeft
-                    # print(_x, ordered_origin_key[_guess])
+                        # 送进去的_x不在队尾，也不在排头，则把right赋值
+                        if _guessLeft > 0:
+                            _guessRight = _guessLeft
+                            _guessLeft -= 1
+                        else:
+                            # 送进去的_x排最前面，把right赋值为0。这里这个right不会用到。
+                            _guessRight = _guessLeft
+                        # print(_x, ordered_origin_key[_guess])
 
                     if _x < ordered_origin_key[_guessLeft]:
                         # 实际填充时，小于队列第一个，不需要对left和right比对，直接跳过。
